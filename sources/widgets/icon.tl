@@ -8,15 +8,15 @@ end
 function Icon:new(parent: IWidget, path: string, size_policy: Policy, size?: Vector2): Icon
     local self = extends(Icon, "Icon", Widget, parent, size_policy, size)
 
-    self.sprite = Sprite:new(path, self.size.x as integer, self.size.y as integer)
+    self.sprite = Sprite:new(path, self.size.x, self.size.y)
 
     return self
 end
 
 -- override:
 function Icon:update()
-    self.sprite:set_pos(self.pos.x as integer, self.pos.y as integer)
-    self.sprite:set_size(self.size.x as integer, self.size.y as integer)
+    self.sprite:set_pos(self.pos.x, self.pos.y)
+    self.sprite:set_size(self.size.x, self.size.y)
 end
 
 -- override:

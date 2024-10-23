@@ -42,7 +42,7 @@ function Label:update()
     cursor.change_type(cursor_type.Arrow)
 
     if self.is_link then
-        if cursor.is_bound(self.pos.x as integer, self.pos.y as integer, self.measure.x as integer, self.measure.y as integer) then
+        if cursor.is_bound(self.pos.x, self.pos.y, self.measure.x, self.measure.y) then
             cursor.change_type(cursor_type.Hand)
 
             if mouse.is_pressed(button.Left) then
@@ -65,13 +65,7 @@ function Label:render()
     if not self.is_visible then return end
 
     if self.is_debug then
-        render.rectangle(
-            self.pos.x as integer,
-            self.pos.y as integer,
-            self.size.x as integer,
-            self.size.y as integer,
-            self.debug_color
-        )
+        render.rectangle(self.pos.x, self.pos.y, self.size.x, self.size.y, self.debug_color)
     end
 
     local x = self.pos.x
@@ -89,7 +83,7 @@ function Label:render()
         y = self.pos.y + self.size.y / 2 - self.measure.y / 2
     end
 
-    render.text(x as integer, y as integer, self.font, self.text, self.color)
+    render.text(x, y, self.font, self.text, self.color)
 end
 
 function Label:setFont(font: Font)

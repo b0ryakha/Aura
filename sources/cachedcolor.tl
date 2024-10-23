@@ -15,13 +15,8 @@ function CachedColor:new(r_or_hex: integer | string, g: integer, b: integer, a?:
             cache_key = hex
         end
     else
-        local r = r_or_hex as integer
-        cache_key = string.format("%02x%02x%02x%02x", 
-		    math.floor(r),
-		    math.floor(g),
-		    math.floor(b),
-            math.floor(a or 255)
-        )
+        local r = r_or_hex
+        cache_key = string.format("%02x%02x%02x%02x", r, g, b, a or 255)
     end
 
     cache_key = string.upper(cache_key)

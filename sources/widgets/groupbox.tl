@@ -46,19 +46,19 @@ function GroupBox:render()
     if not self.is_visible then return end
 
     render.rectangle(
-        self.pos.x as integer,
-        self.pos.y as integer + self.label_offset,
-        self.size.x as integer,
-        self.size.y as integer,
+        self.pos.x,
+        self.pos.y + self.label_offset,
+        self.size.x,
+        self.size.y,
         CachedColor:new(245, 245, 245),
         1
     )
 
     render.outline_rectangle(
-        self.pos.x as integer,
-        self.pos.y as integer + self.label_offset,
-        self.size.x as integer,
-        self.size.y as integer,
+        self.pos.x,
+        self.pos.y + self.label_offset,
+        self.size.x,
+        self.size.y,
         1,
         CachedColor:new(150, 150, 150),
         1

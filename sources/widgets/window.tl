@@ -21,17 +21,12 @@ end
 function Window:render()
     if not self.is_visible then return end
 
-    local x <const>: integer = self.pos.x as integer
-    local y <const>: integer = self.pos.y as integer
-    local w <const>: integer = self.size.x as integer
-    local h <const>: integer = self.size.y as integer
-
     if self.parent then
         local thickness <const> = 1
-        render.rectangle(x, y, w, h, self.ol_color, self.rounding)
-        render.rectangle(x + thickness, y + thickness, w - thickness * 2, h - thickness * 2, self.bg_color, self.rounding)
+        render.rectangle(self.pos.x, self.pos.y, self.size.x, self.size.y, self.ol_color, self.rounding)
+        render.rectangle(self.pos.x + thickness, self.pos.y + thickness, self.size.x - thickness * 2, self.size.y - thickness * 2, self.bg_color, self.rounding)
     else
-        render.rectangle(x, y, w, h, self.bg_color)
+        render.rectangle(self.pos.x, self.pos.y, self.size.x, self.size.y, self.bg_color)
     end
 
     self:childsRender()

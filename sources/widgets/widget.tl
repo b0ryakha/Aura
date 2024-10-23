@@ -63,10 +63,10 @@ function Widget:new(parent: IWidget, size_policy: Policy, size: Vector2): Widget
     self.childs = {}
     self:setParent(parent)
 
-    connect("new_frame", function() self:renderTooltip() end)
-    connect("window_resized", function() self:update() end)
-    connect("startup", function() self:update() end)
-    connect("cursor_stopped", function(data: Data)
+    connect(new_frame, function() self:renderTooltip() end)
+    connect(window_resized, function() self:update() end)
+    connect(startup, function() self:update() end)
+    connect(cursor_stopped, function(data: Data)
         self.tooltip_duration = data.duration as number
     end)
     
@@ -115,7 +115,7 @@ end
 function Widget:renderTooltip()
     if self.tooltip == "" then return end
 
-    local is_bound = cursor.is_bound(self.pos.x as integer, self.pos.y as integer, self.size.x as integer, self.size.y as integer)
+    local is_bound = cursor.is_bound(self.pos.x, self.pos.y, self.size.x, self.size.y)
 
     if not self.is_tooltip_visible then
         if self.tooltip_duration > 0.5 and is_bound then
@@ -133,32 +133,9 @@ function Widget:renderTooltip()
     local cursor_size = 16
     local offset = 4
 
-    render.rectangle(
-        pos.x as integer + cursor_size,
-        pos.y as integer + cursor_size,
-        measure.x as integer + offset * 2,
-        measure.y as integer + offset * 2,
-        CachedColor:new(255, 255, 255),
-        1
-    )
-
-    render.outline_rectangle(
-        pos.x as integer + cursor_size,
-        pos.y as integer + cursor_size,
-        measure.x as integer + offset * 2,
-        measure.y as integer + offset * 2,
-        1,
-        CachedColor:new(150, 150, 150),
-        1
-    )
-
-    render.text(
-        pos.x as integer + cursor_size + offset,
-        pos.y as integer + cursor_size + offset,
-        font,
-        self.tooltip,
-        CachedColor:new(60, 60, 60)
-    )
+    render.rectangle(pos.x + cursor_size, pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, CachedColor:new(255, 255, 255), 1)
+    render.outline_rectangle(pos.x + cursor_size, pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, 1, CachedColor:new(150, 150, 150), 1)
+    render.text(pos.x + cursor_size + offset, pos.y + cursor_size + offset, font, self.tooltip, CachedColor:new(60, 60, 60))
 end
 
 function Widget:setTooltip(tp: string)

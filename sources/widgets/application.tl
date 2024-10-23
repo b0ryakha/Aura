@@ -13,7 +13,7 @@ function Application:new(title: string, size?: Vector2): Application
     
     if size then
         self.size = size
-        window.set_size(self.size.x as integer, self.size.y as integer)
+        window.set_size(self.size.x, self.size.y)
     else
         self.size = window.get_size()
     end
@@ -23,7 +23,7 @@ function Application:new(title: string, size?: Vector2): Application
 
     window.set_title(self.title)
 
-    connect("window_resized", function()
+    connect(window_resized, function()
         local new_size = window.get_size()
         self.size.x = new_size.x
         self.size.y = new_size.y
@@ -34,6 +34,6 @@ end
 
 -- override
 function Application:render()
-    render.rectangle(0, 0, self.size.x as integer, self.size.y as integer, self.bg_color)
+    render.rectangle(0, 0, self.size.x, self.size.y, self.bg_color)
     self:childsRender()
 end

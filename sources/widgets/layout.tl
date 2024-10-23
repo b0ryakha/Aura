@@ -231,13 +231,7 @@ function Layout:render()
     if not self.is_visible then return end
 
     if self.is_debug then
-        render.rectangle(
-            self.pos.x as integer,
-            self.pos.y as integer,
-            self.size.x as integer,
-            self.size.y as integer,
-            self.debug_color
-        )
+        render.rectangle(self.pos.x, self.pos.y, self.size.x, self.size.y, self.debug_color)
     end
 
     self:childsRender()
