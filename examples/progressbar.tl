@@ -8,15 +8,15 @@ layout:setLayoutType("HBox")
 local left = Layout:new("VBox", nil, layout)
 local right = Layout:new("HBox", nil, layout)
 
-local bar = ProgressBar:new(left, Vector2:new(500, 50))
-bar:setFormat("p: %p, v: %v, m: %m")
-local bar2 = ProgressBar:new(left, Vector2:new(500, 50))
-bar2:setInvertedAppearance(true)
+local bar1 = ProgressBar:new(Vector2:new(500, 50), left)
+local bar2 = ProgressBar:new(Vector2:new(500, 50), left)
+local bar3 = ProgressBar:new(Vector2:new(50, 300), right)
+local bar4 = ProgressBar:new(Vector2:new(50, 300), right)
+local bar5 = ProgressBar:new(Vector2:new(50, 300), right)
 
-local bar3 = ProgressBar:new(right, Vector2:new(50, 300))
+bar1:setFormat("p: %p, v: %v, m: %m")
+bar2:setInvertedAppearance(true)
 bar3:setOrientation("Vertical")
-local bar4 = ProgressBar:new(right, Vector2:new(50, 300))
-local bar5 = ProgressBar:new(right, Vector2:new(50, 300))
 bar5:setOrientation("Vertical")
 bar5:setInvertedAppearance(true)
 
@@ -29,7 +29,7 @@ while window.is_open() do
     elseif percent <= 0 then direction = 1 end
 
     app:update()
-    bar:setValue(math.floor(percent))
+    bar1:setValue(math.floor(percent))
     bar2:setValue(math.floor(percent))
     bar3:setValue(math.floor(percent))
     bar4:setValue(math.floor(percent))

@@ -36,6 +36,8 @@ local view = Window:new(Policy:new("Maximum"), nil, page)
 view:setToolTip("folder view =)")
 
 while window.is_open() do
+    app:update()
+
     window.clear()
     app:render()
     window.display()

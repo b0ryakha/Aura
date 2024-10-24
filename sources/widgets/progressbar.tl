@@ -21,7 +21,7 @@ global record ProgressBar is IWidget
     resetFormat: function<Self>(Self)
 end
 
-function ProgressBar:new(parent: IWidget, size?: Vector2): ProgressBar
+function ProgressBar:new(size?: Vector2, parent?: IWidget): ProgressBar
     local self = extends(ProgressBar, "ProgressBar", Widget, parent, nil, size)
 
     self.label = Label:new(nil)

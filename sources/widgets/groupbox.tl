@@ -67,6 +67,14 @@ function GroupBox:render()
     end
 end
 
+function GroupBox:addItem(item: IWidget)
+    if not item then
+        error("Layout: Cannot add a nil item")
+    end
+
+    self:addChild(item)
+end
+
 function GroupBox:title(): string
     return self.label:text()
 end
