@@ -103,6 +103,6 @@ global cursor_stopped = Signal:new(function(data: Data): boolean
     return false
 end)
 
-global new_frame = Signal:new(function(_: Data): boolean
+global update = Signal:new(function(_: Data): boolean
     return true
 end)

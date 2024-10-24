@@ -2,16 +2,16 @@ package.path = package.path .. ";./build/?.lua"
 require("aura")
 
 local app = Application:new("Layouts")
-local layout = Layout:new(app, "VBox")
+local layout = app:layout()
 
-local label = Label:new(layout, "Evelyn Smith")
-label:setSize(Vector2:new(150, 150))
+local label = Label:new("Evelyn Smith", nil, layout)
+label:resize(Vector2:new(150, 150))
 label:turnDebug()
-label:setAlign(Align:new("Center", "Bottom"))
+label:setAlignment(Align:new("Center", "Bottom"))
 
-Label:new(layout, "designer")
+Label:new("designer", nil, layout)
 
-local link = Label:new(layout, "https://www.youtube.com")
+local link = Label:new("https://www.youtube.com", nil, layout)
 link:makeClickable()
 
 while window.is_open() do

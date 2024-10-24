@@ -1,7 +1,4 @@
-require("widget")
-require("oop")
 require("label")
-require("policy")
 
 global enum ButtonState
     "Normal" "Hovered" "Pressed" "Disabled"
@@ -11,6 +8,7 @@ global record PushButton is IWidget
     text: Label
     bg_color: Color
 
+    is_flat: boolean
     state: ButtonState
     is_pressed: boolean
 
@@ -19,16 +17,17 @@ global record PushButton is IWidget
     released: Signal
 end
 
-function PushButton:new(parent: IWidget, text?: string, policy?: Policy, size?: Vector2): PushButton
-    local self = extends(PushButton, "PushButton", Widget, parent, policy, size)
+function PushButton:new(text?: string, size?: Vector2, parent?: IWidget): PushButton
+    local self = extends(PushButton, "PushButton", Widget, parent, nil, size)
 
-    self.text = Label:new(nil, text)
-    self.text:setAlign(Align:new("Center"))
-    self.text:setPos(self.pos) -- by ref
-    self.text:setSize(self.size) -- by ref
+    self.text = Label:new(text)
+    self.text:setAlignment(Align:new("Center"))
+    self.text:bindPos(self.m_pos)
+    self.text:bindSize(self.m_size)
 
-    self.bg_color = CachedColor:new(250, 250, 250)
+    self.bg_color = CachedColor:new(240, 240, 240)
 
+    self.is_flat = false
     self.state = "Normal"
     self.is_pressed = false
 
@@ -43,7 +42,7 @@ end
 function PushButton:update()
     if self.state == "Disabled" then return end
 
-    if cursor.is_bound(self.pos.x, self.pos.y, self.size.x, self.size.y) then
+    if self:isHover() then
         self.state = "Hovered"
 
         if mouse.is_pressed(button.Left) then
@@ -70,19 +69,23 @@ function PushButton:render()
     local color = self.bg_color:copy()
     
     if self.state == "Hovered" then
-        color = CachedColor:new(self.bg_color.r - 10, self.bg_color.g - 10, self.bg_color.b - 10)
+        color = CachedColor:new(self.bg_color.r + 10, self.bg_color.g + 10, self.bg_color.b + 10)
     end
 
     if self.state == "Pressed" then
-        color = CachedColor:new(self.bg_color.r - 20, self.bg_color.g - 20, self.bg_color.b - 20)
+        color = CachedColor:new(self.bg_color.r - 10, self.bg_color.g - 10, self.bg_color.b - 10)
     end
 
     if self.state == "Disabled" then
         color = CachedColor:new(self.bg_color.r, self.bg_color.g, self.bg_color.b, 150)
     end
 
-    render.rectangle(self.pos.x, self.pos.y, self.size.x, self.size.y, color, 5)
-    render.outline_rectangle(self.pos.x, self.pos.y, self.size.x, self.size.y, 1, CachedColor:new(150, 150, 150), 5)
+    render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, color, 5)
+
+    if not self.is_flat then
+        render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, CachedColor:new(150, 150, 150), 5)
+    end
+
     self.text:render()
 end
 
@@ -96,4 +99,12 @@ end
 
 function PushButton:disable()
     self.state = "Disabled"
+end
+
+function PushButton:isFlat(): boolean
+    return self.is_flat
+end
+
+function PushButton:setFlat(state: boolean)
+    self.is_flat = state
 end

@@ -1,13 +1,13 @@
 require("widget")
-require("oop")
 require("format")
 require("align")
 
 global record Label is IWidget
-    text: string
-    align: Align
+    m_text: string
+    m_align: Align
     color: Color
     is_link: boolean
+    --TODO: word_wrap: boolean
 
     font: Font
     measure: Vector2
@@ -20,11 +20,11 @@ global record Label is IWidget
     setStyle: function<Self>(Self, string)
 end
 
-function Label:new(parent: IWidget, text?: string, color?: Color): Label
-    local self = extends(Label, "Label", Widget, parent)
+function Label:new(text?: string, color?: Color, parent?: IWidget): Label
+    local self = extends(Label, "Label", Widget, parent, "Fixed", nil)
 
-    self.text = text or ""
-    self.align = Align:new("Left", "Top")
+    self.m_text = text or ""
+    self.m_align = Align:new("Left", "Top")
     self.color = color or CachedColor:new(0, 0, 0)
     self.is_link = false
 
@@ -32,18 +32,18 @@ function Label:new(parent: IWidget, text?: string, color?: Color): Label
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 100)
 
     self:setFont(CachedFont:new("SansSerif.ttf", 14))
-    self.size = self.measure:copy()
+    self:resize(self.measure)
     
     return self
 end
 
 -- override:
 function Label:update()
-    cursor.change_type(cursor_type.Arrow)
+    self:setCursor(cursor_type.Arrow)
 
     if self.is_link then
-        if cursor.is_bound(self.pos.x, self.pos.y, self.measure.x, self.measure.y) then
-            cursor.change_type(cursor_type.Hand)
+        if self:isHover() then
+            self:setCursor(cursor_type.Hand)
 
             if mouse.is_pressed(button.Left) then
                 local executer = "start"
@@ -51,9 +51,9 @@ function Label:update()
                     executer = "xdg-open"
                 end
 
-                local success, exit_code = os.execute(format("% %", executer, self.text))
+                local success, exit_code = os.execute(format("% %", executer, self.m_text))
                 if not success then
-                    error(format("The link could not be opened: \"%\", error code: %", self.text, exit_code))
+                    error(format("The link could not be opened: \"%\", error code: %", self.m_text, exit_code))
                 end
             end
         end
@@ -65,51 +65,59 @@ function Label:render()
     if not self.is_visible then return end
 
     if self.is_debug then
-        render.rectangle(self.pos.x, self.pos.y, self.size.x, self.size.y, self.debug_color)
+        render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, self.debug_color)
     end
 
-    local x = self.pos.x
-    local y = self.pos.y
+    local x = self.m_pos.x
+    local y = self.m_pos.y
 
-    if self.align.h == "Right" then
-        x = self.pos.x + self.size.x - self.measure.x
-    elseif self.align.h == "Center" then
-        x = self.pos.x + self.size.x / 2 - self.measure.x / 2
+    if self.m_align.h == "Right" then
+        x = self.m_pos.x + self.m_size.x - self.measure.x
+    elseif self.m_align.h == "Center" then
+        x = self.m_pos.x + self.m_size.x / 2 - self.measure.x / 2
     end
 
-    if self.align.v == "Bottom" then
-        y = self.pos.y + self.size.y - self.measure.y
-    elseif self.align.v == "Center" then
-        y = self.pos.y + self.size.y / 2 - self.measure.y / 2
+    if self.m_align.v == "Bottom" then
+        y = self.m_pos.y + self.m_size.y - self.measure.y
+    elseif self.m_align.v == "Center" then
+        y = self.m_pos.y + self.m_size.y / 2 - self.measure.y / 2
     end
 
-    render.text(x, y, self.font, self.text, self.color)
+    render.text(x, y, self.font, self.m_text, self.color)
 end
 
 function Label:setFont(font: Font)
     self.font = font
-    self.measure = render.measure_text(self.font, self.text)
+    self.measure = render.measure_text(self.font, self.m_text)
 
     if self.is_link then
         self:setStyle("l")
     end
 end
 
-function Label:getText(): string
-    return self.text
+function Label:text(): string
+    return self.m_text
 end
 
 function Label:setText(text: string)
-    self.text = text
-    self.measure = render.measure_text(self.font, self.text)
+    self.m_text = text
+    self.measure = render.measure_text(self.font, self.m_text)
+end
+
+function Label:clear()
+    self:setText("")
 end
 
 function Label:turnDebug(is_debug?: boolean)
     self.is_debug = is_debug == nil and true or is_debug
 end
 
-function Label:setAlign(align: Align)
-    self.align = align
+function Label:alignment(): Align
+    return self.m_align
+end
+
+function Label:setAlignment(align: Align)
+    self.m_align = align
 end
 
 function Label:makeClickable()

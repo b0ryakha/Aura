@@ -2,17 +2,38 @@ package.path = package.path .. ";./build/?.lua"
 require("aura")
 
 local app = Application:new("ProgressBar")
-local layout = Layout:new(app, "VBox")
+local layout = app:layout()
+layout:setLayoutType("HBox")
 
-Label:new(layout, "Never give up...")
-local bar = ProgressBar:new(layout, Policy:new("Minimum"), Vector2:new(500, 50))
+local left = Layout:new("VBox", nil, layout)
+local right = Layout:new("HBox", nil, layout)
+
+local bar = ProgressBar:new(left, Vector2:new(500, 50))
+bar:setFormat("p: %p, v: %v, m: %m")
+local bar2 = ProgressBar:new(left, Vector2:new(500, 50))
+bar2:setInvertedAppearance(true)
+
+local bar3 = ProgressBar:new(right, Vector2:new(50, 300))
+bar3:setOrientation("Vertical")
+local bar4 = ProgressBar:new(right, Vector2:new(50, 300))
+local bar5 = ProgressBar:new(right, Vector2:new(50, 300))
+bar5:setOrientation("Vertical")
+bar5:setInvertedAppearance(true)
+
+local direction = 1
 local percent: number = 0
 
 while window.is_open() do
-    percent = cmath.lerp(percent, math.abs(math.sin(os.time())) * 100, dt)
+    percent = percent + direction
+    if percent >= 100 then direction = -1
+    elseif percent <= 0 then direction = 1 end
 
     app:update()
-    bar:setPercent(math.floor(percent))
+    bar:setValue(math.floor(percent))
+    bar2:setValue(math.floor(percent))
+    bar3:setValue(math.floor(percent))
+    bar4:setValue(math.floor(percent))
+    bar5:setValue(math.floor(percent))
 
     window.clear()
     app:render()

@@ -25,4 +25,4 @@ test: build_examples
 		echo -e "\e[31musing: test example=<name>\e[0m";
 		exit 0;
 	fi
-	./externals/moonshine/Moonshine.exe ${BUILD_DIR}/${EXM_DIR}/${example}.lua || true
+	./externals/moonshine/Moonshine.exe ${BUILD_DIR}/${EXM_DIR}/${example}.lua ${args} || true

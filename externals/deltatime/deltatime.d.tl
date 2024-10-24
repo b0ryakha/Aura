@@ -1,5 +1,5 @@
-local record dt
+local record Dt
     getTime: function(): number
 end
 
-return dt
+return Dt

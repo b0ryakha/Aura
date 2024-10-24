@@ -1,5 +1,5 @@
 require("application")
-require("icon")
+require("image")
 require("label")
 require("layout")
 require("spacer")

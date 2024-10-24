@@ -1,5 +1,5 @@
-require("format")
 require("oop")
+require("format")
 
 global record Margin
     left: number

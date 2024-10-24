@@ -2,37 +2,38 @@ package.path = package.path .. ";./build/?.lua"
 require("aura")
 
 local app = Application:new("Explorer")
-local main = Layout:new(app, "VBox")
-main:setSpacing(0)
-main:setMargin(Margin:new(0, 0, 0, 0))
+local layout = app:layout()
+layout:setSpacing(0)
+layout:setMargins(Margin:new(0, 0, 0, 0))
 
-local header = Layout:new(main, "HBox", Policy:new("Maximum", "Minimum"), Vector2:new(main.size.x, 44))
+local header = Layout:new("HBox", Vector2:new(layout.m_size.x, 44), layout)
+header:setSizePolicy(Policy:new("Maximum", "Minimum"))
 header:turnDebug()
 
-local al = Icon:new(header, "./examples/assets/arrow_left.png", Policy:new("Fixed"), Vector2:new(21, 21))
-al:setTooltip("prev folder")
+local al = Image:new("./examples/assets/arrow_left.png", Vector2:new(21, 21), header)
+al:setToolTip("prev folder")
 
-local ar = Icon:new(header, "./examples/assets/arrow_right.png", Policy:new("Fixed"), Vector2:new(21, 21))
-ar:setTooltip("next folder")
+local ar = Image:new("./examples/assets/arrow_right.png", Vector2:new(21, 21), header)
+ar:setToolTip("next folder")
 
-local ad = Icon:new(header, "./examples/assets/arrow_down.png", Policy:new("Fixed"), Vector2:new(12, 12))
-ad:setTooltip("menu...")
+local ad = Image:new("./examples/assets/arrow_down.png", Vector2:new(12, 12), header)
+ad:setToolTip("menu...")
 
-local au = Icon:new(header, "./examples/assets/arrow_up.png", Policy:new("Fixed"), Vector2:new(21, 21))
-au:setTooltip("back to folder")
+local au = Image:new("./examples/assets/arrow_up.png", Vector2:new(21, 21), header)
+au:setToolTip("back to folder")
 
-local search = Window:new(header, Policy:new("Maximum"))
-search:setTooltip("search...")
+local search = Window:new(Policy:new("Maximum"), nil, header)
+search:setToolTip("search...")
 
-local page = Layout:new(main, "HBox")
+local page = Layout:new("HBox", nil, layout)
 page:turnDebug()
 page:setSpacing(4)
 
-local list = Window:new(page, Policy:new("Minimum", "Maximum"), Vector2:new(200, page.size.y))
-list:setTooltip("list of folders =)")
+local list = Window:new(Policy:new("Minimum", "Maximum"), Vector2:new(200, page.m_size.y), page)
+list:setToolTip("list of folders =)")
 
-local view = Window:new(page, Policy:new("Maximum"))
-view:setTooltip("folder view =)")
+local view = Window:new(Policy:new("Maximum"), nil, page)
+view:setToolTip("folder view =)")
 
 while window.is_open() do
     window.clear()

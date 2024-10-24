@@ -1,69 +1,71 @@
 require("widget")
-require("oop")
-
-global enum SpacerType
-    "Horizontal" "Vertical"
-end
+require("orientation")
 
 global record Spacer is IWidget
-    is_debug: boolean
-    align_type: SpacerType
-    debug_color: Color
+    align_type: Orientation
     thickness: number
 end
 
-function Spacer:new(parent: IWidget, align_type: SpacerType): Spacer
+function Spacer:new(align_type: Orientation, parent?: IWidget): Spacer
     local self = extends(Spacer, "Spacer", Widget, parent, "Maximum")
 
-    self.is_debug = false
-    self.debug_color = CachedColor:new(20, 20, 20)
     self.align_type = align_type
     self.thickness = 10
 
     if self.align_type == "Horizontal" then
-        self.size.y = self.thickness
+        self.m_size.y = self.thickness
     else -- Vertical:
-        self.size.x = self.thickness
+        self.m_size.x = self.thickness
     end
+
+    self:hide()
 
     return self
 end
 
 -- override:
-function Spacer:setSize(size: Vector2)
-    if not size then
+function Spacer:resize(m_size: Vector2)
+    if not m_size then
         error("Spacer: Cannot set a nil size")
     end
 
     self.size_policy = Policy:new("Fixed")
-    self.size = size
+    self.m_size = m_size:copy()
+    self:update()
+end
+
+-- override:
+function Spacer:bindSize(m_size: Vector2)
+    if not m_size then
+        error("Spacer: Cannot bind a nil size")
+    end
+
+    self.size_policy = Policy:new("Fixed")
+    self.m_size = m_size
     self:update()
 end
 
 -- override:
 function Spacer:render()
-    if not self:isVisible() then return end
-    if not self.is_debug then return end
+    if not self.is_visible then return end
+
+    local color = CachedColor:new(20, 20, 20)
     
     if self.align_type == "Horizontal" then
-        for x = self.pos.x, self.pos.x + self.size.x - self.thickness / 2, self.thickness do
+        for x = self.m_pos.x, self.m_pos.x + self.m_size.x - self.thickness / 2, self.thickness do
             local x1 = x
-            local y1 = (self.size.y / 2 + self.pos.y)
+            local y1 = (self.m_size.y / 2 + self.m_pos.y)
             local x2 = (x + self.thickness)
-            local y2 = (self.size.y / 2 + self.pos.y + self.thickness)
-            render.line(x1, y1, x2, y2, 5, self.debug_color)
+            local y2 = (self.m_size.y / 2 + self.m_pos.y + self.thickness)
+            render.line(x1, y1, x2, y2, 5, color)
         end
     else -- Vertical:
-        for y = self.pos.y, self.pos.y + self.size.y - self.thickness / 2, self.thickness do
-            local x1 = (self.size.x / 2 + self.pos.x)
+        for y = self.m_pos.y, self.m_pos.y + self.m_size.y - self.thickness / 2, self.thickness do
+            local x1 = (self.m_size.x / 2 + self.m_pos.x)
             local y1 = y
-            local x2 = (self.size.x / 2 + self.pos.x + self.thickness)
+            local x2 = (self.m_size.x / 2 + self.m_pos.x + self.thickness)
             local y2 = (y + self.thickness)
-            render.line(x1, y1, x2, y2, 5, self.debug_color)
+            render.line(x1, y1, x2, y2, 5, color)
         end
     end
-end
-
-function Spacer:turnDebug(is_debug?: boolean)
-    self.is_debug = is_debug == nil and true or is_debug
 end
