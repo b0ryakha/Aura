@@ -9,7 +9,7 @@ require("layouttype")
 --global dbg = require("externals/debugger/debugger") as Debugger
 
 global interface IWidget
-    parent: IWidget
+    m_parent: IWidget
     childs: { IWidget }
     m_layout: IWidget
 
@@ -47,6 +47,7 @@ global interface IWidget
     bindSize: function<Self>(Self, Vector2)
     setSizePolicy: function<Self>(Self, Policy)
     setCursor: function<Self>(Self, integer)
+    resetCursor: function<Self>(Self)
     setToolTip: function<Self>(Self, string)
 
     isHover: function<Self>(Self): boolean
@@ -68,7 +69,7 @@ function Widget:new(parent: IWidget, size_policy?: Policy, size?: Vector2): Widg
     self.m_size = size and size:copy() or Vector2:new(100, 100)
     self.min_size = self.m_size:copy()
     self.size_policy = size_policy or Policy:new("Minimum")
-    self.cursor_type = cursor_type.Arrow
+    self:resetCursor()
 
     self.tooltip = ""
     self.tooltip_duration = 0
@@ -116,7 +117,7 @@ function Widget:update() self:childsUpdate() end
 function Widget:addChild(widget: IWidget)
     if not widget then return end
 
-    widget.parent = self
+    widget.m_parent = self
     table.insert(self.childs, widget)
 end
 
@@ -238,6 +239,10 @@ function Widget:setCursor(new_type: integer)
     self.cursor_type = new_type
 end
 
+function Widget:resetCursor()
+    self.cursor_type = cursor_type.Arrow
+end
+
 function Widget:setSizePolicy(size_policy: Policy)
     if not size_policy then return end
     self.size_policy = size_policy
@@ -252,8 +257,8 @@ function Widget:toolTip(): string
     return self.tooltip
 end
 
-function Widget:parentWidget(): IWidget
-    return self.parent
+function Widget:parent(): IWidget
+    return self.m_parent
 end
 
 function Widget:setVisible(visible: boolean)

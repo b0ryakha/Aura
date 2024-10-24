@@ -20,7 +20,7 @@ end
 function Window:render()
     if not self.is_visible then return end
 
-    if self.parent then
+    if self.m_parent then
         local thickness <const> = 1
         render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, self.ol_color, self.rounding)
         render.rectangle(self.m_pos.x + thickness, self.m_pos.y + thickness, self.m_size.x - thickness * 2, self.m_size.y - thickness * 2, self.bg_color, self.rounding)

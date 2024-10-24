@@ -14,8 +14,8 @@ end
 function Layout:new(align_type: LayoutType, size?: Vector2, parent?: IWidget): Layout
     local self = extends(Layout, "Layout", Widget, parent, Policy:new("Maximum"), size)
 
-    if self.parent and type(self.parent) ~= "Layout" then
-        self.parent:setLayout(self)
+    if self.m_parent and type(self.m_parent) ~= "Layout" then
+        self.m_parent:setLayout(self)
     end
 
     self.type = align_type
