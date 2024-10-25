@@ -7,7 +7,7 @@ global record Label is IWidget
     m_align: Align
     color: Color
     is_link: boolean
-    --TODO: word_wrap: boolean
+    word_wrap: boolean
 
     font: Font
     measure: Vector2
@@ -18,6 +18,7 @@ global record Label is IWidget
 -- force decl:
     setFont: function<Self>(Self, Font)
     setStyle: function<Self>(Self, string)
+    tryWrap: function<Self>(Self)
 end
 
 function Label:new(text?: string, color?: Color, parent?: IWidget): Label
@@ -27,12 +28,14 @@ function Label:new(text?: string, color?: Color, parent?: IWidget): Label
     self.m_align = Align:new("Left", "Top")
     self.color = color or CachedColor:new(0, 0, 0)
     self.is_link = false
+    self.word_wrap = false
 
     self.is_debug = false
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 100)
 
     self:setFont(CachedFont:new("SansSerif.ttf", 14))
     self:resize(self.measure)
+    self:tryWrap()
     
     return self
 end
@@ -60,6 +63,35 @@ function Label:update()
     end
 end
 
+-- private:
+function Label:expand()
+    self.m_text = self.m_text:gsub('\n', '')
+end
+
+-- private:
+function Label:tryWrap()
+    if not self.word_wrap then return end
+    self:expand()
+
+    local wrapped = ""
+    local line_width: number = 0
+
+    for i = 1, #self.m_text do
+        local char = self.m_text:sub(i, i)
+        local char_width = self.font:get_glyph(char).x + 0.5
+
+        if (line_width + char_width) >= self.m_size.x then
+            wrapped = wrapped .. '\n'
+            line_width = 0
+        end
+
+        wrapped = wrapped .. char
+        line_width = line_width + char_width
+    end
+
+    self.m_text = wrapped
+end
+
 -- override:
 function Label:render()
     if not self.is_visible then return end
@@ -67,6 +99,8 @@ function Label:render()
     if self.is_debug then
         render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, self.debug_color)
     end
+
+    if self.m_text == "" then return end
 
     local x = self.m_pos.x
     local y = self.m_pos.y
@@ -93,6 +127,8 @@ function Label:setFont(font: Font)
     if self.is_link then
         self:setStyle("l")
     end
+
+    self:tryWrap()
 end
 
 function Label:text(): string
@@ -102,6 +138,7 @@ end
 function Label:setText(text: string)
     self.m_text = text
     self.measure = render.measure_text(self.font, self.m_text)
+    self:tryWrap()
 end
 
 function Label:clear()
@@ -118,6 +155,7 @@ end
 
 function Label:setAlignment(align: Align)
     self.m_align = align
+    self:tryWrap()
 end
 
 function Label:makeClickable()
@@ -128,4 +166,19 @@ end
 -- style: moonshine font style
 function Label:setStyle(style: string)
     self.font = CachedFont:new(self.font:get_family(), self.font:get_size(), style)
+    self:tryWrap()
+end
+
+function Label:wordWrap(): boolean
+    return self.word_wrap
+end
+
+function Label:setWordWrap(on: boolean)
+    self.word_wrap = on
+    
+    if on then
+        self:tryWrap()
+    else
+        self:expand()
+    end
 end

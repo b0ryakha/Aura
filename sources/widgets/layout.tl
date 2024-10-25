@@ -30,7 +30,6 @@ end
 
 -- private:
 function Layout:warp(child: IWidget)
-    -- contract:
     if child.size_policy.h ~= "Fixed" then
         local right_edge = self.m_pos.x + self.m_size.x - self.margin.right
 
@@ -98,6 +97,7 @@ function Layout:hAlign()
         for _, child in ipairs(self.childs) do
             if child.size_policy.h == "Maximum" then
                 child.m_size.x = new_width
+                self:warp(child)
                 total_children_width = total_children_width + child.m_size.x
             end
         end
@@ -167,6 +167,7 @@ function Layout:vAlign()
         for _, child in ipairs(self.childs) do
             if child.size_policy.v == "Maximum" then
                 child.m_size.y = new_height
+                self:warp(child)
                 total_children_height = total_children_height + child.m_size.y
             end
         end
@@ -192,10 +193,7 @@ function Layout:update()
     if self.type == "VBox" then self:vAlign() end
     if self.type == "Grid" then error("not impl") end
 
-    for _, child in ipairs(self.childs) do
-        self:warp(child)
-        child:update()
-    end
+    self:childsUpdate()
 end
 
 -- override
