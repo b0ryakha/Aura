@@ -13,7 +13,8 @@ header:turnDebug()
 local al = Image:new("./examples/assets/arrow_left.png", Vector2:new(21, 21), header)
 al:setToolTip("prev folder")
 
-local ar = Image:new("./examples/assets/arrow_right.png", Vector2:new(21, 21), header)
+local ar = Image:new("./examples/assets/arrow_left.png", Vector2:new(21, 21), header)
+ar:mirror()
 ar:setToolTip("next folder")
 
 local ad = Image:new("./examples/assets/arrow_down.png", Vector2:new(12, 12), header)
