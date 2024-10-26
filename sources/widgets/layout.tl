@@ -30,16 +30,18 @@ end
 
 -- private:
 function Layout:warp(child: IWidget)
-    if child.size_policy.h == "Fixed" or child.size_policy.v == "Fixed" then return end
-
-    local right_edge = self.m_pos.x + self.m_size.x - self.margin.right
-    if (child.m_pos.x + child.m_size.x) >= right_edge then
-        child.m_size.x = child.m_size.x - (child.m_pos.x + child.m_size.x - right_edge)
+    if child.size_policy.h ~= "Fixed" then
+        local right_edge = self.m_pos.x + self.m_size.x - self.margin.right
+        if (child.m_pos.x + child.m_size.x) >= right_edge then
+            child.m_size.x = child.m_size.x - (child.m_pos.x + child.m_size.x - right_edge)
+        end
     end
-
-    local bottom_edge = self.m_pos.y + self.m_size.y - self.margin.bottom
-    if (child.m_pos.y + child.m_size.y) >= bottom_edge then
-        child.m_size.y = child.m_size.y - (child.m_pos.y + child.m_size.y - bottom_edge)
+    
+    if child.size_policy.v ~= "Fixed" then
+        local bottom_edge = self.m_pos.y + self.m_size.y - self.margin.bottom
+        if (child.m_pos.y + child.m_size.y) >= bottom_edge then
+            child.m_size.y = child.m_size.y - (child.m_pos.y + child.m_size.y - bottom_edge)
+        end
     end
 end
 
