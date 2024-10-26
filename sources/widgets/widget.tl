@@ -2,9 +2,8 @@ require("oop")
 require("policy")
 require("signal")
 require("format")
-require("cachedfont")
-require("cachedcolor")
 require("layouttype")
+require("theme")
 
 --global dbg = require("externals/debugger/debugger") as Debugger
 

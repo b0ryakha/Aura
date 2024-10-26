@@ -1,7 +1,7 @@
 package.path = package.path .. ";./build/?.lua"
 require("aura")
 
-local app = Application:new("Layouts")
+local app = Application:new("Tooltip")
 app:setLayoutType("HBox")
 
 local layout = app:layout()

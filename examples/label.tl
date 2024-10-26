@@ -1,7 +1,7 @@
 package.path = package.path .. ";./build/?.lua"
 require("aura")
 
-local app = Application:new("Layouts")
+local app = Application:new("Label")
 app:setLayoutType("HBox")
 
 local left = Layout:new("VBox", nil, app:layout())
@@ -20,7 +20,7 @@ left:addItem(link)
 
 local right = Layout:new("VBox", nil, app:layout())
 
-local wrapped_label = Label:new("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dolor risus, tincidunt sed quam sit amet, fermentum commodo justo. Morbi cursus nibh sed dui condimentum blandit. Sed sed ante est.")
+local wrapped_label = Label:new("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dolor risus, tincidunt sed quam sit amet, fermentum commodo justo. Morbi cursus nibh sed dui condimentum blandit.")
 wrapped_label:resize(Vector2:new(100, 200))
 wrapped_label:setWordWrap(true)
 wrapped_label:turnDebug()

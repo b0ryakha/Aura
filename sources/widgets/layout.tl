@@ -30,20 +30,16 @@ end
 
 -- private:
 function Layout:warp(child: IWidget)
-    if child.size_policy.h ~= "Fixed" then
-        local right_edge = self.m_pos.x + self.m_size.x - self.margin.right
+    if child.size_policy.h == "Fixed" or child.size_policy.v == "Fixed" then return end
 
-        if (child.m_pos.x + child.m_size.x) >= right_edge then
-            child.m_size.x = child.m_size.x - (child.m_pos.x + child.m_size.x - right_edge)
-        end
+    local right_edge = self.m_pos.x + self.m_size.x - self.margin.right
+    if (child.m_pos.x + child.m_size.x) >= right_edge then
+        child.m_size.x = child.m_size.x - (child.m_pos.x + child.m_size.x - right_edge)
     end
 
-    if child.size_policy.v ~= "Fixed" then
-        local bottom_edge = self.m_pos.y + self.m_size.y - self.margin.bottom
-
-        if (child.m_pos.y + child.m_size.y) >= bottom_edge then
-            child.m_size.y = child.m_size.y - (child.m_pos.y + child.m_size.y - bottom_edge)
-        end
+    local bottom_edge = self.m_pos.y + self.m_size.y - self.margin.bottom
+    if (child.m_pos.y + child.m_size.y) >= bottom_edge then
+        child.m_size.y = child.m_size.y - (child.m_pos.y + child.m_size.y - bottom_edge)
     end
 end
 
@@ -114,6 +110,8 @@ function Layout:hAlign()
         if i < #self.childs then
             current_x = current_x + self.m_spacing
         end
+
+        self:warp(child)
     end
 end
 
@@ -150,7 +148,7 @@ function Layout:vAlign()
         end
         
         if child.size_policy.h == "Maximum" then
-                child.m_size.x = total_width
+            child.m_size.x = total_width
         elseif child.size_policy.h == "Minimum" then
             child.m_size.x = math.min(child.min_size.x, total_width)
         end
@@ -167,7 +165,6 @@ function Layout:vAlign()
         for _, child in ipairs(self.childs) do
             if child.size_policy.v == "Maximum" then
                 child.m_size.y = new_height
-                self:warp(child)
                 total_children_height = total_children_height + child.m_size.y
             end
         end
@@ -184,6 +181,8 @@ function Layout:vAlign()
         if i < #self.childs then
             current_y = current_y + self.m_spacing
         end
+
+        self:warp(child)
     end
 end
 
