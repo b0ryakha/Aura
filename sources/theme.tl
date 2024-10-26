@@ -39,7 +39,7 @@ local themes: { string : Theme } = {
 
         default = CachedColor:new(250, 250, 250),
         hovered = CachedColor:new(254, 254, 254),
-        pressed = CachedColor:new(230, 230, 230),
+        pressed = CachedColor:new(235, 235, 235),
         outline = CachedColor:new(215, 215, 215),
         outline2 = CachedColor:new(150, 150, 150),
         accent = CachedColor:new(180, 220, 255),
