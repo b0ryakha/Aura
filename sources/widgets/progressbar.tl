@@ -13,8 +13,6 @@ global record ProgressBar is IWidget
     m_orientation: Orientation
     is_inverted: boolean
 
-    accent_color: Color
-
     valueChanged: Signal
 
 -- force decl:
@@ -35,7 +33,6 @@ function ProgressBar:new(size?: Vector2, parent?: IWidget): ProgressBar
     self.val = 0
     self.percent = 0
     self.m_orientation = "Horizontal"
-    self.accent_color = CachedColor:new(50, 150, 215)
     self.is_inverted = false
 
     self.valueChanged = Signal:new()
@@ -92,8 +89,8 @@ function ProgressBar:render()
         end
     end
 
-    render.rectangle(x, y, w, h, self.accent_color, 1)
-    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, CachedColor:new(150, 150, 150), 1)
+    render.rectangle(x, y, w, h, theme.accent, 1)
+    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, theme.outline, 1)
 
     self.label:render()
 end
@@ -104,14 +101,6 @@ end
 
 function ProgressBar:setInvertedAppearance(invert: boolean)
     self.is_inverted = invert
-end
-
-function ProgressBar:accentColor(): Color
-    return self.accent_color:copy()
-end
-
-function ProgressBar:setAccentColor(color: Color)
-    self.accent_color = color
 end
 
 function ProgressBar:orientation(): Orientation

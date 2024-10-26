@@ -164,15 +164,15 @@ function Widget:renderToolTip()
         self.is_tooltip_visible = false
     end
 
-    local font = CachedFont:new("SansSerif.ttf", 13)
+    local font = theme.small_font
     local measure = render.measure_text(font as Font, self.tooltip as string)
     local m_pos = cursor.get_pos()
     local cursor_size = 16
     local offset = 4
 
-    render.rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, CachedColor:new(255, 255, 255), 1)
-    render.outline_rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, 1, CachedColor:new(150, 150, 150), 1)
-    render.text(m_pos.x + cursor_size + offset, m_pos.y + cursor_size + offset, font, self.tooltip, CachedColor:new(60, 60, 60))
+    render.rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, theme.background4, 1)
+    render.outline_rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, 1, theme.outline2, 1)
+    render.text(m_pos.x + cursor_size + offset, m_pos.y + cursor_size + offset, font, self.tooltip, theme.foreground4)
 end
 
 function Widget:setToolTip(tp: string)
@@ -293,9 +293,9 @@ function Widget:setActive(state: boolean)
 end
 
 function Widget:disable()
-    self.is_active = false
+    self:setActive(false)
 end
 
 function Widget:enable()
-    self.is_active = true
+    self:setActive(true)
 end

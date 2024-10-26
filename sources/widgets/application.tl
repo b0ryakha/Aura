@@ -4,7 +4,6 @@ require("layout")
 global record Application is IWidget
     title: string
     args: { string }
-    bg_color: Color
     m_icon: Sprite
     --TODO: menu: Menu
 end
@@ -24,7 +23,6 @@ function Application:new(title: string, size?: Vector2): Application
 
     self:setLayout(Layout:new("VBox"))
     self.args = globalvars.get_args()
-    self.bg_color = CachedColor:new(255, 255, 255)
 
     connect(window_resized, function() self:resize(window.get_size()) end)
 
@@ -33,7 +31,7 @@ end
 
 -- override
 function Application:render()
-    render.rectangle(0, 0, self.m_size.x, self.m_size.y, self.bg_color)
+    render.rectangle(0, 0, self.m_size.x, self.m_size.y, theme.background)
     self:childsRender()
 end
 

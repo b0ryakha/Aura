@@ -1,4 +1,5 @@
 require("label")
+require("image")
 
 global enum CheckBoxState
     "Normal" "Pressed"
@@ -6,12 +7,11 @@ end
 
 global record CheckBox is IWidget
     label: Label
-    mark: Sprite
+    mark: Image
 
     box_size: Vector2
     offset: number
-
-    bg_color: Color
+    mutable_offset: number
 
     state: CheckBoxState
     is_checked: boolean
@@ -28,15 +28,14 @@ function CheckBox:new(text?: string, size?: Vector2, parent?: IWidget): CheckBox
 
     self.box_size = size or Vector2:new(14, 14)
     self.offset = 5
+    self.mutable_offset = self.offset
 
     self.label = Label:new(text)
     self.label:setAlignment(Align:new("Center"))
     self.label.m_size.y = self.box_size.y
 
-    self.mark = Sprite:new("assets/checkmark.png", 64, 64)
-    self.mark:set_color(CachedColor:new(0, 0, 0))
-
-    self.bg_color = CachedColor:new(240, 240, 240)
+    self.mark = Image:new("assets/checkmark.png", Vector2:new(64, 64))
+    self.mark:setColor(theme.foreground)
 
     self.state = "Normal"
     self.lock_press = false
@@ -44,7 +43,7 @@ function CheckBox:new(text?: string, size?: Vector2, parent?: IWidget): CheckBox
 
     self.checkStateChanged = Signal:new()
 
-    self:bindSize(Vector2:new(self.box_size.x + self.label.m_size.x + self.offset, self.box_size.y))
+    self:bindSize(Vector2:new(self.box_size.x + self.label.m_size.x + self.mutable_offset, self.box_size.y))
     self:updateElements()
 
     return self
@@ -52,10 +51,10 @@ end
 
 -- private:
 function CheckBox:updateElements()
-    self.label:bindPos(Vector2:new(self.m_pos.x + self.box_size.x + self.offset, self.m_pos.y))
+    self.label:bindPos(Vector2:new(self.m_pos.x + self.box_size.x + self.mutable_offset, self.m_pos.y))
 
-    self.mark:set_pos(self.m_pos.x, self.m_pos.y)
-    self.mark:set_size(self.box_size.x, self.box_size.y)
+    self.mark:setPos(self.m_pos)
+    self.mark:resize(self.box_size)
 end
 
 -- override:
@@ -88,20 +87,30 @@ end
 function CheckBox:render()
     if not self.is_visible then return end
 
-    local color = self.bg_color:copy()
-    
-    if self.state == "Pressed" then
-        color = CachedColor:new(self.bg_color.r - 20, self.bg_color.g - 20, self.bg_color.b - 20)
+    local color = theme.default
+
+    if not self.is_active then
+        color = theme.background2
+    elseif self.state == "Pressed" then
+        color = theme.pressed
     end
 
     render.rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, color, 5)
-    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, 1, CachedColor:new(150, 150, 150), 5)
+    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, 1, theme.outline, 5)
 
     if self.is_checked then
-        render.sprite(self.mark)
+        self.mark:render()
     end
 
     self.label:render()
+end
+
+-- override:
+function CheckBox:setActive(state: boolean)
+    self.is_active = state
+
+    self.label:setActive(self.is_active)
+    self.mark:setActive(self.is_active)
 end
 
 function CheckBox:isChecked(): boolean
@@ -118,4 +127,5 @@ end
 
 function CheckBox:setText(title: string)
     self.label:setText(title)
+    self.mutable_offset = title == "" and 0 or self.offset
 end

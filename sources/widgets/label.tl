@@ -5,7 +5,6 @@ require("align")
 global record Label is IWidget
     m_text: string
     m_align: Align
-    color: Color
     is_link: boolean
     word_wrap: boolean
 
@@ -21,19 +20,18 @@ global record Label is IWidget
     tryWrap: function<Self>(Self)
 end
 
-function Label:new(text?: string, color?: Color, parent?: IWidget): Label
+function Label:new(text?: string, parent?: IWidget): Label
     local self = extends(Label, "Label", Widget, parent, "Fixed", nil)
 
     self.m_text = text or ""
     self.m_align = Align:new("Left", "Top")
-    self.color = color or CachedColor:new(0, 0, 0)
     self.is_link = false
     self.word_wrap = false
 
     self.is_debug = false
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 100)
 
-    self:setFont(CachedFont:new("SansSerif.ttf", 14))
+    self:setFont(theme.regular_font)
     self:resize(self.measure)
     self:tryWrap()
     
@@ -117,7 +115,7 @@ function Label:render()
         y = self.m_pos.y + self.m_size.y / 2 - self.measure.y / 2
     end
 
-    render.text(x, y, self.font, self.m_text, self.color)
+    render.text(x, y, self.font, self.m_text, self.is_active and theme.foreground or theme.foreground3)
 end
 
 function Label:setFont(font: Font)

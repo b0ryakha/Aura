@@ -48,8 +48,6 @@ end
 -- override:
 function Spacer:render()
     if not self.is_visible then return end
-
-    local color = CachedColor:new(20, 20, 20)
     
     if self.align_type == "Horizontal" then
         for x = self.m_pos.x, self.m_pos.x + self.m_size.x - self.thickness / 2, self.thickness do
@@ -57,7 +55,7 @@ function Spacer:render()
             local y1 = (self.m_size.y / 2 + self.m_pos.y)
             local x2 = (x + self.thickness)
             local y2 = (self.m_size.y / 2 + self.m_pos.y + self.thickness)
-            render.line(x1, y1, x2, y2, 5, color)
+            render.line(x1, y1, x2, y2, 5, theme.foreground2)
         end
     else -- Vertical:
         for y = self.m_pos.y, self.m_pos.y + self.m_size.y - self.thickness / 2, self.thickness do
@@ -65,7 +63,7 @@ function Spacer:render()
             local y1 = y
             local x2 = (self.m_size.x / 2 + self.m_pos.x + self.thickness)
             local y2 = (y + self.thickness)
-            render.line(x1, y1, x2, y2, 5, color)
+            render.line(x1, y1, x2, y2, 5, theme.foreground2)
         end
     end
 end

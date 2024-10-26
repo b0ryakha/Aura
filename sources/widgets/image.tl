@@ -7,7 +7,8 @@ global record Image is IWidget
     is_v_mirror: boolean
 
 -- force decl:
-    loadFromFile: function<Self>(Self, string)
+    loadFromFile: function<Self>(Self, string, Vector2)
+    setColor: function<Self>(Self, Color)
 end
 
 function Image:new(path?: string, size?: Vector2, parent?: IWidget): Image
@@ -15,7 +16,7 @@ function Image:new(path?: string, size?: Vector2, parent?: IWidget): Image
 
     self.is_h_mirror = false
     self.is_v_mirror = false
-    self:loadFromFile(path)
+    self:loadFromFile(path, size)
 
     return self
 end
@@ -43,7 +44,17 @@ function Image:render()
     render.sprite(self.sprite)
 end
 
+-- override:
+function Image:setActive(state: boolean)
+    self.is_active = state
+    self.sprite:set_color(self.is_active and theme.foreground or theme.foreground3)
+end
+
 function Image:color(): Color
+    if not self.m_color then
+        return (self.is_active and theme.foreground or theme.foreground3):copy()
+    end
+
     return self.m_color:copy()
 end
 
@@ -60,8 +71,10 @@ function Image:setAlphaChannel(alpha: integer)
     self:setColor(self.m_color)
 end
 
-function Image:loadFromFile(path: string)
+function Image:loadFromFile(path: string, size: Vector2)
     if not path then return end
+
+    self:bindSize(size or Vector2:new(64, 64))
     self.sprite = Sprite:new(path, self.m_size.x, self.m_size.y)
 end
 

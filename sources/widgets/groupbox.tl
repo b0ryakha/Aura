@@ -10,6 +10,8 @@ global record GroupBox is IWidget
 
     is_flat: boolean
     is_checkable: boolean
+
+    checkStateChanged: Signal
 end
 
 function GroupBox:new(title: string, size?: Vector2, parent?: IWidget): GroupBox
@@ -26,6 +28,8 @@ function GroupBox:new(title: string, size?: Vector2, parent?: IWidget): GroupBox
             child:setActive(data.state as boolean)
         end
     end)
+
+    self.checkStateChanged = self.checkbox.checkStateChanged
 
     self.offset = cmath.round(self.m_pos.y + self.label.measure.y * 1.5)
 
@@ -62,10 +66,10 @@ end
 function GroupBox:render()
     if not self.is_visible then return end
 
-    render.rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, CachedColor:new(245, 245, 245), 1)
+    render.rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, theme.background2, 1)
 
     if not self.is_flat then
-        render.outline_rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, 1, CachedColor:new(150, 150, 150), 1)
+        render.outline_rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, 1, theme.outline, 1)
     end
 
     if self.is_checkable then
