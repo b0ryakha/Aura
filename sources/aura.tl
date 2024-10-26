@@ -8,6 +8,7 @@ require("window")
 require("groupbox")
 require("progressbar")
 require("pushbutton")
+require("checkbox")
 
 -- hook:
 local deltatime = require("externals/deltatime/deltatime")

@@ -173,24 +173,24 @@ function Widget:size(): Vector2
     return self.m_size:copy()
 end
 
-function Widget:resize(m_size: Vector2)
-    if not m_size then
+function Widget:resize(size: Vector2)
+    if not size then
         error(format("%: Cannot set a nil size", type(self)))
     end
 
-    self.m_size = m_size:copy()
-    if self.m_layout then self.m_layout:resize(m_size) end
+    self.m_size = size:copy()
+    if self.m_layout then self.m_layout:resize(size) end
 
     self:update()
 end
 
-function Widget:bindSize(m_size: Vector2)
-    if not m_size then
+function Widget:bindSize(size: Vector2)
+    if not size then
         error(format("%: Cannot bind a nil size", type(self)))
     end
 
-    self.m_size = m_size
-    if self.m_layout then self.m_layout:bindSize(m_size) end
+    self.m_size = size
+    if self.m_layout then self.m_layout:bindSize(size) end
 
     self:update()
 end
@@ -199,21 +199,21 @@ function Widget:pos(): Vector2
     return self.m_pos:copy()
 end
 
-function Widget:setPos(m_pos: Vector2)
-    if not m_pos then
+function Widget:setPos(pos: Vector2)
+    if not pos then
         error(format("%: Cannot set a nil pos", type(self)))
     end
 
-    self.m_pos = m_pos:copy()
+    self.m_pos = pos:copy()
     self:update()
 end
 
-function Widget:bindPos(m_pos: Vector2)
-    if not m_pos then
+function Widget:bindPos(pos: Vector2)
+    if not pos then
         error(format("%: Cannot bind a nil pos", type(self)))
     end
 
-    self.m_pos = m_pos
+    self.m_pos = pos
     self:update()
 end
 

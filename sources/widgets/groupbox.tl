@@ -1,10 +1,13 @@
 require("label")
 require("layout")
+require("checkbox")
 
 global record GroupBox is IWidget
     label: Label
     label_offset: integer
     is_flat: boolean
+
+    --TODO: is_checkable
     --TODO: is_checked
 end
 
