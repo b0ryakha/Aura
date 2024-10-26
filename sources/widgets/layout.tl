@@ -93,7 +93,6 @@ function Layout:hAlign()
         for _, child in ipairs(self.childs) do
             if child.size_policy.h == "Maximum" then
                 child.m_size.x = new_width
-                self:warp(child)
                 total_children_width = total_children_width + child.m_size.x
             end
         end
