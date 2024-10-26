@@ -82,8 +82,11 @@ function Widget:new(parent: IWidget, size_policy?: Policy, size?: Vector2): Widg
     connect(cursor_stopped, function(data: Data)
         self.tooltip_duration = data.duration as number
     end)
-    connect(update, function()
-        cursor.change_type(self.cursor_type)
+    connect(global_update, function()
+        if self:isHover() then
+            cursor.change_type(self.cursor_type)
+        end
+        
         self:renderToolTip()
     end)
     
@@ -234,7 +237,6 @@ function Widget:cursor(): integer
 end
 
 function Widget:setCursor(new_type: integer)
-    if not new_type then return end
     self.cursor_type = new_type
 end
 
