@@ -15,9 +15,11 @@ group1:addItem(Spacer:new("Vertical"))
 group1:addItem(Window:new(Policy:new("Minimum"), Vector2:new(150, 150)))
 
 local group2 = GroupBox:new("Another layout", Vector2:new(300, 200))
+group2:setCheckable(true)
 group2:setLayout(Layout:new("HBox"))
-group2:addItem(Label:new("box ->"))
-group2:addItem(Window:new(Policy:new("Minimum"), Vector2:new(50, 50)))
+group2:addItem(PushButton:new("click"))
+group2:addItem(Spacer:new("Horizontal"))
+group2:addItem(CheckBox:new("check"))
 
 layout:addItem(group1)
 layout:addItem(group2)

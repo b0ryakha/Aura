@@ -189,6 +189,8 @@ end
 
 -- override:
 function Layout:update()
+    if not self.is_active then return end
+
     if self.type == "HBox" then self:hAlign() end
     if self.type == "VBox" then self:vAlign() end
     if self.type == "Grid" then error("not impl") end

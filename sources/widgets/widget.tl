@@ -14,6 +14,7 @@ global interface IWidget
 
     m_pos: Vector2
     is_visible: boolean
+    is_active: boolean
 
     m_size: Vector2
     min_size: Vector2
@@ -29,6 +30,7 @@ global interface IWidget
     childAt: function<Self>(Self, integer): IWidget
     pos: function<Self>(Self): Vector2
     isVisible: function<Self>(Self): boolean
+    isActive: function<Self>(Self): boolean
     size: function<Self>(Self): Vector2
     sizePolicy: function<Self>(Self): Policy
     cursor: function<Self>(Self): integer
@@ -42,6 +44,9 @@ global interface IWidget
     setVisible: function<Self>(Self, boolean)
     hide: function<Self>(Self)
     show: function<Self>(Self)
+    setActive: function<Self>(Self, boolean)
+    disable: function<Self>(Self)
+    enable: function<Self>(Self)
     resize: function<Self>(Self, Vector2)
     bindSize: function<Self>(Self, Vector2)
     setSizePolicy: function<Self>(Self, Policy)
@@ -64,6 +69,7 @@ function Widget:new(parent: IWidget, size_policy?: Policy, size?: Vector2): Widg
 
     self.m_pos = Vector2:new(0, 0)
     self.is_visible = true
+    self.is_active = true
 
     self.m_size = size and size:copy() or Vector2:new(100, 100)
     self.min_size = self.m_size:copy()
@@ -83,6 +89,8 @@ function Widget:new(parent: IWidget, size_policy?: Policy, size?: Vector2): Widg
         self.tooltip_duration = data.duration as number
     end)
     connect(global_update, function()
+        if not self.is_active then return end
+
         if self:isHover() then
             cursor.change_type(self.cursor_type)
         end
@@ -113,8 +121,8 @@ function Widget:childsUpdate()
     end
 end
 
-function Widget:render() self:childsRender() end
-function Widget:update() self:childsUpdate() end
+function Widget:render() if self:isVisible() then self:childsRender() end end
+function Widget:update() if self:isActive() then self:childsUpdate() end end
 
 function Widget:addChild(widget: IWidget)
     if not widget then return end
@@ -181,6 +189,7 @@ function Widget:resize(size: Vector2)
     end
 
     self.m_size = size:copy()
+    self.min_size = size:copy()
     if self.m_layout then self.m_layout:resize(size) end
 
     self:update()
@@ -192,6 +201,7 @@ function Widget:bindSize(size: Vector2)
     end
 
     self.m_size = size
+    self.min_size = size
     if self.m_layout then self.m_layout:bindSize(size) end
 
     self:update()
@@ -217,10 +227,6 @@ function Widget:bindPos(pos: Vector2)
 
     self.m_pos = pos
     self:update()
-end
-
-function Widget:isVisible(): boolean
-    return self.is_visible
 end
 
 function Widget:childAt(index: integer): IWidget
@@ -262,6 +268,10 @@ function Widget:parent(): IWidget
     return self.m_parent
 end
 
+function Widget:isVisible(): boolean
+    return self.is_visible
+end
+
 function Widget:setVisible(visible: boolean)
     self.is_visible = visible
 end
@@ -272,4 +282,20 @@ end
 
 function Widget:show()
     self.is_visible = true
+end
+
+function Widget:isActive(): boolean
+    return self.is_active
+end
+
+function Widget:setActive(state: boolean)
+    self.is_active = state
+end
+
+function Widget:disable()
+    self.is_active = false
+end
+
+function Widget:enable()
+    self.is_active = true
 end

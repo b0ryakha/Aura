@@ -59,6 +59,8 @@ end
 
 -- override:
 function ProgressBar:update()
+    if not self.is_active then return end
+
     self.percent = math.floor(((self.val - self.min) / (self.max - self.min)) * 100)
     self.label:setText(self:processFormat(self.m_format))
 end

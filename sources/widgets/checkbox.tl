@@ -1,12 +1,15 @@
 require("label")
 
 global enum CheckBoxState
-    "Normal" "Pressed" "Disabled"
+    "Normal" "Pressed"
 end
 
 global record CheckBox is IWidget
-    text: Label
+    label: Label
     mark: Sprite
+
+    box_size: Vector2
+    offset: number
 
     bg_color: Color
 
@@ -21,11 +24,14 @@ global record CheckBox is IWidget
 end
 
 function CheckBox:new(text?: string, size?: Vector2, parent?: IWidget): CheckBox
-    local self = extends(CheckBox, "CheckBox", Widget, parent, nil, size or Vector2:new(16, 16))
+    local self = extends(CheckBox, "CheckBox", Widget, parent, nil, nil)
 
-    self.text = Label:new(text)
-    self.text:setAlignment(Align:new("Center"))
-    self.text:resize(Vector2:new(self.text:size().x, self.m_size.y))
+    self.box_size = size or Vector2:new(14, 14)
+    self.offset = 5
+
+    self.label = Label:new(text)
+    self.label:setAlignment(Align:new("Center"))
+    self.label.m_size.y = self.box_size.y
 
     self.mark = Sprite:new("assets/checkmark.png", 64, 64)
     self.mark:set_color(CachedColor:new(0, 0, 0))
@@ -38,6 +44,7 @@ function CheckBox:new(text?: string, size?: Vector2, parent?: IWidget): CheckBox
 
     self.checkStateChanged = Signal:new()
 
+    self:bindSize(Vector2:new(self.box_size.x + self.label.m_size.x + self.offset, self.box_size.y))
     self:updateElements()
 
     return self
@@ -45,15 +52,15 @@ end
 
 -- private:
 function CheckBox:updateElements()
-    self.text:bindPos(Vector2:new(self.m_pos.x + self.m_size.x + 5, self.m_pos.y))
+    self.label:bindPos(Vector2:new(self.m_pos.x + self.box_size.x + self.offset, self.m_pos.y))
 
     self.mark:set_pos(self.m_pos.x, self.m_pos.y)
-    self.mark:set_size(self.m_size.x, self.m_size.y)
+    self.mark:set_size(self.box_size.x, self.box_size.y)
 end
 
 -- override:
 function CheckBox:update()
-    if self.state == "Disabled" then return end
+    if not self.is_active then return end
 
     if self:isHover() then
         if mouse.is_pressed(button.Left) then
@@ -62,6 +69,8 @@ function CheckBox:update()
             if not self.lock_press then
                 self.lock_press = true
                 self.is_checked = not self.is_checked
+
+                self.checkStateChanged:updateData("state", self.is_checked)
                 emit(self.checkStateChanged)
             end
         elseif self.lock_press then
@@ -85,26 +94,14 @@ function CheckBox:render()
         color = CachedColor:new(self.bg_color.r - 20, self.bg_color.g - 20, self.bg_color.b - 20)
     end
 
-    if self.state == "Disabled" then
-        color = CachedColor:new(self.bg_color.r, self.bg_color.g, self.bg_color.b, 150)
-    end
-
-    render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, color, 5)
-    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, CachedColor:new(150, 150, 150), 5)
+    render.rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, color, 5)
+    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, 1, CachedColor:new(150, 150, 150), 5)
 
     if self.is_checked then
         render.sprite(self.mark)
     end
 
-    self.text:render()
-end
-
-function CheckBox:enable()
-    self.state = "Normal"
-end
-
-function CheckBox:disable()
-    self.state = "Disabled"
+    self.label:render()
 end
 
 function CheckBox:isChecked(): boolean
@@ -113,4 +110,12 @@ end
 
 function CheckBox:setCheckState(state: boolean)
     self.is_checked = state
+end
+
+function CheckBox:text(): string
+    return self.label:text()
+end
+
+function CheckBox:setText(title: string)
+    self.label:setText(title)
 end

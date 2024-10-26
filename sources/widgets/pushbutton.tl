@@ -1,7 +1,7 @@
 require("label")
 
 global enum ButtonState
-    "Normal" "Hovered" "Pressed" "Disabled"
+    "Normal" "Hovered" "Pressed"
 end
 
 global record PushButton is IWidget
@@ -40,7 +40,7 @@ end
 
 -- override:
 function PushButton:update()
-    if self.state == "Disabled" then return end
+    if not self.is_active then return end
 
     if self:isHover() then
         self.state = "Hovered"
@@ -76,10 +76,6 @@ function PushButton:render()
         color = CachedColor:new(self.bg_color.r - 10, self.bg_color.g - 10, self.bg_color.b - 10)
     end
 
-    if self.state == "Disabled" then
-        color = CachedColor:new(self.bg_color.r, self.bg_color.g, self.bg_color.b, 150)
-    end
-
     render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, color, 5)
 
     if not self.is_flat then
@@ -91,14 +87,6 @@ end
 
 function PushButton:setColor(color: Color)
     self.bg_color = color
-end
-
-function PushButton:enable()
-    self.state = "Normal"
-end
-
-function PushButton:disable()
-    self.state = "Disabled"
 end
 
 function PushButton:isFlat(): boolean

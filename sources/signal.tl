@@ -40,6 +40,10 @@ function Signal:addSlot(slot: Slot)
     table.insert(self.slots, slot)
 end
 
+function Signal:updateData(key: string, value: any)
+    self.data[key] = value
+end
+
 global function process_signals()
     for _, signal in ipairs(signals) do
         signal:process()

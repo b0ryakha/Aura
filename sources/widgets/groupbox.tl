@@ -4,11 +4,12 @@ require("checkbox")
 
 global record GroupBox is IWidget
     label: Label
-    label_offset: integer
-    is_flat: boolean
+    checkbox: CheckBox
 
-    --TODO: is_checkable
-    --TODO: is_checked
+    offset: integer
+
+    is_flat: boolean
+    is_checkable: boolean
 end
 
 function GroupBox:new(title: string, size?: Vector2, parent?: IWidget): GroupBox
@@ -16,10 +17,31 @@ function GroupBox:new(title: string, size?: Vector2, parent?: IWidget): GroupBox
 
     self.label = Label:new(title)
     self.label:bindPos(self.m_pos)
-    self.label_offset = cmath.round(self.m_pos.y + self.label.measure.y * 1.5)
+
+    self.checkbox = CheckBox:new(title, nil)
+    self.checkbox:bindPos(self.m_pos)
+    self.checkbox:setCheckState(true)
+    connect(self.checkbox.checkStateChanged, function(data: Data)
+        for _, child in ipairs(self.m_layout.childs) do
+            child:setActive(data.state as boolean)
+        end
+    end)
+
+    self.offset = cmath.round(self.m_pos.y + self.label.measure.y * 1.5)
+
     self.is_flat = false
+    self.is_checkable = false
 
     return self
+end
+
+-- override:
+function GroupBox:update()
+    if not self.is_active then return end
+
+    self.label:update()
+    self.checkbox:update()
+    self.m_layout:update()
 end
 
 -- override:
@@ -29,8 +51,8 @@ function GroupBox:setLayout(widget: IWidget)
 
     layout:bindPos(self.m_pos)
     layout:bindSize(self.m_size)
-    layout.margin.top = layout.margin.top + self.label_offset
-    layout.margin.bottom = layout.margin.bottom - self.label_offset
+    layout.margin.top = layout.margin.top + self.offset
+    layout.margin.bottom = layout.margin.bottom - self.offset
     layout.childs = self.childs
 
     self.m_layout = layout
@@ -40,28 +62,17 @@ end
 function GroupBox:render()
     if not self.is_visible then return end
 
-    render.rectangle(
-        self.m_pos.x,
-        self.m_pos.y + self.label_offset,
-        self.m_size.x,
-        self.m_size.y,
-        CachedColor:new(245, 245, 245),
-        1
-    )
+    render.rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, CachedColor:new(245, 245, 245), 1)
 
     if not self.is_flat then
-        render.outline_rectangle(
-            self.m_pos.x,
-            self.m_pos.y + self.label_offset,
-            self.m_size.x,
-            self.m_size.y,
-            1,
-            CachedColor:new(150, 150, 150),
-            1
-        )
+        render.outline_rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, 1, CachedColor:new(150, 150, 150), 1)
     end
 
-    self.label:render()
+    if self.is_checkable then
+        self.checkbox:render()
+    else
+        self.label:render()
+    end
 
     if self.m_layout then
         self.m_layout:render()
@@ -84,6 +95,7 @@ end
 
 function GroupBox:setTitle(title: string)
     self.label:setText(title)
+    self.checkbox:setText(title)
 end
 
 function GroupBox:isFlat(): boolean
@@ -92,4 +104,12 @@ end
 
 function GroupBox:setFlat(state: boolean)
     self.is_flat = state
+end
+
+function GroupBox:isCheckable(): boolean
+    return self.is_checkable
+end
+
+function GroupBox:setCheckable(state: boolean)
+    self.is_checkable = state
 end
