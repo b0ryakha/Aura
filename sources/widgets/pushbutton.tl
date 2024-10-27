@@ -40,6 +40,7 @@ function PushButton:update()
     if not self.is_active then return end
 
     if self:isHover() then
+        self:setCursor(cursor_type.Hand)
         self.state = "Hovered"
 
         if mouse.is_pressed(button.Left) then

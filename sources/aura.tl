@@ -16,5 +16,6 @@ local moonshine_display = window.display
 _G["window"].display = function()
     process_signals()
     moonshine_display()
+    cursor_system.update()
     dt = deltatime.getTime()
 end

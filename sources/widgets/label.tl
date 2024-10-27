@@ -40,8 +40,6 @@ end
 
 -- override:
 function Label:update()
-    self:setCursor(cursor_type.Arrow)
-
     if self.is_link then
         if self:isHover() then
             self:setCursor(cursor_type.Hand)

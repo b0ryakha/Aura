@@ -4,6 +4,7 @@ require("signal")
 require("format")
 require("layouttype")
 require("theme")
+require("cursorsystem")
 
 --global dbg = require("externals/debugger/debugger") as Debugger
 
@@ -90,14 +91,11 @@ function Widget:new(parent: IWidget, size_policy?: Policy, size?: Vector2): Widg
     end)
     connect(global_update, function()
         if not self.is_active then return end
-
-        if self:isHover() then
-            cursor.change_type(self.cursor_type)
-        end
-        
         self:renderToolTip()
     end)
-    
+
+    cursor_system.add_element(self)
+
     return self
 end
 
