@@ -20,7 +20,7 @@ function Window:render()
 
     if self.m_parent then
         local thickness <const> = 1
-        render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, theme.outline, self.rounding)
+        render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, theme.outline2, self.rounding)
         render.rectangle(self.m_pos.x + thickness, self.m_pos.y + thickness, self.m_size.x - thickness * 2, self.m_size.y - thickness * 2, bg_color, self.rounding)
     else
         render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, bg_color)
