@@ -31,6 +31,7 @@ global interface IWidget
     isVisible: function<Self>(Self): boolean
     isActive: function<Self>(Self): boolean
     size: function<Self>(Self): Vector2
+    minSize: function<Self>(Self): Vector2
     sizePolicy: function<Self>(Self): Policy
     cursor: function<Self>(Self): integer
     toolTip: function<Self>(Self): string
@@ -177,6 +178,10 @@ end
 
 function Widget:size(): Vector2
     return self.m_size:copy()
+end
+
+function Widget:minSize(): Vector2
+    return self.min_size:copy()
 end
 
 function Widget:resize(size: Vector2)

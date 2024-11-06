@@ -11,8 +11,6 @@ require("pushbutton")
 require("checkbox")
 require("userinterface")
 
--- TODO: ограничение уменьшения окна
-
 -- hook:
 local deltatime = require("externals/deltatime/deltatime")
 local moonshine_display = window.display

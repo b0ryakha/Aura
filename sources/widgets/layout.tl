@@ -198,7 +198,7 @@ function Layout:update()
     self:childsUpdate()
 end
 
--- override
+-- override:
 function Layout:render()
     if not self.is_visible then return end
 
@@ -279,4 +279,25 @@ end
 
 function Layout:turnDebug(is_debug?: boolean)
     self.is_debug = is_debug == nil and true or is_debug
+end
+
+-- override:
+function Layout:minSize(): Vector2
+    local result = Vector2:new(self.margin.left + self.margin.right, self.margin.top + self.margin.bottom)
+    if #self.childs == 0 then return result end
+
+    for _, child in ipairs(self.childs) do
+        result.x = result.x + child:minSize().x
+        result.y = result.y + child:minSize().y
+    end
+
+    if self.type == "HBox" or self.type == "Grid" then
+        result.x = result.x + self.m_spacing * (#self.childs - 1)
+    end
+
+    if self.type == "VBox" or self.type == "Grid" then
+        result.y = result.y + self.m_spacing * (#self.childs - 1)
+    end
+
+    return result
 end
