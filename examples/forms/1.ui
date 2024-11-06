@@ -1,0 +1,14 @@
+<ui version="4.0">
+    <widget class="Layout" name="main_layout">
+        <widget class="PushButton" name="button">
+            <property name="text">
+                <string>Press me</string>
+            </property>
+        </widget>
+        <widget class="Label" name="label">
+            <property name="text">
+                <string>Example text</string>
+            </property>
+        </widget>
+    </widget>
+</ui>

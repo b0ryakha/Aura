@@ -6,8 +6,6 @@ require("layouttype")
 require("theme")
 require("cursorsystem")
 
---global dbg = require("externals/debugger/debugger") as Debugger
-
 global interface IWidget
     m_parent: IWidget
     childs: { IWidget }
@@ -245,7 +243,7 @@ function Widget:setCursor(new_type: integer)
 end
 
 function Widget:resetCursor()
-    self.cursor_type = cursor_type.Arrow
+    self:setCursor(cursor_type.Arrow)
 end
 
 function Widget:setSizePolicy(size_policy: Policy)

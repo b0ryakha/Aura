@@ -43,8 +43,11 @@ end
 function GroupBox:update()
     if not self.is_active then return end
 
+    if self.is_checkable then
+        self.checkbox:update()
+    end
+
     self.label:update()
-    self.checkbox:update()
     self.m_layout:update()
 end
 
