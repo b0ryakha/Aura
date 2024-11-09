@@ -18,6 +18,11 @@ require("checkbox")
 global type UIData = { string : IWidget }
 local type Attributes = { string : any }
 
+local record UIVar
+    name: string
+    regonize: function
+end
+
 local record UINode
     attributes: Attributes
     childs: { UINode }
@@ -27,6 +32,7 @@ end
 
 global record UserInterface
     data: UIData
+    vars: { UIVar }
     stack: { string }
     text: string
     cur_ch: integer
@@ -42,6 +48,7 @@ function UserInterface:new(path: string): UIData
     local self = create(UserInterface, "UserInterface")
 
     self.data = {}
+    self.vars = {}
     self.stack = {}
     self.text = self:removeComments(self:readFile(path))
     self.cur_ch = 1
@@ -87,26 +94,39 @@ function UserInterface:pushWidget(node: UINode): any
             local prop = child_node.childs[1]
             local prop_field = child_node.attributes.name as string
             local prop_type = prop.tag
-            local value: any = nil
+            local prop_val: any = nil
 
-            if prop_type == "string" then
-                value = prop.content
+            if prop_type == "string" or prop_type == "var" then
+                prop_val = prop.content
             end
             if prop_type == "number" then
-                value = tonumber(prop.content)
+                prop_val = tonumber(prop.content)
             end
             if prop_type == "rect" then
-                value = {}
+                prop_val = {}
                 for _, v in ipairs(prop.childs) do
-                    (value as table)[v.tag] = tonumber(v.content)
+                    (prop_val as table)[v.tag] = tonumber(v.content)
                 end
             end
 
             if prop_field == "text" then
-                (element as Label):setText(value as string)
+                (element as Label):setText(prop_val as string)
+            end
+            if prop_field == "title" then
+                (element as Application):setTitle(prop_val as string)
+            end
+            if prop_field == "layout" then
+                local layout = self.data[prop_val as string]
+                if layout then
+                    element:setLayout(layout)
+                else
+                    table.insert(self.vars, { name = prop_val as string, regonize = function()
+                        self.data[name]:setLayout(self.data[prop_val as string])
+                    end})
+                end
             end
             if prop_field == "geometry" then
-                element:setGeometry(value as Geometry)
+                element:setGeometry(prop_val as Geometry)
             end
         else
             local child = self:pushWidget(child_node) as IWidget
@@ -117,34 +137,16 @@ function UserInterface:pushWidget(node: UINode): any
     end
 
     self.data[name] = element as IWidget
+
+    for _, var in ipairs(self.vars) do
+        if name == var.name then
+            var.regonize()
+            break
+        end
+    end
+
     return element
 end
-
--- private:
---function UserInterface:printNodes(node: UINode)
---    print("Tag: " .. node.tag)
---
---    if next(node.attributes) ~= nil then
---        print("Attributes:")
---        for k, v in pairs(node.attributes) do
---            print(format("  %: %", k, v))
---        end
---    end
---
---    local childs = ""
---    for _, child in ipairs(node.childs) do
---        childs = childs .. format("%(name:%), ", child.tag, child.attributes.name or "")
---    end
---    if childs ~= "" then
---        print("Childs: " .. childs:sub(1, #childs - 2))
---    end
---
---    print(format("Content: \"%\"\n", node.content))
---
---    for _, child in ipairs(node.childs) do
---        self:printNodes(child)
---    end
---end
 
 -- private:
 function UserInterface:skipSpaces()

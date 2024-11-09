@@ -237,7 +237,7 @@ function Widget:bindPos(pos: Vector2)
 end
 
 function Widget:geometry(): Geometry
-    return { self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y } as Geometry
+    return { x = self.m_pos.x, y = self.m_pos.y, width = self.m_size.x, height = self.m_size.y }
 end
 
 function Widget:setGeometry(geometry: Geometry)

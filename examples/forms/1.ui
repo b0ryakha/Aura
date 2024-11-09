@@ -1,4 +1,13 @@
 <ui>
+    <widget class="Application" name="app">
+        <property name="title">
+            <string>Press me</string>
+        </property>
+        <property name="layout">
+            <var>main_layout</var>
+        </property>
+    </widget>
+
     <widget class="Layout" name="main_layout">
         <widget class="PushButton" name="button">
             <property name="text">

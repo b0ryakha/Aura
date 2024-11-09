@@ -2,13 +2,14 @@ require("window")
 require("layout")
 
 global record Application is IWidget
-    title: string
+    m_title: string
     args: { string }
     m_icon: Sprite
     --TODO: menu: Menu
 
 -- force decl:
     layout: function<Self>(Self): Layout
+    setTitle: function<Self>(Self, string)
 end
 
 function Application:new(title?: string, size?: Vector2): Application
@@ -20,9 +21,7 @@ function Application:new(title?: string, size?: Vector2): Application
         self:resize(window.get_size())
     end
 
-    self.title = title or ""
-    window.set_title(self.title)
-
+    self:setTitle(title or "")
     self:setLayout(Layout:new("VBox"))
     self.args = globalvars.get_args()
 
@@ -100,4 +99,13 @@ function Application:setIcon(path_or_icon: string | Sprite)
     end
 
     window.set_icon(self.m_icon)
+end
+
+function Application:title(): string
+    return self.m_title
+end
+
+function Application:setTitle(text: string)
+    self.m_title = text
+    window.set_title(self.m_title)
 end
