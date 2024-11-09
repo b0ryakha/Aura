@@ -5,7 +5,7 @@ global enum ButtonState
 end
 
 global record PushButton is IWidget
-    text: Label
+    label: Label
 
     is_flat: boolean
     state: ButtonState
@@ -19,10 +19,10 @@ end
 function PushButton:new(text?: string, size?: Vector2, parent?: IWidget): PushButton
     local self = extends(PushButton, "PushButton", Widget, parent, nil, size)
 
-    self.text = Label:new(text)
-    self.text:setAlignment(Align:new("Center"))
-    self.text:bindPos(self.m_pos)
-    self.text:bindSize(self.m_size)
+    self.label = Label:new(text)
+    self.label:setAlignment(Align:new("Center"))
+    self.label:bindPos(self.m_pos)
+    self.label:bindSize(self.m_size)
 
     self.is_flat = false
     self.state = "Normal"
@@ -84,13 +84,21 @@ function PushButton:render()
         render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, theme.outline, 5)
     end
 
-    self.text:render()
+    self.label:render()
+end
+
+function PushButton:text(): string
+    return self.label:text()
+end
+
+function PushButton:setText(text: string)
+    self.label:setText(text)
 end
 
 -- override:
 function PushButton:setActive(state: boolean)
     self.is_active = state
-    self.text:setActive(self.is_active)
+    self.label:setActive(self.is_active)
 end
 
 function PushButton:isFlat(): boolean

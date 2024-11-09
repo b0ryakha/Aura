@@ -1,8 +1,16 @@
-<ui version="4.0">
+<ui>
     <widget class="Layout" name="main_layout">
         <widget class="PushButton" name="button">
             <property name="text">
                 <string>Press me</string>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>90</x>
+                    <y>160</y>
+                    <width>280</width>
+                    <height>170</height>
+                </rect>
             </property>
         </widget>
         <widget class="Label" name="label">

@@ -14,7 +14,7 @@ global record GroupBox is IWidget
     checkStateChanged: Signal
 end
 
-function GroupBox:new(title: string, size?: Vector2, parent?: IWidget): GroupBox
+function GroupBox:new(title?: string, size?: Vector2, parent?: IWidget): GroupBox
     local self = extends(GroupBox, "GroupBox", Widget, parent, nil, size)
 
     self.label = Label:new(title)

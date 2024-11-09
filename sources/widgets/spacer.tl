@@ -6,10 +6,10 @@ global record Spacer is IWidget
     thickness: number
 end
 
-function Spacer:new(align_type: Orientation, parent?: IWidget): Spacer
+function Spacer:new(align_type?: Orientation, parent?: IWidget): Spacer
     local self = extends(Spacer, "Spacer", Widget, parent, "Maximum")
 
-    self.align_type = align_type
+    self.align_type = align_type or "Horizontal"
     self.thickness = 10
 
     if self.align_type == "Horizontal" then

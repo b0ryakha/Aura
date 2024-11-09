@@ -11,7 +11,7 @@ global record Application is IWidget
     layout: function<Self>(Self): Layout
 end
 
-function Application:new(title: string, size?: Vector2): Application
+function Application:new(title?: string, size?: Vector2): Application
     local self = extends(Application, "Application", Widget, nil, "Maximum", nil)
     
     if size then
@@ -20,7 +20,7 @@ function Application:new(title: string, size?: Vector2): Application
         self:resize(window.get_size())
     end
 
-    self.title = title
+    self.title = title or ""
     window.set_title(self.title)
 
     self:setLayout(Layout:new("VBox"))

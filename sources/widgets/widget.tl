@@ -5,6 +5,7 @@ require("format")
 require("layouttype")
 require("theme")
 require("cursorsystem")
+require("geometry")
 
 global interface IWidget
     m_parent: IWidget
@@ -32,6 +33,7 @@ global interface IWidget
     isActive: function<Self>(Self): boolean
     size: function<Self>(Self): Vector2
     minSize: function<Self>(Self): Vector2
+    geometry: function<Self>(Self): Geometry
     sizePolicy: function<Self>(Self): Policy
     cursor: function<Self>(Self): integer
     toolTip: function<Self>(Self): string
@@ -49,6 +51,7 @@ global interface IWidget
     enable: function<Self>(Self)
     resize: function<Self>(Self, Vector2)
     bindSize: function<Self>(Self, Vector2)
+    setGeometry: function<Self>(Self, Geometry)
     setSizePolicy: function<Self>(Self, Policy)
     setCursor: function<Self>(Self, integer)
     resetCursor: function<Self>(Self)
@@ -64,7 +67,7 @@ end
 
 global record Widget is IWidget end
 
-function Widget:new(parent: IWidget, size_policy?: Policy, size?: Vector2): Widget
+function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Widget
     local self = create(Widget, "Widget")
 
     self.m_pos = Vector2:new(0, 0)
@@ -81,7 +84,10 @@ function Widget:new(parent: IWidget, size_policy?: Policy, size?: Vector2): Widg
     self.is_tooltip_visible = false
 
     self.childs = {}
-    self:setParent(parent)
+
+    if parent then
+        self:setParent(parent)
+    end
 
     connect(window_resized, function() self:update() end)
     connect(startup, function() self:update() end)
@@ -228,6 +234,15 @@ function Widget:bindPos(pos: Vector2)
 
     self.m_pos = pos
     self:update()
+end
+
+function Widget:geometry(): Geometry
+    return { self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y } as Geometry
+end
+
+function Widget:setGeometry(geometry: Geometry)
+    self:bindPos(Vector2:new(geometry.x, geometry.y))
+    self:bindSize(Vector2:new(geometry.width, geometry.height))
 end
 
 function Widget:childAt(index: integer): IWidget

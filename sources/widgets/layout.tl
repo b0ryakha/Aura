@@ -11,14 +11,14 @@ global record Layout is IWidget
     debug_color: Color
 end
 
-function Layout:new(align_type: LayoutType, size?: Vector2, parent?: IWidget): Layout
+function Layout:new(align_type?: LayoutType, size?: Vector2, parent?: IWidget): Layout
     local self = extends(Layout, "Layout", Widget, parent, Policy:new("Maximum"), size)
 
     if self.m_parent and type(self.m_parent) ~= "Layout" then
         self.m_parent:setLayout(self)
     end
 
-    self.type = align_type
+    self.type = align_type or "HBox"
     self.margin = Margin:new(9, 9, 9, 9)
     self.m_spacing = 6
 

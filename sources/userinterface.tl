@@ -1,8 +1,21 @@
 require("oop")
 require("format")
 
+require("application")
+require("image")
+require("label")
+require("layout")
+require("spacer")
+require("widget")
+require("window")
+require("groupbox")
+require("progressbar")
+require("pushbutton")
+require("checkbox")
+
 --global dbg = require("externals/debugger/debugger") as Debugger
 
+global type UIData = { string : IWidget }
 local type Attributes = { string : any }
 
 local record UINode
@@ -13,30 +26,34 @@ local record UINode
 end
 
 global record UserInterface
+    data: UIData
     stack: { string }
     text: string
     cur_ch: integer
 
 -- force decl:
     removeComments: function<Self>(Self, string): string
-    printNodes: function<Self>(Self, UINode)
+    pushWidget: function<Self>(Self, UINode): any
     readFile: function<Self>(Self, string): string
     parseXml: function<Self>(Self): UINode
 end
 
-function UserInterface:new(path: string): UINode
+function UserInterface:new(path: string): UIData
     local self = create(UserInterface, "UserInterface")
 
+    self.data = {}
     self.stack = {}
     self.text = self:removeComments(self:readFile(path))
     self.cur_ch = 1
 
-    local nodes = self:parseXml()
-    self:printNodes(nodes)
+    for _, node in ipairs(self:parseXml().childs) do
+        self:pushWidget(node)
+    end
 
-    return nodes
+    return self.data
 end
 
+-- private:
 function UserInterface:readFile(path: string): string
     local xml = io.open(path, "r")
     if not xml then
@@ -50,30 +67,84 @@ function UserInterface:readFile(path: string): string
 end
 
 -- private:
-function UserInterface:printNodes(node: UINode)
-    print("Tag: " .. node.tag)
+function UserInterface:pushWidget(node: UINode): any
+    if node.tag ~= "widget" then return end
 
-    if next(node.attributes) ~= nil then
-        print("Attributes:")
-        for k, v in pairs(node.attributes) do
-            print(format("  %: %", k, v))
+    local T = (_G as table)[node.attributes.class] as Widget
+    if T == nil or T.new == nil then
+        error(format("[UserInterface] Unknown class \"%\"", node.attributes.class))
+    end
+
+    local name = node.attributes.name as string
+    if name == nil then
+        error(format("[UserInterface] Widget with type \"%\" has no name", node.attributes.class))
+    end
+
+    local element = T:new()
+
+    for _, child_node in ipairs(node.childs) do
+        if child_node.tag == "property" then
+            local prop = child_node.childs[1]
+            local prop_field = child_node.attributes.name as string
+            local prop_type = prop.tag
+            local value: any = nil
+
+            if prop_type == "string" then
+                value = prop.content
+            end
+            if prop_type == "number" then
+                value = tonumber(prop.content)
+            end
+            if prop_type == "rect" then
+                value = {}
+                for _, v in ipairs(prop.childs) do
+                    (value as table)[v.tag] = tonumber(v.content)
+                end
+            end
+
+            if prop_field == "text" then
+                (element as Label):setText(value as string)
+            end
+            if prop_field == "geometry" then
+                element:setGeometry(value as Geometry)
+            end
+        else
+            local child = self:pushWidget(child_node) as IWidget
+            if child then
+                (element as Widget):addChild(child)
+            end
         end
     end
 
-    local childs = ""
-    for _, child in ipairs(node.childs) do
-        childs = childs .. format("%(name:%), ", child.tag, child.attributes.name or "")
-    end
-    if childs ~= "" then
-        print("Childs: " .. childs:sub(1, #childs - 2))
-    end
-
-    print(format("Content: \"%\"\n", node.content))
-
-    for _, child in ipairs(node.childs) do
-        self:printNodes(child)
-    end
+    self.data[name] = element as IWidget
+    return element
 end
+
+-- private:
+--function UserInterface:printNodes(node: UINode)
+--    print("Tag: " .. node.tag)
+--
+--    if next(node.attributes) ~= nil then
+--        print("Attributes:")
+--        for k, v in pairs(node.attributes) do
+--            print(format("  %: %", k, v))
+--        end
+--    end
+--
+--    local childs = ""
+--    for _, child in ipairs(node.childs) do
+--        childs = childs .. format("%(name:%), ", child.tag, child.attributes.name or "")
+--    end
+--    if childs ~= "" then
+--        print("Childs: " .. childs:sub(1, #childs - 2))
+--    end
+--
+--    print(format("Content: \"%\"\n", node.content))
+--
+--    for _, child in ipairs(node.childs) do
+--        self:printNodes(child)
+--    end
+--end
 
 -- private:
 function UserInterface:skipSpaces()
