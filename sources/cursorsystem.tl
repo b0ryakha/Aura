@@ -6,7 +6,7 @@ end
 local elements: { Element } = {}
 global cursor_system: { string : function } = {}
 
-cursor_system.add_element = function(element: any)
+cursor_system.add_element = function(element: Element)
     table.insert(elements, element as Element)
 end
 

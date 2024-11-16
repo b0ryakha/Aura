@@ -13,8 +13,6 @@ require("progressbar")
 require("pushbutton")
 require("checkbox")
 
---global dbg = require("externals/debugger/debugger") as Debugger
-
 global type UIData = { string : IWidget }
 local type Attributes = { string : any }
 
@@ -64,7 +62,7 @@ end
 function UserInterface:readFile(path: string): string
     local xml = io.open(path, "r")
     if not xml then
-        error(format("[UserInterface] Could not be found the interface form by path: \"%\"", path))
+        error(format("UserInterface: Could not be found the interface form by path: \"%\"", path))
     end
 
     local content = xml:read("*all")
@@ -79,12 +77,12 @@ function UserInterface:pushWidget(node: UINode): any
 
     local T = (_G as table)[node.attributes.class] as Widget
     if T == nil or T.new == nil then
-        error(format("[UserInterface] Unknown class \"%\"", node.attributes.class))
+        error(format("UserInterface: Unknown class \"%\"", node.attributes.class))
     end
 
     local name = node.attributes.name as string
     if name == nil then
-        error(format("[UserInterface] Widget with type \"%\" has no name", node.attributes.class))
+        error(format("UserInterface: Widget with type \"%\" has no name", node.attributes.class))
     end
 
     local element = T:new()

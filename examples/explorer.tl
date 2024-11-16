@@ -4,7 +4,7 @@ require("aura")
 local app = Application:new("Explorer")
 local layout = app:layout()
 layout:setSpacing(0)
-layout:setMargins(Margin:new(0, 0, 0, 0))
+layout:setMargins(Margins:new(0, 0, 0, 0))
 
 local header = Layout:new("HBox", Vector2:new(layout.m_size.x, 44), layout)
 header:setSizePolicy(Policy:new("Maximum", "Minimum"))

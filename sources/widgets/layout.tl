@@ -1,10 +1,12 @@
 require("widget")
-require("margin")
+require("margins")
 require("layouttype")
+
+--global dbg = require("externals/debugger/debugger") as Debugger
 
 global record Layout is IWidget
     type: LayoutType
-    margin: Margin
+    m_margins: Margins
     m_spacing: number
 
     is_debug: boolean
@@ -19,7 +21,7 @@ function Layout:new(align_type?: LayoutType, size?: Vector2, parent?: IWidget): 
     end
 
     self.type = align_type or "HBox"
-    self.margin = Margin:new(9, 9, 9, 9)
+    self.m_margins = Margins:new(9, 9, 9, 9)
     self.m_spacing = 6
 
     self.is_debug = false
@@ -31,14 +33,14 @@ end
 -- private:
 function Layout:warp(child: IWidget)
     if child.size_policy.h ~= "Fixed" then
-        local right_edge = self.m_pos.x + self.m_size.x - self.margin.right
+        local right_edge = self.m_pos.x + self.m_size.x - self.m_margins.right
         if (child.m_pos.x + child.m_size.x) >= right_edge then
             child.m_size.x = child.m_size.x - (child.m_pos.x + child.m_size.x - right_edge)
         end
     end
     
     if child.size_policy.v ~= "Fixed" then
-        local bottom_edge = self.m_pos.y + self.m_size.y - self.margin.bottom
+        local bottom_edge = self.m_pos.y + self.m_size.y - self.m_margins.bottom
         if (child.m_pos.y + child.m_size.y) >= bottom_edge then
             child.m_size.y = child.m_size.y - (child.m_pos.y + child.m_size.y - bottom_edge)
         end
@@ -47,8 +49,8 @@ end
 
 -- private:
 function Layout:hAlign()
-    local total_width = self.m_size.x - self.margin.left - self.margin.right
-    local total_height = self.m_size.y - self.margin.top - self.margin.bottom
+    local total_width = self.m_size.x - self.m_margins.left - self.m_margins.right
+    local total_height = self.m_size.y - self.m_margins.top - self.m_margins.bottom
     
     local fixed_width: number = 0
     local warp_count = 0
@@ -101,11 +103,11 @@ function Layout:hAlign()
     end
 
     local offset = (total_width - total_children_width - (warp_count - 1) * self.m_spacing) / 2
-    local current_x = self.m_pos.x + self.margin.left + math.max(0, offset)
+    local current_x = self.m_pos.x + self.m_margins.left + math.max(0, offset)
 
     for i, child in ipairs(self.childs) do
         child.m_pos.x = current_x
-        child.m_pos.y = self.m_pos.y + self.margin.top + (total_height - child.m_size.y) / 2
+        child.m_pos.y = self.m_pos.y + self.m_margins.top + (total_height - child.m_size.y) / 2
 
         current_x = current_x + child.m_size.x
         if i < #self.childs then
@@ -118,8 +120,8 @@ end
 
 -- private:
 function Layout:vAlign()
-    local total_width = self.m_size.x - self.margin.left - self.margin.right
-    local total_height = self.m_size.y - self.margin.top - self.margin.bottom
+    local total_width = self.m_size.x - self.m_margins.left - self.m_margins.right
+    local total_height = self.m_size.y - self.m_margins.top - self.m_margins.bottom
     
     local fixed_height: number = 0
     local warp_count = 0
@@ -172,11 +174,11 @@ function Layout:vAlign()
     end
 
     local offset = (total_height - total_children_height - (warp_count - 1) * self.m_spacing) / 2
-    local current_y = self.m_pos.y + self.margin.top + math.max(0, offset)
+    local current_y = self.m_pos.y + self.m_margins.top + math.max(0, offset)
 
     for i, child in ipairs(self.childs) do
         child.m_pos.y = current_y
-        child.m_pos.x = self.m_pos.x + self.margin.left + (total_width - child.m_size.x) / 2
+        child.m_pos.x = self.m_pos.x + self.m_margins.left + (total_width - child.m_size.x) / 2
 
         current_y = current_y + child.m_size.y
         if i < #self.childs then
@@ -193,7 +195,7 @@ function Layout:update()
 
     if self.type == "HBox" then self:hAlign() end
     if self.type == "VBox" then self:vAlign() end
-    if self.type == "Grid" then error("not impl") end
+    if self.type == "Grid" then error("Layout: not impl") end
 
     self:childsUpdate()
 end
@@ -211,7 +213,7 @@ end
 
 function Layout:addItem(item: IWidget)
     if not item then
-        error("Layout: Cannot add a nil item")
+        error(format("%: Cannot add a nil item", type(self)))
     end
 
     self:addChild(item)
@@ -247,12 +249,12 @@ function Layout:setSpacing(spacing: number)
     self.m_spacing = spacing
 end
 
-function Layout:contentsMargins(): Margin
-    return self.margin:copy()
+function Layout:margins(): Margins
+    return self.m_margins:copy()
 end
 
-function Layout:setMargins(margin: Margin)
-    self.margin = margin:copy()
+function Layout:setMargins(margins: Margins)
+    self.m_margins = margins:copy()
 end
 
 function Layout:layoutType(): LayoutType
@@ -283,12 +285,22 @@ end
 
 -- override:
 function Layout:minSize(): Vector2
-    local result = Vector2:new(self.margin.left + self.margin.right, self.margin.top + self.margin.bottom)
+    local result = Vector2:new(self.m_margins.left + self.m_margins.right, self.m_margins.top + self.m_margins.bottom)
     if #self.childs == 0 then return result end
 
     for _, child in ipairs(self.childs) do
-        result.x = result.x + child:minSize().x
-        result.y = result.y + child:minSize().y
+        local min = child:minSize()
+
+        if self.type == "HBox" then
+            result.x = result.x + min.x
+            result.y = math.max(result.y, result.y + min.y)
+        elseif self.type == "VBox" then
+            result.x = math.max(result.x, result.x + min.x)
+            result.y = result.y + min.y
+        else -- Grid:
+            result.x = math.max(result.x, result.x + min.x)
+            result.y = math.max(result.y, result.y + min.y)
+        end
     end
 
     if self.type == "HBox" or self.type == "Grid" then

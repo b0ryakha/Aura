@@ -13,7 +13,7 @@ global record Application is IWidget
 end
 
 function Application:new(title?: string, size?: Vector2): Application
-    local self = extends(Application, "Application", Widget, nil, "Maximum", nil)
+    local self = extends(Application, "Application", Widget, nil, Policy:new("Maximum"), nil)
     
     if size then
         self:resize(size)
@@ -27,35 +27,18 @@ function Application:new(title?: string, size?: Vector2): Application
 
     connect(window_resized, function()
         local win = window.get_size()
+        local min = self:minSize()
+
         self:resize(Vector2:new(
-            math.max(win.x, self:minSize().x),
-            math.max(win.y, self:minSize().y)
+            math.max(win.x, min.x),
+            math.max(win.y, min.y)
         ))
     end)
 
     return self
 end
 
--- override
-function Application:minSize(): Vector2
-    return self.m_layout:minSize()
-end
-
--- override
-function Application:resize(size: Vector2)
-    if not size then
-        error(format("%: Cannot set a nil size", type(self)))
-    end
-
-    self.m_size = size:copy()
-    self.min_size = size:copy()
-    if self.m_layout then self.m_layout:resize(size) end
-    window.set_size(size.x, size.y)
-
-    self:update()
-end
-
--- override
+-- override:
 function Application:bindSize(size: Vector2)
     if not size then
         error(format("%: Cannot bind a nil size", type(self)))
@@ -69,7 +52,7 @@ function Application:bindSize(size: Vector2)
     self:update()
 end
 
--- override
+-- override:
 function Application:render()
     render.rectangle(0, 0, self.m_size.x, self.m_size.y, theme.background)
     self:childsRender()

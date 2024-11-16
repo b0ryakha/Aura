@@ -1,4 +1,5 @@
 require("oop")
+require("format")
 
 global enum PolicyType
     "Fixed" "Minimum" "Maximum"
@@ -16,4 +17,8 @@ function Policy:new(h: PolicyType, v?: PolicyType): Policy
     self.v = v or h
     
     return self
+end
+
+function Policy:__tostring(): string
+    return format("%(h: %, v: %)", type(self), self.h, self.v)
 end

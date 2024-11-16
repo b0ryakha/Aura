@@ -7,7 +7,7 @@ global record Spacer is IWidget
 end
 
 function Spacer:new(align_type?: Orientation, parent?: IWidget): Spacer
-    local self = extends(Spacer, "Spacer", Widget, parent, "Maximum")
+    local self = extends(Spacer, "Spacer", Widget, parent, Policy:new("Maximum"))
 
     self.align_type = align_type or "Horizontal"
     self.thickness = 10
@@ -24,24 +24,13 @@ function Spacer:new(align_type?: Orientation, parent?: IWidget): Spacer
 end
 
 -- override:
-function Spacer:resize(m_size: Vector2)
-    if not m_size then
-        error("Spacer: Cannot set a nil size")
+function Spacer:bindSize(size: Vector2)
+    if not size then
+        error(format("%: Cannot bind a nil size", type(self)))
     end
 
     self.size_policy = Policy:new("Fixed")
-    self.m_size = m_size:copy()
-    self:update()
-end
-
--- override:
-function Spacer:bindSize(m_size: Vector2)
-    if not m_size then
-        error("Spacer: Cannot bind a nil size")
-    end
-
-    self.size_policy = Policy:new("Fixed")
-    self.m_size = m_size
+    self.m_size = size
     self:update()
 end
 

@@ -21,8 +21,8 @@ function PushButton:new(text?: string, size?: Vector2, parent?: IWidget): PushBu
 
     self.label = Label:new(text)
     self.label:setAlignment(Align:new("Center"))
-    self.label:bindPos(self.m_pos)
-    self.label:bindSize(self.m_size)
+    self.label:bindPos(self.m_pos) -- fake ref
+    self.label:bindSize(self.m_size) -- fake ref
 
     self.is_flat = false
     self.state = "Normal"
@@ -85,6 +85,31 @@ function PushButton:render()
     end
 
     self.label:render()
+end
+
+-- override:
+function PushButton:bindPos(pos: Vector2)
+    if not pos then
+        error(format("%: Cannot bind a nil pos", type(self)))
+    end
+
+    self.m_pos = pos
+    self.label:bindPos(pos)
+    self:update()
+end
+
+-- override:
+function PushButton:bindSize(size: Vector2)
+    if not size then
+        error(format("%: Cannot bind a nil size", type(self)))
+    end
+
+    self.m_size = size
+    self.min_size = size
+    if self.m_layout then self.m_layout:bindSize(size) end
+    self.label:bindSize(size)
+
+    self:update()
 end
 
 function PushButton:text(): string

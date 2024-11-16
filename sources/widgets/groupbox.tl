@@ -7,7 +7,6 @@ global record GroupBox is IWidget
     checkbox: CheckBox
 
     offset: integer
-
     is_flat: boolean
     is_checkable: boolean
 
@@ -24,15 +23,14 @@ function GroupBox:new(title?: string, size?: Vector2, parent?: IWidget): GroupBo
     self.checkbox:bindPos(self.m_pos)
     self.checkbox:setCheckState(true)
     connect(self.checkbox.checkStateChanged, function(data: Data)
+        if not self.m_layout then return end
         for _, child in ipairs(self.m_layout.childs) do
             child:setActive(data.state as boolean)
         end
     end)
 
-    self.checkStateChanged = self.checkbox.checkStateChanged
-
+    self.checkStateChanged = self.checkbox.checkStateChanged -- by ref
     self.offset = cmath.round(self.m_pos.y + self.label.measure.y * 1.5)
-
     self.is_flat = false
     self.is_checkable = false
 
@@ -58,20 +56,19 @@ function GroupBox:setLayout(widget: IWidget)
 
     layout:bindPos(self.m_pos)
     layout:bindSize(self.m_size)
-    layout.margin.top = layout.margin.top + self.offset
-    layout.margin.bottom = layout.margin.bottom - self.offset
+    layout.m_margins.top = layout.m_margins.top + self.offset
+    layout.m_margins.bottom = layout.m_margins.bottom - self.offset
     layout.childs = self.childs
 
-    self.m_layout = layout
+    self.m_layout = layout -- by ref
 end
 
 -- override:
 function GroupBox:render()
     if not self.is_visible then return end
 
-    render.rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, theme.background2, 1)
-
     if not self.is_flat then
+        render.rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, theme.background2, 1)
         render.outline_rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, 1, theme.outline, 1)
     end
 
@@ -90,10 +87,14 @@ end
 
 function GroupBox:addItem(item: IWidget)
     if not item then
-        error("Layout: Cannot add a nil item")
+        error(format("%: Cannot add a nil item", type(self)))
     end
 
-    self:addChild(item)
+    if self.m_layout then
+        self.m_layout:addChild(item)
+    else
+        self:addChild(item)
+    end
 end
 
 function GroupBox:title(): string

@@ -32,7 +32,7 @@ global interface IWidget
     isVisible: function<Self>(Self): boolean
     isActive: function<Self>(Self): boolean
     size: function<Self>(Self): Vector2
-    minSize: function<Self>(Self): Vector2
+    minSize: function<Self>(Self): Vector2 -- virtual
     geometry: function<Self>(Self): Geometry
     sizePolicy: function<Self>(Self): Policy
     cursor: function<Self>(Self): integer
@@ -40,17 +40,18 @@ global interface IWidget
 
     setParent: function<Self>(Self, IWidget)
     addChild: function<Self>(Self, IWidget)
-    setLayout: function<Self>(Self, IWidget)
+    setLayout: function<Self>(Self, IWidget) -- virtual
     setPos: function<Self>(Self, Vector2)
-    bindPos: function<Self>(Self, Vector2)
-    setVisible: function<Self>(Self, boolean)
+    bindPos: function<Self>(Self, Vector2) -- virtual
+    setVisible: function<Self>(Self, boolean) -- virtual
     hide: function<Self>(Self)
     show: function<Self>(Self)
-    setActive: function<Self>(Self, boolean)
+    setActive: function<Self>(Self, boolean) -- virtual
     disable: function<Self>(Self)
     enable: function<Self>(Self)
+    minimize: function<Self>(Self)
     resize: function<Self>(Self, Vector2)
-    bindSize: function<Self>(Self, Vector2)
+    bindSize: function<Self>(Self, Vector2) -- virtual
     setGeometry: function<Self>(Self, Geometry)
     setSizePolicy: function<Self>(Self, Policy)
     setCursor: function<Self>(Self, integer)
@@ -58,9 +59,9 @@ global interface IWidget
     setToolTip: function<Self>(Self, string)
 
     isHover: function<Self>(Self): boolean
-    render: function<Self>(Self)
-    update: function<Self>(Self)
-    renderToolTip: function<Self>(Self)
+    render: function<Self>(Self) -- virtual
+    update: function<Self>(Self) -- virtual
+    renderToolTip: function<Self>(Self) -- virtual
     childsRender: function<Self>(Self)
     childsUpdate: function<Self>(Self)
 end
@@ -90,11 +91,11 @@ function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Wid
     end
 
     connect(window_resized, function() self:update() end)
-    connect(startup, function() self:update() end)
+    connect(window_started, function() self:update() end)
     connect(cursor_stopped, function(data: Data)
         self.tooltip_duration = data.duration as number
     end)
-    connect(global_update, function()
+    connect(window_updated, function()
         if not self.is_active then return end
         self:renderToolTip()
     end)
@@ -104,54 +105,23 @@ function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Wid
     return self
 end
 
-function Widget:__tostring(): string
-    return format("%(pos: %, size: %, policy: \"%\")", type(self), self.m_pos, self.m_size, self.size_policy)
-end
+-- virtual:
+function Widget:render() self:childsRender() end
 
-function Widget:childsRender()
-    for _, child in ipairs(self.childs) do
-        child:render()
-    end
+-- virtual:
+function Widget:update() self:childsUpdate() end
 
-    if self.m_layout then
-        self.m_layout:render()
-    end
-end
-
-function Widget:childsUpdate()
-    for _, child in ipairs(self.childs) do
-        child:update()
-    end
-end
-
-function Widget:render() if self:isVisible() then self:childsRender() end end
-function Widget:update() if self:isActive() then self:childsUpdate() end end
-
-function Widget:addChild(widget: IWidget)
-    if not widget then return end
-
-    widget.m_parent = self
-    table.insert(self.childs, widget)
-end
-
-function Widget:setParent(widget: IWidget)
-    if not widget then return end
-    widget:addChild(self)
-end
-
+-- virtual:
 function Widget:setLayout(layout: IWidget)
     if not layout then return end
 
-    self.m_layout = layout
+    self.m_layout = layout -- by ref
     self.m_layout:setParent(self)
     self.m_layout:bindPos(self.m_pos)
     self.m_layout:bindSize(self.m_size)
 end
 
-function Widget:isHover(): boolean
-    return cursor.is_bound(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
-end
-
+-- virtual:
 function Widget:renderToolTip()
     if self.tooltip == "" then return end
 
@@ -178,30 +148,28 @@ function Widget:renderToolTip()
     render.text(m_pos.x + cursor_size + offset, m_pos.y + cursor_size + offset, font, self.tooltip, theme.foreground4)
 end
 
-function Widget:setToolTip(tp: string)
-    self.tooltip = tp
-end
-
-function Widget:size(): Vector2
-    return self.m_size:copy()
-end
-
+-- virtual:
 function Widget:minSize(): Vector2
+    if self.m_layout then
+        return self.m_layout:minSize()
+    end
+
+    if #self.childs > 0 then
+        local max = Vector2:new(0, 0)
+
+        for _, child in ipairs(self.childs) do
+            local min = child:minSize()
+            max.x = math.max(max.x, min.x)
+            max.y = math.max(max.y, min.y)
+        end
+
+        return max
+    end
+
     return self.min_size:copy()
 end
 
-function Widget:resize(size: Vector2)
-    if not size then
-        error(format("%: Cannot set a nil size", type(self)))
-    end
-
-    self.m_size = size:copy()
-    self.min_size = size:copy()
-    if self.m_layout then self.m_layout:resize(size) end
-
-    self:update()
-end
-
+-- virtual:
 function Widget:bindSize(size: Vector2)
     if not size then
         error(format("%: Cannot bind a nil size", type(self)))
@@ -214,19 +182,7 @@ function Widget:bindSize(size: Vector2)
     self:update()
 end
 
-function Widget:pos(): Vector2
-    return self.m_pos:copy()
-end
-
-function Widget:setPos(pos: Vector2)
-    if not pos then
-        error(format("%: Cannot set a nil pos", type(self)))
-    end
-
-    self.m_pos = pos:copy()
-    self:update()
-end
-
+-- virtual:
 function Widget:bindPos(pos: Vector2)
     if not pos then
         error(format("%: Cannot bind a nil pos", type(self)))
@@ -236,8 +192,90 @@ function Widget:bindPos(pos: Vector2)
     self:update()
 end
 
+-- virtual:
+function Widget:setVisible(visible: boolean)
+    self.is_visible = visible
+end
+
+-- virtual:
+function Widget:setActive(state: boolean)
+    self.is_active = state
+end
+
+function Widget:__tostring(): string
+    return format("%(pos: %, size: %, policy: %)", type(self), self.m_pos, self.m_size, self.size_policy)
+end
+
+function Widget:childsRender()
+    if not self:isVisible() then return end
+
+    for _, child in ipairs(self.childs) do
+        child:render()
+    end
+
+    if self.m_layout then
+        self.m_layout:render()
+    end
+end
+
+function Widget:childsUpdate()
+    if not self:isActive() then return end
+
+    for _, child in ipairs(self.childs) do
+        child:update()
+    end
+end
+
+function Widget:addChild(widget: IWidget)
+    if not widget then return end
+
+    widget.m_parent = self
+    table.insert(self.childs, widget)
+end
+
+function Widget:setParent(widget: IWidget)
+    if not widget then return end
+    widget:addChild(self)
+end
+
+function Widget:isHover(): boolean
+    return cursor.is_bound(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
+end
+
+function Widget:setToolTip(tp: string)
+    self.tooltip = tp
+end
+
+function Widget:size(): Vector2
+    return self.m_size:copy()
+end
+
+function Widget:minimize()
+    self:bindSize(self:minSize())
+end
+
+function Widget:resize(size: Vector2)
+    if not size then
+        error(format("%: Cannot set a nil size", type(self)))
+    end
+
+    self:bindSize(size:copy())
+end
+
 function Widget:geometry(): Geometry
-    return { x = self.m_pos.x, y = self.m_pos.y, width = self.m_size.x, height = self.m_size.y }
+    return Geometry:new(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
+end
+
+function Widget:pos(): Vector2
+    return self.m_pos:copy()
+end
+
+function Widget:setPos(pos: Vector2)
+    if not pos then
+        error(format("%: Cannot set a nil pos", type(self)))
+    end
+
+    self:bindPos(pos:copy())
 end
 
 function Widget:setGeometry(geometry: Geometry)
@@ -248,7 +286,7 @@ end
 function Widget:childAt(index: integer): IWidget
     local widget = self.childs[index]
     if not widget then
-        error(format("%.at: out of bounds, size: %, but try index: %", type(self), #self.childs, index))
+        error(format("%: Out of bounds (len: %, i: %)", type(self), #self.childs, index))
     end
 
     return widget
@@ -288,10 +326,6 @@ function Widget:isVisible(): boolean
     return self.is_visible
 end
 
-function Widget:setVisible(visible: boolean)
-    self.is_visible = visible
-end
-
 function Widget:hide()
     self.is_visible = false
 end
@@ -302,10 +336,6 @@ end
 
 function Widget:isActive(): boolean
     return self.is_active
-end
-
-function Widget:setActive(state: boolean)
-    self.is_active = state
 end
 
 function Widget:disable()

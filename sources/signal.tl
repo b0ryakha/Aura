@@ -52,11 +52,11 @@ end
 
 global function connect(signal: Signal, slot: Slot)
     if not signal then
-        error("Cannot connect a slot to nil signal!")
+        error("Signal: Cannot connect a slot to nil signal!")
     end
 
     if not slot then
-        error("Cannot connect a nil slot!")
+        error("Signal: Cannot connect a nil slot!")
     end
 
     signal:addSlot(slot)
@@ -64,13 +64,15 @@ end
 
 global function emit(signal: Signal)
     if not signal then
-        error("Cannot emit a nil signal!")
+        error("Signal: Cannot emit a nil signal!")
     end
 
     signal:runSlots()
 end
 
 -- default signals:
+global dt: number = 0
+
 global window_resized = Signal:new(function(data: Data): boolean
     if not data.new_size then data.new_size = window.get_size() end
 
@@ -82,7 +84,7 @@ global window_resized = Signal:new(function(data: Data): boolean
     return false
 end)
 
-global startup = Signal:new(function(data: Data): boolean
+global window_started = Signal:new(function(data: Data): boolean
     if not data.started then
         data.started = true
         return true
@@ -91,7 +93,6 @@ global startup = Signal:new(function(data: Data): boolean
     return false
 end)
 
-global dt: number = 0
 global cursor_stopped = Signal:new(function(data: Data): boolean
     if not data.old_cursor_pos then data.old_cursor_pos = cursor.get_pos() end
     if not data.duration then data.duration = 0 end
@@ -107,6 +108,6 @@ global cursor_stopped = Signal:new(function(data: Data): boolean
     return false
 end)
 
-global global_update = Signal:new(function(_: Data): boolean
+global window_updated = Signal:new(function(_: Data): boolean
     return true
 end)

@@ -21,7 +21,7 @@ global record Label is IWidget
 end
 
 function Label:new(text?: string, parent?: IWidget): Label
-    local self = extends(Label, "Label", Widget, parent, "Fixed", nil)
+    local self = extends(Label, "Label", Widget, parent, Policy:new("Fixed"), nil)
 
     self.m_text = text or ""
     self.m_align = Align:new("Left", "Top")
@@ -32,7 +32,6 @@ function Label:new(text?: string, parent?: IWidget): Label
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 100)
 
     self:setFont(theme.regular_font)
-    self:resize(self.measure)
     self:tryWrap()
     
     return self
@@ -52,7 +51,7 @@ function Label:update()
 
                 local success, exit_code = os.execute(format("% %", executer, self.m_text))
                 if not success then
-                    error(format("The link could not be opened: \"%\", error code: %", self.m_text, exit_code))
+                    error(format("%: The link could not be opened: \"%\", error code: %", type(self), self.m_text, exit_code))
                 end
             end
         end
@@ -119,6 +118,7 @@ end
 function Label:setFont(font: Font)
     self.font = font
     self.measure = render.measure_text(self.font, self.m_text)
+    self:resize(self.measure)
 
     if self.is_link then
         self:setStyle("l")
@@ -134,6 +134,7 @@ end
 function Label:setText(text: string)
     self.m_text = text
     self.measure = render.measure_text(self.font, self.m_text)
+
     self:tryWrap()
 end
 
@@ -172,7 +173,7 @@ end
 function Label:setWordWrap(on: boolean)
     self.word_wrap = on
     
-    if on then
+    if self.word_wrap then
         self:tryWrap()
     else
         self:expand()
