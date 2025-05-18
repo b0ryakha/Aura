@@ -78,10 +78,10 @@ function PushButton:render()
         end
     end
 
-    render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, color, 5)
+    render.gradient(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, color, color, theme.pressed, theme.pressed)
 
     if not self.is_flat then
-        render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, theme.outline, 5)
+        render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, theme.outline)
     end
 
     self.label:render()
@@ -93,9 +93,12 @@ function PushButton:bindPos(pos: Vector2)
         error(format("%: Cannot bind a nil pos", type(self)))
     end
 
-    self.m_pos = pos
-    self.label:bindPos(pos)
-    self:update()
+    if self.m_pos ~= pos then
+        self.m_pos = pos
+        self.label:bindPos(pos)
+        self:update()
+        emit(self.posChanged)
+    end
 end
 
 -- override:
@@ -104,12 +107,15 @@ function PushButton:bindSize(size: Vector2)
         error(format("%: Cannot bind a nil size", type(self)))
     end
 
-    self.m_size = size
-    self.min_size = size
-    if self.m_layout then self.m_layout:bindSize(size) end
-    self.label:bindSize(size)
+    if self.m_size ~= size then
+        self.m_size = size
+        self.min_size = size
+        if self.m_layout then self.m_layout:bindSize(size) end
+        self.label:bindSize(size)
 
-    self:update()
+        self:update()
+        emit(self.sizeChanged)
+    end
 end
 
 function PushButton:text(): string

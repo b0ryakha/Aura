@@ -19,6 +19,7 @@ global record Theme
     outline: Color
     outline2: Color
     accent: Color
+    light_accent: Color
 
     regular_font: Font
     small_font: Font
@@ -43,6 +44,7 @@ local themes: { string : Theme } = {
         outline = CachedColor:new(215, 215, 215),
         outline2 = CachedColor:new(150, 150, 150),
         accent = CachedColor:new(180, 220, 255),
+        light_accent = CachedColor:new(200, 240, 255),
 
         regular_font = CachedFont:new("SansSerif.ttf", 14),
         small_font = CachedFont:new("SansSerif.ttf", 12)

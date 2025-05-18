@@ -1,6 +1,9 @@
 local interface IClass
     __type: string
     __base_type: string
+    __tostring: function<Self>(Self): string
+    __eq: function<Self>(Self, Self): boolean
+
     new: function<Self>(Self, ...: any)
 end
 
@@ -20,7 +23,13 @@ global function instanceof<T, U>(self: T, object: U): boolean
 end
 
 global function create<T>(class: T, name: string): T
-    local mt = { __index = class, __type = name }
+    local mt = {
+        __index = class,
+        __type = name,
+        __tostring = (class as IClass).__tostring,
+        __eq = (class as IClass).__eq,
+    }
+
     return setmetatable({}, mt) as T
 end
 

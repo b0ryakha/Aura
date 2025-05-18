@@ -2,7 +2,7 @@ require("oop")
 
 global type Data = { string : any }
 global type Slot = function(Data)
-global type Trigger = function(data: Data): boolean
+global type Trigger = function(Data): boolean
 
 global record Signal
     trigger: Trigger

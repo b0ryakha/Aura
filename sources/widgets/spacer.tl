@@ -29,9 +29,13 @@ function Spacer:bindSize(size: Vector2)
         error(format("%: Cannot bind a nil size", type(self)))
     end
 
-    self.size_policy = Policy:new("Fixed")
-    self.m_size = size
-    self:update()
+    if self.m_size ~= size then
+        self.size_policy = Policy:new("Fixed")
+        self.m_size = size
+
+        self:update()
+        emit(self.sizeChanged)
+    end
 end
 
 -- override:

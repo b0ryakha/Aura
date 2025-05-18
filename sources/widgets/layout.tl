@@ -193,11 +193,22 @@ end
 function Layout:update()
     if not self.is_active then return end
 
+    local old_pos: { Vector2 } = {}
+    local old_size: { Vector2 } = {}
+    for i, child in ipairs(self.childs) do
+        old_pos[i] = child:pos()
+        old_size[i] = child:size()
+    end
+
     if self.type == "HBox" then self:hAlign() end
     if self.type == "VBox" then self:vAlign() end
     if self.type == "Grid" then error("Layout: not impl") end
 
-    self:childsUpdate()
+    for i, child in ipairs(self.childs) do
+        child:update()
+        if old_pos[i] ~= child:pos() then emit(child.posChanged) end
+        if old_size[i] ~= child:size() then emit(child.sizeChanged) end
+    end
 end
 
 -- override:

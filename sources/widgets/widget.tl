@@ -64,6 +64,9 @@ global interface IWidget
     renderToolTip: function<Self>(Self) -- virtual
     childsRender: function<Self>(Self)
     childsUpdate: function<Self>(Self)
+
+    sizeChanged: Signal
+    posChanged: Signal
 end
 
 global record Widget is IWidget end
@@ -89,6 +92,9 @@ function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Wid
     if parent then
         self:setParent(parent)
     end
+
+    self.sizeChanged = Signal:new()
+    self.posChanged = Signal:new()
 
     connect(window_resized, function() self:update() end)
     connect(window_started, function() self:update() end)
@@ -175,11 +181,14 @@ function Widget:bindSize(size: Vector2)
         error(format("%: Cannot bind a nil size", type(self)))
     end
 
-    self.m_size = size
-    self.min_size = size
-    if self.m_layout then self.m_layout:bindSize(size) end
+    if self.m_size ~= size then
+        self.m_size = size
+        self.min_size = size
+        if self.m_layout then self.m_layout:bindSize(size) end
 
-    self:update()
+        self:update()
+        emit(self.sizeChanged)
+    end
 end
 
 -- virtual:
@@ -188,8 +197,12 @@ function Widget:bindPos(pos: Vector2)
         error(format("%: Cannot bind a nil pos", type(self)))
     end
 
-    self.m_pos = pos
-    self:update()
+    if self.m_pos ~= pos then
+        self.m_pos = pos
+
+        self:update()
+        emit(self.posChanged)
+    end
 end
 
 -- virtual:

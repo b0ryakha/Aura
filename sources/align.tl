@@ -1,4 +1,5 @@
 require("oop")
+require("format")
 
 global enum HAlign "Left" "Right" "Center" end
 global enum VAlign "Top" "Bottom" "Center" end
@@ -15,4 +16,8 @@ function Align:new(h: HAlign, v?: VAlign): Align
     self.v = v or h
     
     return self
+end
+
+function Align:__tostring(): string
+    return format("%(h: %, v: %)", type(self), self.h, self.v)
 end

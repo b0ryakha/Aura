@@ -4,6 +4,7 @@ global record render
     measure_text: function(Font, string): Vector2
     rectangle: function(number, number, number, number, Color, ?number)
     outline_rectangle: function(number, number, number, number, number, Color, ?number)
+    gradient: function(number, number, number, number, Color, Color, Color, Color)
     circle: function(number, number, number, Color, ?number, ?Color)
     line: function(number, number, number, number, number, Color)
     polygon: function({{number}}, Color)
@@ -25,6 +26,7 @@ global record window
 	sleep: function(number)
 	await: function()
 	set_icon: function(Sprite)
+	set_style: function(integer)
 end
 
 global record keyboard

@@ -44,12 +44,15 @@ function Application:bindSize(size: Vector2)
         error(format("%: Cannot bind a nil size", type(self)))
     end
 
-    self.m_size = size
-    self.min_size = size
-    if self.m_layout then self.m_layout:bindSize(size) end
-    window.set_size(size.x, size.y)
+    if self.m_size ~= size then
+        self.m_size = size
+        self.min_size = size
+        if self.m_layout then self.m_layout:bindSize(size) end
+        window.set_size(size.x, size.y)
 
-    self:update()
+        self:update()
+        emit(self.sizeChanged)
+    end
 end
 
 -- override:
