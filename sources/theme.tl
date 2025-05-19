@@ -20,6 +20,7 @@ global record Theme
     outline2: Color
     accent: Color
     light_accent: Color
+    dark_accent: Color
 
     regular_font: Font
     small_font: Font
@@ -38,13 +39,14 @@ local themes: { string : Theme } = {
         foreground3 = CachedColor:new(215, 215, 215),
         foreground4 = CachedColor:new(60, 60, 60),
 
-        default = CachedColor:new(250, 250, 250),
+        default = CachedColor:new(240, 240, 240),
         hovered = CachedColor:new(254, 254, 254),
         pressed = CachedColor:new(235, 235, 235),
         outline = CachedColor:new(215, 215, 215),
         outline2 = CachedColor:new(150, 150, 150),
         accent = CachedColor:new(180, 220, 255),
-        light_accent = CachedColor:new(200, 240, 255),
+        dark_accent = CachedColor:new(140, 180, 215),
+        light_accent = CachedColor:new(220, 250, 255),
 
         regular_font = CachedFont:new("SansSerif.ttf", 14),
         small_font = CachedFont:new("SansSerif.ttf", 12)

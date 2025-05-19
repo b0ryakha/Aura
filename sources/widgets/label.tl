@@ -29,7 +29,7 @@ function Label:new(text?: string, parent?: IWidget): Label
     self.word_wrap = false
 
     self.is_debug = false
-    self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 100)
+    self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 50)
 
     self:setFont(theme.regular_font)
     self:tryWrap()

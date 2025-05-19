@@ -1,3 +1,4 @@
+--TODO: go to widget signal
 local record Element
     cursor: function<Self>(Self): integer
     isHover: function<Self>(Self): boolean

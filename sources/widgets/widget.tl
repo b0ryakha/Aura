@@ -59,6 +59,8 @@ global interface IWidget
     setToolTip: function<Self>(Self, string)
 
     isHover: function<Self>(Self): boolean
+    peekFocus: function<Self>(Self)
+    hasFocus: function<Self>(Self): boolean
     render: function<Self>(Self) -- virtual
     update: function<Self>(Self) -- virtual
     renderToolTip: function<Self>(Self) -- virtual
@@ -70,6 +72,8 @@ global interface IWidget
 end
 
 global record Widget is IWidget end
+
+local focused: IWidget = nil
 
 function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Widget
     local self = create(Widget, "Widget")
@@ -104,6 +108,10 @@ function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Wid
     connect(window_updated, function()
         if not self.is_active then return end
         self:renderToolTip()
+
+        if self:isHover() and mouse.is_pressed(button.Left) then
+            self:peekFocus()
+        end
     end)
 
     cursor_system.add_element(self)
@@ -181,12 +189,12 @@ function Widget:bindSize(size: Vector2)
         error(format("%: Cannot bind a nil size", type(self)))
     end
 
-    if self.m_size ~= size then
-        self.m_size = size
-        self.min_size = size
-        if self.m_layout then self.m_layout:bindSize(size) end
+    self.m_size = size
+    self.min_size = size
+    if self.m_layout then self.m_layout:bindSize(size) end
+    self:update()
 
-        self:update()
+    if self.m_size ~= size then
         emit(self.sizeChanged)
     end
 end
@@ -197,10 +205,10 @@ function Widget:bindPos(pos: Vector2)
         error(format("%: Cannot bind a nil pos", type(self)))
     end
 
-    if self.m_pos ~= pos then
-        self.m_pos = pos
+    self.m_pos = pos
+    self:update()
 
-        self:update()
+    if self.m_pos ~= pos then
         emit(self.posChanged)
     end
 end
@@ -253,6 +261,14 @@ end
 
 function Widget:isHover(): boolean
     return cursor.is_bound(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
+end
+
+function Widget:peekFocus()
+    focused = self
+end
+
+function Widget:hasFocus(): boolean
+    return self == focused
 end
 
 function Widget:setToolTip(tp: string)

@@ -1,6 +1,6 @@
 require("label")
 require("image")
-
+--TODO: check by SPACE key or add bind system for widgets
 global enum CheckBoxState
     "Normal" "Pressed"
 end

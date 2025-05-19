@@ -38,11 +38,9 @@ function StandartDelegate:paint(option: DelegateOption, index: ModelIndex)
     end
 
     if option.is_hovered then
-        local darked = CachedColor:new(theme.light_accent.r - 20, theme.light_accent.g - 20, theme.light_accent.b - 20)
-        render.gradient(option.rect.x, option.rect.y, option.rect.width, option.rect.height, theme.light_accent, theme.light_accent, darked, darked)
+        render.gradient(option.rect.x, option.rect.y, option.rect.width, option.rect.height, theme.light_accent, theme.light_accent, theme.accent, theme.accent)
     elseif option.is_selected then
-        local darked = CachedColor:new(theme.accent.r - 20, theme.accent.g - 20, theme.accent.b - 20)
-        render.gradient(option.rect.x, option.rect.y, option.rect.width, option.rect.height, theme.accent, theme.accent, darked, darked)
+        render.gradient(option.rect.x, option.rect.y, option.rect.width, option.rect.height, theme.accent, theme.accent, theme.dark_accent, theme.dark_accent)
     elseif index:row() % 2 == 0 then
         render.rectangle(option.rect.x, option.rect.y, option.rect.width, option.rect.height, theme.background)
     end

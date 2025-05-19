@@ -12,13 +12,14 @@ local bar1 = ProgressBar:new(Vector2:new(500, 50), left)
 local bar2 = ProgressBar:new(Vector2:new(500, 50), left)
 local bar3 = ProgressBar:new(Vector2:new(50, 300), right)
 local bar4 = ProgressBar:new(Vector2:new(50, 300), right)
-local bar5 = ProgressBar:new(Vector2:new(50, 300), right)
+--TODO: fix an unnecessary increase in the window size, the total size in Layout may not be calculated correctly.
+--local bar5 = ProgressBar:new(Vector2:new(50, 300), right)
 
 bar1:setFormat("p: %p, v: %v, m: %m")
 bar2:setInvertedAppearance(true)
 bar3:setOrientation("Vertical")
-bar5:setOrientation("Vertical")
-bar5:setInvertedAppearance(true)
+--bar5:setOrientation("Vertical")
+--bar5:setInvertedAppearance(true)
 
 local direction = 1
 local percent: number = 0
@@ -33,7 +34,7 @@ while window.is_open() do
     bar2:setValue(math.floor(percent))
     bar3:setValue(math.floor(percent))
     bar4:setValue(math.floor(percent))
-    bar5:setValue(math.floor(percent))
+    --bar5:setValue(math.floor(percent))
 
     window.clear()
     app:render()

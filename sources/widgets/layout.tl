@@ -25,7 +25,7 @@ function Layout:new(align_type?: LayoutType, size?: Vector2, parent?: IWidget): 
     self.m_spacing = 6
 
     self.is_debug = false
-    self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 100)
+    self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 50)
 
     return self
 end

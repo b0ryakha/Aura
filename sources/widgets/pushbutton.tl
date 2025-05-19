@@ -93,10 +93,11 @@ function PushButton:bindPos(pos: Vector2)
         error(format("%: Cannot bind a nil pos", type(self)))
     end
 
+    self.m_pos = pos
+    self.label:bindPos(pos)
+    self:update()
+
     if self.m_pos ~= pos then
-        self.m_pos = pos
-        self.label:bindPos(pos)
-        self:update()
         emit(self.posChanged)
     end
 end
@@ -107,13 +108,14 @@ function PushButton:bindSize(size: Vector2)
         error(format("%: Cannot bind a nil size", type(self)))
     end
 
-    if self.m_size ~= size then
-        self.m_size = size
-        self.min_size = size
-        if self.m_layout then self.m_layout:bindSize(size) end
-        self.label:bindSize(size)
+    self.m_size = size
+    self.min_size = size
+    if self.m_layout then self.m_layout:bindSize(size) end
+    self.label:bindSize(size)
 
-        self:update()
+    self:update()
+
+    if self.m_size ~= size then
         emit(self.sizeChanged)
     end
 end

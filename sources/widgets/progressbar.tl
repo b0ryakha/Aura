@@ -8,7 +8,7 @@ global record ProgressBar is IWidget
     max: integer
     min: integer
     val: integer
-    percent: integer
+    m_percent: integer
 
     m_orientation: Orientation
     is_inverted: boolean
@@ -22,7 +22,7 @@ end
 function ProgressBar:new(size?: Vector2, parent?: IWidget): ProgressBar
     local self = extends(ProgressBar, "ProgressBar", Widget, parent, nil, size)
 
-    self.label = Label:new(nil)
+    self.label = Label:new()
     self.label:setAlignment(Align:new("Center"))
     self.label:bindPos(self.m_pos)
     self.label:bindSize(self.m_size)
@@ -31,7 +31,7 @@ function ProgressBar:new(size?: Vector2, parent?: IWidget): ProgressBar
     self.min = 0
     self.max = 100
     self.val = 0
-    self.percent = 0
+    self.m_percent = 0
     self.m_orientation = "Horizontal"
     self.is_inverted = false
 
@@ -43,7 +43,7 @@ end
 -- private:
 function ProgressBar:processFormat(fmt: string): string
     local values = {
-        ['p'] = self.percent,
+        ['p'] = self.m_percent,
         ['v'] = self.val,
         ['m'] = self.max
     }
@@ -58,7 +58,7 @@ end
 function ProgressBar:update()
     if not self.is_active then return end
 
-    self.percent = math.floor(((self.val - self.min) / (self.max - self.min)) * 100)
+    self.m_percent = math.floor(((self.val - self.min) / (self.max - self.min)) * 100)
     self.label:setText(self:processFormat(self.m_format))
 end
 
@@ -66,31 +66,31 @@ end
 function ProgressBar:render()
     if not self.is_visible then return end
 
-    render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, CachedColor:new(250, 250, 250), 1)
+    render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, theme.default)
     
     local x = self.m_pos.x
     local y = self.m_pos.y
-    local w = (self.percent / 100) * self.m_size.x
+    local w = (self.m_percent / 100) * self.m_size.x
     local h = self.m_size.y
 
     if self.is_inverted then
         if self.m_orientation == "Horizontal" then
-            x = self.m_pos.x + self.m_size.x - (self.percent / 100) * self.m_size.x
-            w = (self.percent / 100) * self.m_size.x
+            x = x + self.m_size.x - (self.m_percent / 100) * self.m_size.x
+            w = (self.m_percent / 100) * self.m_size.x
         else -- Vertical:
-            y = self.m_pos.y + self.m_size.y - (self.percent / 100) * self.m_size.y
             w = self.m_size.x
-            h = (self.percent / 100) * self.m_size.y
+            h = (self.m_percent / 100) * self.m_size.y
         end
     else
         if self.m_orientation == "Vertical" then
+            y = y + h - (self.m_percent / 100) * self.m_size.y
             w = self.m_size.x
-            h = (self.percent / 100) * self.m_size.y
+            h = (self.m_percent / 100) * self.m_size.y
         end
     end
 
-    render.rectangle(x, y, w, h, theme.accent, 1)
-    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, theme.outline, 1)
+    render.gradient(x, y, w, h, theme.accent, theme.accent, theme.dark_accent, theme.dark_accent)
+    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, theme.outline)
 
     self.label:render()
 end
@@ -120,9 +120,17 @@ function ProgressBar:setValue(value: integer)
     end
 end
 
+function ProgressBar:value(): integer
+    return self.val
+end
+
+function ProgressBar:percent(): integer
+    return self.m_percent
+end
+
 function ProgressBar:reset()
     self.val = 0
-    self.percent = 0
+    self.m_percent = 0
 end
 
 function ProgressBar:setMinimum(min: integer)

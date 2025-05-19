@@ -1,3 +1,5 @@
+--TODO: split aura.tl to modules
+--TODO: write docs
 require("application")
 require("image")
 require("label")
@@ -11,6 +13,7 @@ require("pushbutton")
 require("checkbox")
 require("userinterface")
 require("listview")
+require("slider")
 
 -- hook:
 local deltatime = require("externals/deltatime/deltatime")
