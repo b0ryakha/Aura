@@ -3,7 +3,10 @@ EXM_DIR = "./examples"
 BUILD_DIR = "./build"
 .ONESHELL:
 
-build:
+gen_doc:
+	./teal-doc-gen.exe ./sources/widgets ./Documentation.md
+
+build: gen_doc
 	tl check ${SRC_DIR}/*.tl &&
 	tl gen ${SRC_DIR}/*.tl &&
 	tl check ${SRC_DIR}/widgets/*.tl &&

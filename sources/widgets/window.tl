@@ -13,6 +13,9 @@ function Window:new(size_policy?: Policy, size?: Vector2, parent?: IWidget): Win
 end
 
 -- override
+--[[
+Renders the window.
+]]--
 function Window:render()
     if not self.is_visible then return end
 
