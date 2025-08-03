@@ -5,7 +5,10 @@ local Signal = require("Signal")
 local fmt = require("fmt")
 require("oop")
 
-local record Model is IModel end
+local record Model is IModel
+-- force decl:
+    metamethod __call: function<Self>(Self): Model
+end
 
 function Model:new(): Model
     local self = create(Model, "Model")
@@ -13,7 +16,7 @@ function Model:new(): Model
     self.items = {}
     self.count = Vector2:new(0, 0)
 
-    self.dataChanged = Signal:new()
+    self.dataChanged = Signal()
 
     return self
 end
@@ -26,7 +29,7 @@ function Model:resolveIndex(index: ModelIndex): ModelIndex
         end
     end
 
-    return ModelIndex:new()
+    return ModelIndex()
 end
 
 function Model:data(index: ModelIndex, role?: ModelItem.Role): ModelItem.Value

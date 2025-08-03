@@ -8,10 +8,13 @@ local theme = require("theme")
 local record Spacer is IWidget
     align_type: Orientation
     thickness: number
+
+-- force decl:
+    metamethod __call: function<Self>(Self, align_type?: Orientation, parent?: IWidget): Spacer
 end
 
 function Spacer:new(align_type?: Orientation, parent?: IWidget): Spacer
-    local self = extends(Spacer, "Spacer", Widget, parent, Policy:new("Maximum"))
+    local self = extends(Spacer, "Spacer", Widget, parent, Policy("Maximum"))
 
     self.align_type = align_type or "Horizontal"
     self.thickness = 10
@@ -33,7 +36,7 @@ function Spacer:bindSize(size: Vector2)
         error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
-    self.size_policy = Policy:new("Fixed")
+    self.size_policy = Policy("Fixed")
     self.m_size = size
     self:update()
 

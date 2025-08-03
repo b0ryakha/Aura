@@ -9,6 +9,7 @@ local record ModelItem
     data: { Role : Value }
 
 -- force decl:
+    metamethod __call: function<Self>(Self, display: string, decoration?: string, tooltip?: string): ModelItem
     set: function<Self>(Self, Role, Value)
 end
 

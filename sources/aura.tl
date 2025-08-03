@@ -1,5 +1,4 @@
 --TODO: write docs
---TODO: auto fill 'aura' table with blacklist: { CachedColor, CachedFont, oop, Signal }
 --TODO: 'private' comment to real private methods
 local aura = {
     fmt = require("fmt"),

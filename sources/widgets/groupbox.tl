@@ -16,15 +16,18 @@ local record GroupBox is IWidget
     is_checkable: boolean
 
     checkStateChanged: Signal
+
+-- force decl:
+    metamethod __call: function<Self>(Self, title?: string, size?: Vector2, parent?: IWidget): GroupBox
 end
 
 function GroupBox:new(title?: string, size?: Vector2, parent?: IWidget): GroupBox
     local self = extends(GroupBox, "GroupBox", Widget, parent, nil, size)
 
-    self.label = Label:new(title)
+    self.label = Label(title)
     self.label:bindPos(self.m_pos)
 
-    self.checkbox = CheckBox:new(title, nil)
+    self.checkbox = CheckBox(title, nil)
     self.checkbox:bindPos(self.m_pos)
     self.checkbox:setCheckState(true)
     connect(self.checkbox.checkStateChanged, function(data: SignalData)

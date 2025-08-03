@@ -5,6 +5,9 @@ local theme = require("theme")
 
 local record Window is IWidget
     rounding: integer
+
+-- force decl:
+    metamethod __call: function<Self>(Self, size_policy?: Policy, size?: Vector2, parent?: IWidget): Window
 end
 
 function Window:new(size_policy?: Policy, size?: Vector2, parent?: IWidget): Window

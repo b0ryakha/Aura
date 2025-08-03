@@ -1,39 +1,39 @@
 package.path = package.path .. ";./build/?.lua"
 local aura = require("aura")
 
-local app = aura.Application:new("Explorer")
+local app = aura.Application("Explorer")
 local layout = app:layout()
 layout:setSpacing(0)
-layout:setMargins(aura.Margins:new(0, 0, 0, 0))
+layout:setMargins(aura.Margins(0, 0, 0, 0))
 
-local header = aura.Layout:new("HBox", Vector2:new(layout.m_size.x, 44), layout)
-header:setSizePolicy(aura.Policy:new("Maximum", "Minimum"))
+local header = aura.Layout("HBox", Vector2:new(layout.m_size.x, 44), layout)
+header:setSizePolicy(aura.Policy("Maximum", "Minimum"))
 header:turnDebug()
 
-local al = aura.Image:new("./examples/assets/arrow_left.png", Vector2:new(21, 21), header)
+local al = aura.Image("./examples/assets/arrow_left.png", Vector2:new(21, 21), header)
 al:setToolTip("prev folder")
 
-local ar = aura.Image:new("./examples/assets/arrow_left.png", Vector2:new(21, 21), header)
+local ar = aura.Image("./examples/assets/arrow_left.png", Vector2:new(21, 21), header)
 ar:mirror()
 ar:setToolTip("next folder")
 
-local ad = aura.Image:new("./examples/assets/arrow_down.png", Vector2:new(12, 12), header)
+local ad = aura.Image("./examples/assets/arrow_down.png", Vector2:new(12, 12), header)
 ad:setToolTip("menu...")
 
-local au = aura.Image:new("./examples/assets/arrow_up.png", Vector2:new(21, 21), header)
+local au = aura.Image("./examples/assets/arrow_up.png", Vector2:new(21, 21), header)
 au:setToolTip("back to folder")
 
-local search = aura.Window:new(aura.Policy:new("Maximum"), nil, header)
+local search = aura.Window(aura.Policy("Maximum"), nil, header)
 search:setToolTip("search...")
 
-local page = aura.Layout:new("HBox", nil, layout)
+local page = aura.Layout("HBox", nil, layout)
 page:turnDebug()
 page:setSpacing(4)
 
-local list = aura.Window:new(aura.Policy:new("Minimum", "Maximum"), Vector2:new(200, page.m_size.y), page)
+local list = aura.Window(aura.Policy("Minimum", "Maximum"), Vector2:new(200, page.m_size.y), page)
 list:setToolTip("list of folders =)")
 
-local view = aura.Window:new(aura.Policy:new("Maximum"), nil, page)
+local view = aura.Window(aura.Policy("Maximum"), nil, page)
 view:setToolTip("folder view =)")
 
 while window.is_open() do

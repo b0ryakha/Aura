@@ -39,6 +39,9 @@ local record ListView is IWidget
     itemPressed: Signal
     itemClicked: Signal
     itemDoubleClicked: Signal
+
+-- force decl:
+    metamethod __call: function<Self>(Self, size?: Vector2, flow?: ListView.Flow, parent?: IWidget): ListView
 end
 
 function ListView:new(size?: Vector2, flow?: ListView.Flow, parent?: IWidget): ListView
@@ -46,13 +49,13 @@ function ListView:new(size?: Vector2, flow?: ListView.Flow, parent?: IWidget): L
 
     self:bindSize(size or Vector2:new(250, 200))
 
-    self.delegate = Delegate:new()
+    self.delegate = Delegate()
 
-    self.selected = ModelIndex:new()
-    self.hovered = ModelIndex:new()
+    self.selected = ModelIndex()
+    self.hovered = ModelIndex()
     self.is_pressed = false
     self.m_flow = flow or "TopToBottom"
-    self.m_align = Align:new("Left", "Center")
+    self.m_align = Align("Left", "Center")
 
     self.font = theme.regular_font
     self.m_spacing = math.floor(self.font:get_glyph('@').x * 0.3)
@@ -60,10 +63,10 @@ function ListView:new(size?: Vector2, flow?: ListView.Flow, parent?: IWidget): L
     self.last_click_time = 0
     self.double_click_threshold = 0.25
 
-    self.itemSelected = Signal:new()
-    self.itemPressed = Signal:new()
-    self.itemClicked = Signal:new()
-    self.itemDoubleClicked = Signal:new()
+    self.itemSelected = Signal()
+    self.itemPressed = Signal()
+    self.itemClicked = Signal()
+    self.itemDoubleClicked = Signal()
 
     return self
 end
@@ -91,7 +94,7 @@ function ListView:findGeometryFor(index: ModelIndex): Geometry
 
     self.prev_size = self.prev_size + size:copy()
 
-    return Geometry:new(pos.x, pos.y, size.x, size.y)
+    return Geometry(pos.x, pos.y, size.x, size.y)
 end
 
 -- private:
@@ -129,7 +132,7 @@ function ListView:selectIndex(index: ModelIndex)
     end
 
     self.selected = index
-    self.hovered = ModelIndex:new()
+    self.hovered = ModelIndex()
 
     self.itemSelected:updateData("index", self.selected)
     emit(self.itemSelected)
@@ -167,7 +170,7 @@ function ListView:updateFor(geometry: Geometry, index: ModelIndex)
             self.hovered = index
         end
     else
-        self.hovered = ModelIndex:new()
+        self.hovered = ModelIndex()
     end
 end
 
@@ -180,14 +183,14 @@ function ListView:render()
 
     if self.m_model ~= nil then
         for i = 1, self.m_model:rowCount() do
-            local index = ModelIndex:new(i)
+            local index = ModelIndex(i)
 
             local geometry = self:findGeometryFor(index)
             if not self:isInside(geometry) then break end
 
             self:updateFor(geometry, index)
 
-            self.delegate:paint(DelegateOption:new(
+            self.delegate:paint(DelegateOption(
                 self.selected == index,
                 self.hovered == index,
                 self.m_model:data(index) as string,
@@ -233,7 +236,7 @@ function ListView:hoveredIndex(): ModelIndex
 end
 
 function ListView:unselectIndex()
-    self.selected = ModelIndex:new()
+    self.selected = ModelIndex()
 end
 
 function ListView:setFlow(flow: ListView.Flow)

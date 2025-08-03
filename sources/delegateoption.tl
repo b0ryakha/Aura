@@ -10,6 +10,9 @@ local record DelegateOption
     font: Font
     spacing: integer
     align: Align
+
+-- force decl:
+    metamethod __call: function<Self>(Self, is_selected: boolean, is_hovered: boolean, text: string, rect: Geometry, font: Font, spacing: integer, align: Align): DelegateOption
 end
 
 function DelegateOption:new(is_selected: boolean, is_hovered: boolean, text: string, rect: Geometry, font: Font, spacing: integer, align: Align): DelegateOption

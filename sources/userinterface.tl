@@ -29,6 +29,7 @@ local record UserInterface
     cur_ch: integer
 
 -- force decl:
+    metamethod __call: function<Self>(Self, path: string): UIData
     removeComments: function<Self>(Self, string): string
     pushWidget: function<Self>(Self, UINode): any
     readFile: function<Self>(Self, string): string

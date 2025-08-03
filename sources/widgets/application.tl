@@ -12,12 +12,13 @@ local record Application is IWidget
     --TODO: menu: Menu
 
 -- force decl:
+    metamethod __call: function<Self>(Self, title?: string, size?: Vector2): Application
     layout: function<Self>(Self): Layout
     setTitle: function<Self>(Self, string)
 end
 
 function Application:new(title?: string, size?: Vector2): Application
-    local self = extends(Application, "Application", Widget, nil, Policy:new("Maximum"), nil)
+    local self = extends(Application, "Application", Widget, nil, Policy("Maximum"), nil)
     
     if size then
         self:resize(size)
@@ -26,7 +27,7 @@ function Application:new(title?: string, size?: Vector2): Application
     end
 
     self:setTitle(title or "")
-    self:setLayout(Layout:new("VBox"))
+    self:setLayout(Layout("VBox"))
     self.args = globalvars.get_args()
 
     connect(window_resized, function()

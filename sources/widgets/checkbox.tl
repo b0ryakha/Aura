@@ -26,6 +26,7 @@ local record CheckBox is IWidget
     checkStateChanged: Signal
 
 -- force decl:
+    metamethod __call: function<Self>(Self, text?: string, size?: Vector2, parent?: IWidget): CheckBox
     updateElements: function<Self>(Self)
 end
 
@@ -36,18 +37,18 @@ function CheckBox:new(text?: string, size?: Vector2, parent?: IWidget): CheckBox
     self.offset = 5
     self.mutable_offset = self.offset
 
-    self.label = Label:new(text)
-    self.label:setAlignment(Align:new("Center"))
+    self.label = Label(text)
+    self.label:setAlignment(Align("Center"))
     self.label.m_size.y = self.box_size.y
 
-    self.mark = Image:new("assets/checkmark.png", Vector2:new(64, 64))
+    self.mark = Image("assets/checkmark.png", Vector2:new(64, 64))
     self.mark:setColor(theme.foreground)
 
     self.state = "Normal"
     self.lock_press = false
     self.is_checked = false
 
-    self.checkStateChanged = Signal:new()
+    self.checkStateChanged = Signal()
 
     self:bindSize(Vector2:new(self.box_size.x + self.label.m_size.x + self.mutable_offset, self.box_size.y))
     self:updateElements()

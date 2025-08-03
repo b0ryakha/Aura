@@ -1,22 +1,22 @@
 package.path = package.path .. ";./build/?.lua"
 local aura = require("aura")
 
-local app = aura.Application:new("aura.Slider")
+local app = aura.Application("aura.Slider")
 local layout = app:layout()
 layout:setLayoutType("HBox")
 
-local left = aura.Layout:new("VBox", nil, layout)
+local left = aura.Layout("VBox", nil, layout)
 left:setSpacing(100)
-local right = aura.Layout:new("HBox", nil, layout)
+local right = aura.Layout("HBox", nil, layout)
 right:setSpacing(100)
 
-local slider1 = aura.Slider:new(Vector2:new(500, 20), left)
-local slider2 = aura.Slider:new(Vector2:new(500, 20), left)
-local slider3 = aura.Slider:new(Vector2:new(500, 50), left)
+local slider1 = aura.Slider(Vector2:new(500, 20), left)
+local slider2 = aura.Slider(Vector2:new(500, 20), left)
+local slider3 = aura.Slider(Vector2:new(500, 50), left)
 
-local slider4 = aura.Slider:new(Vector2:new(20, 300), right)
-local slider5 = aura.Slider:new(Vector2:new(50, 300), right)
-local slider6 = aura.Slider:new(Vector2:new(20, 300), right)
+local slider4 = aura.Slider(Vector2:new(20, 300), right)
+local slider5 = aura.Slider(Vector2:new(50, 300), right)
+local slider6 = aura.Slider(Vector2:new(20, 300), right)
 
 slider2:setInvertedAppearance(true)
 slider2:setRange(0, 5)

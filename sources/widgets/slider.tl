@@ -37,6 +37,7 @@ local record Slider is IWidget
     valueChanged: Signal
 
 -- force decl:
+    metamethod __call: function<Self>(Self, size?: Vector2, parent?: IWidget): Slider
     setValue: function<Self>(Self, integer)
     resolvedTickPosition: function<Self>(Self): TickPosition
     renderTicks: function<Self>(Self)
@@ -60,7 +61,7 @@ function Slider:new(size?: Vector2, parent?: IWidget): Slider
     self.is_debug = false
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 50)
 
-    self.valueChanged = Signal:new()
+    self.valueChanged = Signal()
 
     self:bindSize(size or Vector2:new(300, 20))
     

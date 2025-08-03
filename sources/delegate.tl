@@ -8,6 +8,9 @@ require("oop")
 
 local record Delegate is IDelegate
     cached_labels: { string : Label }
+
+-- force decl:
+    metamethod __call: function<Self>(Self): Delegate
 end
 
 function Delegate:new(): Delegate
@@ -26,7 +29,7 @@ end
 function Delegate:paint(option: DelegateOption, index: ModelIndex)
     local hash = option.text .. tostring(option.rect) .. tostring(option.align)
     if self.cached_labels[hash] == nil then
-        local label = Label:new(option.text)
+        local label = Label(option.text)
         label:setFont(option.font)
         label:bindPos(option.rect:pos() + option.spacing)
         label:bindSize(option.rect:size() - option.spacing)

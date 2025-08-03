@@ -7,6 +7,9 @@ local record Align
 
     h: Horizontal
     v: Vertical
+
+-- force decl:
+    metamethod __call: function<Self>(Self, h: Align.Horizontal, v?: Align.Vertical): Align
 end
 
 function Align:new(h: Align.Horizontal, v?: Align.Vertical): Align

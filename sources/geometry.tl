@@ -6,6 +6,9 @@ local record Geometry
     y: number
     width: number
     height: number
+
+-- force decl:
+    metamethod __call: function<Self>(Self, x: number, y: number, width: number, height: number): Geometry
 end
 
 function Geometry:new(x: number, y: number, width: number, height: number): Geometry

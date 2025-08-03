@@ -24,6 +24,7 @@ end
 
 global function create<T>(class: T, name: string): T
     local mt = {
+        __call = (class as IClass).new,
         __index = class,
         __type = name,
         __tostring = (class as IClass).__tostring,

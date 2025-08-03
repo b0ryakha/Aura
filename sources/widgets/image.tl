@@ -9,6 +9,7 @@ local record Image is IWidget
     is_v_mirror: boolean
 
 -- force decl:
+    metamethod __call: function<Self>(Self, path?: string, size?: Vector2, parent?: IWidget): Image
     loadFromFile: function<Self>(Self, string, Vector2)
     setColor: function<Self>(Self, Color)
 end

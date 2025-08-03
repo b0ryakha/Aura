@@ -8,6 +8,9 @@ local record Policy
 
     h: Type
     v: Type
+
+-- force decl:
+    metamethod __call: function<Self>(Self, h: Policy.Type, v?: Policy.Type): Policy
 end
 
 function Policy:new(h: Policy.Type, v?: Policy.Type): Policy

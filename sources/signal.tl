@@ -9,6 +9,9 @@ local record Signal
     trigger: Trigger
     slots: { Slot }
     data: SignalData
+
+-- force decl:
+    metamethod __call: function<Self>(Self, trigger?: Trigger): Signal
 end
 
 local signals: { Signal } = {};
@@ -77,7 +80,7 @@ end
 
 -- default signals:
 -- provides: new_size
-global window_resized = Signal:new(function(data: SignalData): boolean
+global window_resized = Signal(function(data: SignalData): boolean
     if not data.new_size then data.new_size = window.get_size() end
 
     if data.new_size ~= window.get_size() then
@@ -89,7 +92,7 @@ global window_resized = Signal:new(function(data: SignalData): boolean
 end)
 
 -- provides: started
-global window_started = Signal:new(function(data: SignalData): boolean
+global window_started = Signal(function(data: SignalData): boolean
     if not data.started then
         data.started = true
         return true
@@ -99,7 +102,7 @@ global window_started = Signal:new(function(data: SignalData): boolean
 end)
 
 -- provides: duration
-global cursor_stopped = Signal:new(function(data: SignalData): boolean
+global cursor_stopped = Signal(function(data: SignalData): boolean
     if not data.old_cursor_pos then data.old_cursor_pos = cursor.get_pos() end
     if not data.duration then data.duration = 0 end
 
@@ -115,7 +118,7 @@ global cursor_stopped = Signal:new(function(data: SignalData): boolean
 end)
 
 -- provides: nil
-global window_updated = Signal:new(function(_: SignalData): boolean
+global window_updated = Signal(function(_: SignalData): boolean
     return true
 end)
 

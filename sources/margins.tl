@@ -6,6 +6,9 @@ local record Margins
     right: number
     top: number
     bottom: number
+
+-- force decl:
+    metamethod __call: function<Self>(Self, left: number, right: number, top: number, bottom: number): Margins
 end
     
 function Margins:new(left: number, right: number, top: number, bottom: number): Margins
@@ -20,7 +23,7 @@ function Margins:new(left: number, right: number, top: number, bottom: number): 
 end
 
 function Margins:copy(): Margins
-    return Margins:new(self.left, self.right, self.top, self.bottom)
+    return Margins(self.left, self.right, self.top, self.bottom)
 end
 
 function Margins:__tostring(): string

@@ -20,13 +20,16 @@ local record PushButton is IWidget
     clicked: Signal
     pressed: Signal
     released: Signal
+
+-- force decl:
+    metamethod __call: function<Self>(Self, text?: string, size?: Vector2, parent?: IWidget): PushButton
 end
 
 function PushButton:new(text?: string, size?: Vector2, parent?: IWidget): PushButton
     local self = extends(PushButton, "PushButton", Widget, parent, nil, size)
 
-    self.label = Label:new(text)
-    self.label:setAlignment(Align:new("Center"))
+    self.label = Label(text)
+    self.label:setAlignment(Align("Center"))
     self.label:bindPos(self.m_pos) -- fake ref
     self.label:bindSize(self.m_size) -- fake ref
 
@@ -34,9 +37,9 @@ function PushButton:new(text?: string, size?: Vector2, parent?: IWidget): PushBu
     self.state = "Normal"
     self.is_pressed = false
 
-    self.clicked = Signal:new()
-    self.pressed = Signal:new()
-    self.released = Signal:new()
+    self.clicked = Signal()
+    self.pressed = Signal()
+    self.released = Signal()
     
     return self
 end

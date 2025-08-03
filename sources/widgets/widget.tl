@@ -7,7 +7,10 @@ local cursors = require("cursors")
 local theme = require("theme")
 require("oop")
 
-local record Widget is IWidget end
+local record Widget is IWidget
+-- force decl:
+    metamethod __call: function<Self>(Self, parent?: IWidget, size_policy?: Policy, size?: Vector2): Widget
+end
 
 local focused: IWidget = nil
 
@@ -20,7 +23,7 @@ function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Wid
 
     self.m_size = size and size:copy() or Vector2:new(100, 100)
     self.min_size = self.m_size:copy()
-    self.size_policy = size_policy or Policy:new("Minimum")
+    self.size_policy = size_policy or Policy("Minimum")
     self:resetCursor()
 
     self.tooltip = ""
@@ -33,8 +36,8 @@ function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Wid
         self:setParent(parent)
     end
 
-    self.sizeChanged = Signal:new()
-    self.posChanged = Signal:new()
+    self.sizeChanged = Signal()
+    self.posChanged = Signal()
 
     connect(window_resized, function() self:update() end)
     connect(window_started, function() self:update() end)
@@ -228,7 +231,7 @@ function Widget:resize(size: Vector2)
 end
 
 function Widget:geometry(): Geometry
-    return Geometry:new(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
+    return Geometry(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
 end
 
 function Widget:pos(): Vector2

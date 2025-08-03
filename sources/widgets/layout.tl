@@ -18,17 +18,20 @@ local record Layout is IWidget
 
     is_debug: boolean
     debug_color: Color
+
+-- force decl:
+    metamethod __call: function<Self>(Self, align_type?: Layout.Type, size?: Vector2, parent?: IWidget): Layout
 end
 
 function Layout:new(align_type?: Layout.Type, size?: Vector2, parent?: IWidget): Layout
-    local self = extends(Layout, "Layout", Widget, parent, Policy:new("Maximum"), size)
+    local self = extends(Layout, "Layout", Widget, parent, Policy("Maximum"), size)
 
     if self.m_parent and type(self.m_parent) ~= "Layout" then
         self.m_parent:setLayout(self)
     end
 
     self.type = align_type or "HBox"
-    self.m_margins = Margins:new(9, 9, 9, 9)
+    self.m_margins = Margins(9, 9, 9, 9)
     self.m_spacing = 6
 
     self.is_debug = false

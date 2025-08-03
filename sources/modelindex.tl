@@ -4,6 +4,9 @@ require("oop")
 local record ModelIndex
     m_row: integer
     m_column: integer
+
+-- force decl:
+    metamethod __call: function<Self>(Self, row?: integer, column?: integer): ModelIndex
 end
 
 function ModelIndex:new(row?: integer, column?: integer): ModelIndex

@@ -21,14 +21,15 @@ local record ProgressBar is IWidget
     valueChanged: Signal
 
 -- force decl:
+    metamethod __call: function<Self>(Self, size?: Vector2, parent?: IWidget): ProgressBar
     resetFormat: function<Self>(Self)
 end
 
 function ProgressBar:new(size?: Vector2, parent?: IWidget): ProgressBar
     local self = extends(ProgressBar, "ProgressBar", Widget, parent, nil, size)
 
-    self.label = Label:new()
-    self.label:setAlignment(Align:new("Center"))
+    self.label = Label()
+    self.label:setAlignment(Align("Center"))
     self.label:bindPos(self.m_pos)
     self.label:bindSize(self.m_size)
     self:resetFormat()
@@ -40,7 +41,7 @@ function ProgressBar:new(size?: Vector2, parent?: IWidget): ProgressBar
     self.m_orientation = "Horizontal"
     self.is_inverted = false
 
-    self.valueChanged = Signal:new()
+    self.valueChanged = Signal()
     
     return self
 end

@@ -20,16 +20,17 @@ local record Label is IWidget
     debug_color: Color
 
 -- force decl:
+    metamethod __call: function<Self>(Self, text?: string, parent?: IWidget): Label
     setFont: function<Self>(Self, Font)
     setStyle: function<Self>(Self, string)
     tryWrap: function<Self>(Self)
 end
 
 function Label:new(text?: string, parent?: IWidget): Label
-    local self = extends(Label, "Label", Widget, parent, Policy:new("Fixed"), nil)
+    local self = extends(Label, "Label", Widget, parent, Policy("Fixed"), nil)
 
     self.m_text = text or ""
-    self.m_align = Align:new("Left", "Top")
+    self.m_align = Align("Left", "Top")
     self.is_link = false
     self.word_wrap = false
 
