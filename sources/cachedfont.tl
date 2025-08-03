@@ -1,4 +1,4 @@
-global record CachedFont
+local record CachedFont
     new: function<Self>(Self, string, integer, ?string): Font
 end
 
@@ -14,3 +14,5 @@ function CachedFont:new(name: string, m_size: integer, style?: string): Font
 
     return cache[cache_key]
 end
+
+return CachedFont

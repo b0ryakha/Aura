@@ -1,6 +1,9 @@
-require("widget")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local Policy = require("Policy")
+local theme = require("theme")
 
-global record Window is IWidget
+local record Window is IWidget
     rounding: integer
 end
 
@@ -31,3 +34,5 @@ function Window:render()
 
     self:childsRender()
 end
+
+return Window

@@ -1,7 +1,7 @@
+local fmt = require("fmt")
 require("oop")
-require("format")
 
-global record Geometry
+local record Geometry
     x: number
     y: number
     width: number
@@ -20,7 +20,7 @@ function Geometry:new(x: number, y: number, width: number, height: number): Geom
 end
 
 function Geometry:__tostring(): string
-    return format("%(x: %, y: %, w: %, h: %)", type(self), self.x, self.y, self.width, self.height)
+    return fmt("%(x: %, y: %, w: %, h: %)", type(self), self.x, self.y, self.width, self.height)
 end
 
 function Geometry:unpack(): number, number, number, number
@@ -34,3 +34,5 @@ end
 function Geometry:size(): Vector2
     return Vector2:new(self.width, self.height)
 end
+
+return Geometry

@@ -1,16 +1,16 @@
 package.path = package.path .. ";./build/?.lua"
-require("aura")
+local aura = require("aura")
 
-local app = Application:new("Tooltip")
+local app = aura.Application:new("Tooltip")
 app:setLayoutType("HBox")
 
 local layout = app:layout()
 layout:setSpacing(100)
 
-local label = Label:new("Point it at me ->")
+local label = aura.Label:new("Point it at me ->")
 label:setToolTip("Not on the text...")
 
-local win = Window:new(Policy:new("Minimum"), Vector2:new(250, 250))
+local win = aura.Window:new(aura.Policy:new("Minimum"), Vector2:new(250, 250))
 win:setToolTip("The square is a quadrangle with pride!")
 
 layout:addItem(label)

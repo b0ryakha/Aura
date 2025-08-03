@@ -1,8 +1,8 @@
+local Align = require("Align")
+local Geometry = require("Geometry")
 require("oop")
-require("geometry")
-require("align")
 
-global record DelegateOption
+local record DelegateOption
     is_selected: boolean
     is_hovered: boolean
     text: string
@@ -25,3 +25,5 @@ function DelegateOption:new(is_selected: boolean, is_hovered: boolean, text: str
 
     return self
 end
+
+return DelegateOption

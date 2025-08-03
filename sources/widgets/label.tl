@@ -1,8 +1,13 @@
-require("widget")
-require("format")
-require("align")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local Align = require("Align")
+local CachedFont = require("CachedFont")
+local CachedColor = require("CachedColor")
+local Policy = require("Policy")
+local fmt = require("fmt")
+local theme = require("theme")
 
-global record Label is IWidget
+local record Label is IWidget
     m_text: string
     m_align: Align
     is_link: boolean
@@ -49,9 +54,9 @@ function Label:update()
                     executer = "xdg-open"
                 end
 
-                local success, exit_code = os.execute(format("% %", executer, self.m_text))
+                local success, exit_code = os.execute(fmt("% %", executer, self.m_text))
                 if not success then
-                    error(format("%: The link could not be opened: \"%\", error code: %", type(self), self.m_text, exit_code))
+                    error(fmt("%: The link could not be opened: \"%\", error code: %", type(self), self.m_text, exit_code))
                 end
             end
         end
@@ -179,3 +184,5 @@ function Label:setWordWrap(on: boolean)
         self:expand()
     end
 end
+
+return Label

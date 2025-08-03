@@ -1,19 +1,12 @@
-require("oop")
-require("format")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local Geometry = require("Geometry")
+local Application = require("Application")
+local Label = require("Label")
+require("Layout")
+local fmt = require("fmt")
 
-require("application")
-require("image")
-require("label")
-require("layout")
-require("spacer")
-require("widget")
-require("window")
-require("groupbox")
-require("progressbar")
-require("pushbutton")
-require("checkbox")
-
-global type UIData = { string : IWidget }
+local type UIData = { string : IWidget }
 local type Attributes = { string : any }
 
 local record UIVar
@@ -28,7 +21,7 @@ local record UINode
     tag: string
 end
 
-global record UserInterface
+local record UserInterface
     data: UIData
     vars: { UIVar }
     stack: { string }
@@ -62,7 +55,7 @@ end
 function UserInterface:readFile(path: string): string
     local xml = io.open(path, "r")
     if not xml then
-        error(format("%: Could not be found the interface form by path: \"%\"", type(self), path))
+        error(fmt("%: Could not be found the interface form by path: \"%\"", type(self), path))
     end
 
     local content = xml:read("*all")
@@ -77,12 +70,12 @@ function UserInterface:pushWidget(node: UINode): any
 
     local T = (_G as table)[node.attributes.class] as Widget
     if T == nil or T.new == nil then
-        error(format("%: Unknown class \"%\"", type(self), node.attributes.class))
+        error(fmt("%: Unknown class \"%\"", type(self), node.attributes.class))
     end
 
     local name = node.attributes.name as string
     if name == nil then
-        error(format("%: Widget with type \"%\" has no name", type(self), node.attributes.class))
+        error(fmt("%: Widget with type \"%\" has no name", type(self), node.attributes.class))
     end
 
     local element = T:new()
@@ -258,3 +251,5 @@ function UserInterface:parseXml(): UINode
 
     return { tag = tag, attributes = attributes, childs = childs, content = content }
 end
+
+return UserInterface

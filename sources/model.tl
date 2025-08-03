@@ -1,25 +1,11 @@
+local type IModel = require("IModel")
+local ModelItem = require("ModelItem")
+local ModelIndex = require("ModelIndex")
+local Signal = require("Signal")
+local fmt = require("fmt")
 require("oop")
-require("signal")
-require("modelindex")
-require("modelitem")
 
-global interface IModel
-    items: { ModelIndex : ModelItem }
-    count: Vector2
-
--- public:
-    data: function<Self>(Self, ModelIndex, role?: ModelRole): ModelItemValue
-
-    rowCount: function<Self>(Self): integer
-    columnCount: function<Self>(Self): integer
-
-    insert: function<Self>(Self, ModelIndex, ModelItem): boolean
-    remove: function<Self>(Self, ModelIndex): boolean
-
-    dataChanged: Signal
-end
-
-global record Model is IModel end
+local record Model is IModel end
 
 function Model:new(): Model
     local self = create(Model, "Model")
@@ -43,10 +29,10 @@ function Model:resolveIndex(index: ModelIndex): ModelIndex
     return ModelIndex:new()
 end
 
-function Model:data(index: ModelIndex, role?: ModelRole): ModelItemValue
+function Model:data(index: ModelIndex, role?: ModelItem.Role): ModelItem.Value
     local resolved = self:resolveIndex(index)
     if not resolved:isValid() then
-        error(format("%: Cannot find a value at an index: %", type(self), index))
+        error(fmt("%: Cannot find a value at an index: %", type(self), index))
     end
 
     return self.items[resolved]:get(role or "Display")
@@ -97,3 +83,5 @@ function Model:remove(index: ModelIndex): boolean
 
     return true
 end
+
+return Model

@@ -1,15 +1,15 @@
+local fmt = require("fmt")
 require("oop")
-require("format")
 
-global enum HAlign "Left" "Right" "Center" end
-global enum VAlign "Top" "Bottom" "Center" end
+local record Align
+    enum Horizontal "Left" "Right" "Center" end
+    enum Vertical "Top" "Bottom" "Center" end
 
-global record Align
-    h: HAlign
-    v: VAlign
+    h: Horizontal
+    v: Vertical
 end
 
-function Align:new(h: HAlign, v?: VAlign): Align
+function Align:new(h: Align.Horizontal, v?: Align.Vertical): Align
     local self = create(Align, "Align")
 
     self.h = h
@@ -19,5 +19,7 @@ function Align:new(h: HAlign, v?: VAlign): Align
 end
 
 function Align:__tostring(): string
-    return format("%(h: %, v: %)", type(self), self.h, self.v)
+    return fmt("%(h: %, v: %)", type(self), self.h, self.v)
 end
+
+return Align

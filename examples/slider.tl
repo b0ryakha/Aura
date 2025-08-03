@@ -1,22 +1,22 @@
 package.path = package.path .. ";./build/?.lua"
-require("aura")
+local aura = require("aura")
 
-local app = Application:new("Slider")
+local app = aura.Application:new("aura.Slider")
 local layout = app:layout()
 layout:setLayoutType("HBox")
 
-local left = Layout:new("VBox", nil, layout)
+local left = aura.Layout:new("VBox", nil, layout)
 left:setSpacing(100)
-local right = Layout:new("HBox", nil, layout)
+local right = aura.Layout:new("HBox", nil, layout)
 right:setSpacing(100)
 
-local slider1 = Slider:new(Vector2:new(500, 20), left)
-local slider2 = Slider:new(Vector2:new(500, 20), left)
-local slider3 = Slider:new(Vector2:new(500, 50), left)
+local slider1 = aura.Slider:new(Vector2:new(500, 20), left)
+local slider2 = aura.Slider:new(Vector2:new(500, 20), left)
+local slider3 = aura.Slider:new(Vector2:new(500, 50), left)
 
-local slider4 = Slider:new(Vector2:new(20, 300), right)
-local slider5 = Slider:new(Vector2:new(50, 300), right)
-local slider6 = Slider:new(Vector2:new(20, 300), right)
+local slider4 = aura.Slider:new(Vector2:new(20, 300), right)
+local slider5 = aura.Slider:new(Vector2:new(50, 300), right)
+local slider6 = aura.Slider:new(Vector2:new(20, 300), right)
 
 slider2:setInvertedAppearance(true)
 slider2:setRange(0, 5)
@@ -42,15 +42,15 @@ slider5:setValue(cmath.rand_int(0, 100))
 slider6:setValue(cmath.rand_int(0, 100))
 
 connect(slider1.valueChanged, function()
-    print(format("1: changed to percent: %", slider1:percent()))
+    print(aura.fmt("1: changed to percent: %", slider1:percent()))
 end)
 
 connect(slider2.valueChanged, function()
-    print(format("3: changed to value: %", slider2:value()))
+    print(aura.fmt("3: changed to value: %", slider2:value()))
 end)
 
 connect(slider6.valueChanged, function()
-    print(format("6: changed to percent: %", slider6:percent()))
+    print(aura.fmt("6: changed to percent: %", slider6:percent()))
 end)
 
 while window.is_open() do

@@ -1,7 +1,12 @@
-require("label")
-require("orientation")
+local type Orientation = require("Orientation")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local Align = require("Align")
+local Signal = require("Signal")
+local Label = require("Label")
+local theme = require("theme")
 
-global record ProgressBar is IWidget
+local record ProgressBar is IWidget
     label: Label
     m_format: string
 
@@ -149,7 +154,7 @@ function ProgressBar:setRange(min: integer, max: integer)
     self:setValue(self.val)
 end
 
-function ProgressBar:format(): string
+function ProgressBar:fmt(): string
     return self.m_format
 end
 
@@ -160,3 +165,5 @@ end
 function ProgressBar:resetFormat()
     self:setFormat("%p%")
 end
+
+return ProgressBar

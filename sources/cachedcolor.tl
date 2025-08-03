@@ -1,4 +1,4 @@
-global record CachedColor
+local record CachedColor
     new: function<Self>(Self, integer | string, ?integer, ?integer, ?integer): Color
 end
 
@@ -32,3 +32,5 @@ function CachedColor:new(r_or_hex: integer | string, g?: integer, b?: integer, a
 
     return cache[cache_key]
 end
+
+return CachedColor

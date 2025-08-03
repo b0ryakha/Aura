@@ -1,7 +1,11 @@
-require("window")
-require("layout")
+local Policy = require("Policy")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local Layout = require("Layout")
+local fmt = require("fmt")
+local theme = require("theme")
 
-global record Application is IWidget
+local record Application is IWidget
     m_title: string
     args: { string }
     m_icon: Sprite
@@ -41,7 +45,7 @@ end
 -- override:
 function Application:bindSize(size: Vector2)
     if not size then
-        error(format("%: Cannot bind a nil size", type(self)))
+        error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
     self.m_size = size
@@ -66,11 +70,11 @@ function Application:layout(): Layout
     return self.m_layout as Layout
 end
 
-function Application:layoutType(): LayoutType
+function Application:layoutType(): Layout.Type
     return (self.m_layout as Layout).type
 end
 
-function Application:setLayoutType(new_type: LayoutType)
+function Application:setLayoutType(new_type: Layout.Type)
     (self.m_layout as Layout).type = new_type
 end
 
@@ -96,3 +100,5 @@ function Application:setTitle(text: string)
     self.m_title = text
     window.set_title(self.m_title)
 end
+
+return Application

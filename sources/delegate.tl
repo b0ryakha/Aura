@@ -1,31 +1,29 @@
+
+local ModelIndex = require("ModelIndex")
+local DelegateOption = require("DelegateOption")
+local type IDelegate = require("IDelegate")
+local Label = require("Label")
+local theme = require("theme")
 require("oop")
-require("delegateoption")
-require("modelindex")
-require("label")
 
-global interface IDelegate
-    paint: function<Self>(Self, DelegateOption, ModelIndex) -- virtual
-    clear_cache: function<Self>(Self)
-end
-
-global record StandartDelegate is IDelegate
+local record Delegate is IDelegate
     cached_labels: { string : Label }
 end
 
-function StandartDelegate:new(): StandartDelegate
-    local self = create(StandartDelegate, "StandartDelegate")
+function Delegate:new(): Delegate
+    local self = create(Delegate, "Delegate")
 
     self.cached_labels = {}
 
     return self
 end
 
-function StandartDelegate:clear_cache()
+function Delegate:clear_cache()
     self.cached_labels = {}
 end
 
 -- override:
-function StandartDelegate:paint(option: DelegateOption, index: ModelIndex)
+function Delegate:paint(option: DelegateOption, index: ModelIndex)
     local hash = option.text .. tostring(option.rect) .. tostring(option.align)
     if self.cached_labels[hash] == nil then
         local label = Label:new(option.text)
@@ -47,3 +45,5 @@ function StandartDelegate:paint(option: DelegateOption, index: ModelIndex)
 
     self.cached_labels[hash]:render()
 end
+
+return Delegate

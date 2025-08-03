@@ -1,7 +1,7 @@
+local fmt = require("fmt")
 require("oop")
-require("format")
 
-global record ModelIndex
+local record ModelIndex
     m_row: integer
     m_column: integer
 end
@@ -29,19 +29,19 @@ end
 
 function ModelIndex:__tostring(): string
     if not self:isValid() then
-        return format("%(invalid)", type(self))
+        return fmt("%(invalid)", type(self))
     end
 
     if self.m_column == 0 then
-        return format("%(row: %)", type(self), self.m_row)
+        return fmt("%(row: %)", type(self), self.m_row)
     else
-        return format("%(row: %, column: %)", type(self), self.m_row, self.m_column)
+        return fmt("%(row: %, column: %)", type(self), self.m_row, self.m_column)
     end
 end
 
 function ModelIndex:row(): integer
     if self.m_row == nil then
-        error(format("%: Cannot get a nil row", type(self)))
+        error(fmt("%: Cannot get a nil row", type(self)))
     end
 
     return self.m_row
@@ -49,8 +49,10 @@ end
 
 function ModelIndex:column(): integer
     if self.m_row == nil then
-        error(format("%: Cannot get a nil column", type(self)))
+        error(fmt("%: Cannot get a nil column", type(self)))
     end
 
     return self.m_column
 end
+
+return ModelIndex

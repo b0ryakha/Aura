@@ -1,7 +1,11 @@
-require("widget")
-require("orientation")
+local type Orientation = require("Orientation")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local Policy = require("Policy")
+local fmt = require("fmt")
+local theme = require("theme")
 
-global record Spacer is IWidget
+local record Spacer is IWidget
     align_type: Orientation
     thickness: number
 end
@@ -26,7 +30,7 @@ end
 -- override:
 function Spacer:bindSize(size: Vector2)
     if not size then
-        error(format("%: Cannot bind a nil size", type(self)))
+        error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
     self.size_policy = Policy:new("Fixed")
@@ -60,3 +64,5 @@ function Spacer:render()
         end
     end
 end
+
+return Spacer

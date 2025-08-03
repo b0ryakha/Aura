@@ -1,8 +1,11 @@
-require("model")
+local type IModel = require("IModel")
+local Model = require("Model")
+local ModelItem = require("ModelItem")
+local ModelIndex = require("ModelIndex")
 
-global record ListModel is IModel end
+local record ListModel is IModel end
 
-function ListModel:new(values?: { ModelItemValue }): ListModel
+function ListModel:new(values?: { ModelItem.Value }): ListModel
     local self = extends(ListModel, "ListModel", Model)
 
     if values ~= nil then
@@ -13,3 +16,5 @@ function ListModel:new(values?: { ModelItemValue }): ListModel
 
     return self
 end
+
+return ListModel

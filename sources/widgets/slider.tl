@@ -1,18 +1,24 @@
-require("widget")
-require("orientation")
+local type Orientation = require("Orientation")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local CachedColor = require("CachedColor")
+local Signal = require("Signal")
+local theme = require("theme")
+
 --TODO: fix handle going beyond the slider
 --TODO: fix fact that you can drag slider by touching near area (not slider itself)
 --TODO: bring out part of the functionality in ISlider
-global enum TickPosition
-    "None"
-    "Above"
-    "Left"
-    "Below"
-    "Right"
-    "BothSides"
-end
 
-global record Slider is IWidget
+local record Slider is IWidget
+    enum TickPosition
+        "None"
+        "Above"
+        "Left"
+        "Below"
+        "Right"
+        "BothSides"
+    end
+
     max: integer
     min: integer
     val: integer
@@ -270,7 +276,7 @@ function Slider:renderTicks()
 end
 
 -- private:
-function Slider:resolvedTickPosition(): TickPosition
+function Slider:resolvedTickPosition(): Slider.TickPosition
     if self.m_orientation == "Horizontal" then
         if self.tick_pos == "Left" then return "Above" end
         if self.tick_pos == "Right" then return "Below" end
@@ -342,11 +348,11 @@ function Slider:tickInterval(): integer
     return self.tick_interval
 end
 
-function Slider:setTickPosition(tick_pos: TickPosition)
+function Slider:setTickPosition(tick_pos: Slider.TickPosition)
     self.tick_pos = tick_pos
 end
 
-function Slider:tickPosition(): TickPosition
+function Slider:tickPosition(): Slider.TickPosition
     return self.tick_pos
 end
 
@@ -355,3 +361,5 @@ function Slider:setRange(min: integer, max: integer)
     self.max = max
     self:setValue(self.val)
 end
+
+return Slider

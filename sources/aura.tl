@@ -1,26 +1,40 @@
---TODO: split aura.tl to modules
 --TODO: write docs
-require("application")
-require("image")
-require("label")
-require("layout")
-require("spacer")
-require("widget")
-require("window")
-require("groupbox")
-require("progressbar")
-require("pushbutton")
-require("checkbox")
-require("userinterface")
-require("listview")
-require("slider")
+--TODO: auto fill 'aura' table with blacklist: { CachedColor, CachedFont, oop, Signal }
+--TODO: 'private' comment to real private methods
+local aura = {
+    fmt = require("fmt"),
+    theme = require("theme"),
+    cursors = require("cursors"),
 
--- hook:
-local deltatime = require("externals/deltatime/deltatime")
-local moonshine_display = window.display
-_G["window"].display = function()
-    process_signals()
-    moonshine_display()
-    cursor_system.update()
-    dt = deltatime.getTime()
-end
+    Align = require("Align"),
+    UserInterface = require("UserInterface"),
+    Policy = require("Policy"),
+    Orientation = require("Orientation"),
+    ModelItem = require("ModelItem"),
+    ModelIndex = require("ModelIndex"),
+    Model = require("Model"),
+    IModel = require("IModel"),
+    Margins = require("Margins"),
+    ListModel = require("ListModel"),
+    Geometry = require("Geometry"),
+    DelegateOption = require("DelegateOption"),
+    Delegate = require("Delegate"),
+    IDelegate = require("IDelegate"),
+
+    Application = require("Application"),
+    CheckBox = require("CheckBox"),
+    GroupBox = require("GroupBox"),
+    Image = require("Image"),
+    Label = require("Label"),
+    Layout = require("Layout"),
+    ListView = require("ListView"),
+    ProgressBar = require("ProgressBar"),
+    PushButton = require("PushButton"),
+    Slider = require("Slider"),
+    Spacer = require("Spacer"),
+    Window = require("Window"),
+    Widget = require("Widget"),
+    IWidget = require("IWidget")
+}
+
+return aura

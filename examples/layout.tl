@@ -1,25 +1,25 @@
 package.path = package.path .. ";./build/?.lua"
-require("aura")
+local aura = require("aura")
 
-local app = Application:new("Layouts")
+local app = aura.Application:new("Layouts")
 app:setLayoutType("HBox")
 
 local layout = app:layout()
 layout:turnDebug()
 
-layout:addItem(Window:new(Policy:new("Fixed"), Vector2:new(100, 100)))
-layout:addItem(Window:new(Policy:new("Minimum"), Vector2:new(250, 250)))
+layout:addItem(aura.Window:new(aura.Policy:new("Fixed"), Vector2:new(100, 100)))
+layout:addItem(aura.Window:new(aura.Policy:new("Minimum"), Vector2:new(250, 250)))
 
-local vlayout = Layout:new("VBox", nil, layout)
+local vlayout = aura.Layout:new("VBox", nil, layout)
 vlayout:turnDebug()
 
-vlayout:addItem(Window:new(Policy:new("Maximum")))
+vlayout:addItem(aura.Window:new(aura.Policy:new("Maximum")))
 
-local spacer = Spacer:new("Vertical")
+local spacer = aura.Spacer:new("Vertical")
 spacer:show()
 
 vlayout:addItem(spacer)
-vlayout:addItem(Window:new(Policy:new("Minimum"), Vector2:new(100, 100)))
+vlayout:addItem(aura.Window:new(aura.Policy:new("Minimum"), Vector2:new(100, 100)))
 
 while window.is_open() do
     app:update()

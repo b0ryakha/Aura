@@ -1,18 +1,28 @@
-require("listmodel")
-require("delegate")
+local type IDelegate = require("IDelegate")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local Delegate = require("Delegate")
+local Signal = require("Signal")
+local Align = require("Align")
+local ModelIndex = require("ModelIndex")
+local ListModel = require("ListModel")
+local Geometry = require("Geometry")
+local DelegateOption = require("DelegateOption")
+local theme = require("theme")
+local fmt = require("fmt")
 
-global enum ListViewFlow
-    "TopToBottom" "LeftToRight"
-end
+local record ListView is IWidget
+    enum Flow
+        "TopToBottom" "LeftToRight"
+    end
 
-global record ListView is IWidget
     m_model: ListModel
     delegate: IDelegate
 
     selected: ModelIndex
     hovered: ModelIndex
     is_pressed: boolean
-    m_flow: ListViewFlow
+    m_flow: Flow
     m_align: Align
     --TODO: is_wrap: boolean
     --TODO: scroll_bar
@@ -31,12 +41,12 @@ global record ListView is IWidget
     itemDoubleClicked: Signal
 end
 
-function ListView:new(size?: Vector2, flow?: ListViewFlow, parent?: IWidget): ListView
+function ListView:new(size?: Vector2, flow?: ListView.Flow, parent?: IWidget): ListView
     local self = extends(ListView, "ListView", Widget, parent, nil, nil)
 
     self:bindSize(size or Vector2:new(250, 200))
 
-    self.delegate = StandartDelegate:new()
+    self.delegate = Delegate:new()
 
     self.selected = ModelIndex:new()
     self.hovered = ModelIndex:new()
@@ -111,7 +121,7 @@ end
 
 function ListView:selectIndex(index: ModelIndex)
     if not index:isValid() then
-        error(format("%: Cannot select a invalid index", type(self)))
+        error(fmt("%: Cannot select a invalid index", type(self)))
     end
 
     if self.selected == index then
@@ -196,7 +206,7 @@ end
 
 function ListView:setModel(model: ListModel)
     if model == nil then
-        error(format("%: Cannot set a nil model", type(self)))
+        error(fmt("%: Cannot set a nil model", type(self)))
     end
 
     self.m_model = model -- by ref
@@ -208,7 +218,7 @@ end
 
 function ListView:setDelegate(delegate: IDelegate)
     if delegate == nil then
-        error(format("%: Cannot set a nil delegate", type(self)))
+        error(fmt("%: Cannot set a nil delegate", type(self)))
     end
 
     self.delegate = delegate -- by ref
@@ -226,11 +236,11 @@ function ListView:unselectIndex()
     self.selected = ModelIndex:new()
 end
 
-function ListView:setFlow(flow: ListViewFlow)
+function ListView:setFlow(flow: ListView.Flow)
     self.m_flow = flow
 end
 
-function ListView:flow(): ListViewFlow
+function ListView:flow(): ListView.Flow
     return self.m_flow
 end
 
@@ -249,3 +259,5 @@ end
 function ListView:setSpacing(spacing: integer)
     self.m_spacing = spacing
 end
+
+return ListView

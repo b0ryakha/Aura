@@ -1,16 +1,15 @@
 require("oop")
 
-global enum ModelRole
-    "Display" "Decoration" "ToolTip" "Font" "Background" "Foreground" "UserData"
-end
+local record ModelItem
+    type Value = any
+    enum Role
+        "Display" "Decoration" "ToolTip" "Font" "Background" "Foreground" "UserData"
+    end
 
-global type ModelItemValue = any
-
-global record ModelItem
-    data: { ModelRole : ModelItemValue }
+    data: { Role : Value }
 
 -- force decl:
-    set: function<Self>(Self, ModelRole, ModelItemValue)
+    set: function<Self>(Self, Role, Value)
 end
 
 function ModelItem:new(display: string, decoration?: string, tooltip?: string): ModelItem
@@ -25,10 +24,12 @@ function ModelItem:new(display: string, decoration?: string, tooltip?: string): 
     return self
 end
 
-function ModelItem:set(role: ModelRole, value: ModelItemValue)
+function ModelItem:set(role: ModelItem.Role, value: ModelItem.Value)
     self.data[role] = value
 end
 
-function ModelItem:get(role: ModelRole): ModelItemValue
+function ModelItem:get(role: ModelItem.Role): ModelItem.Value
     return self.data[role]
 end
+
+return ModelItem

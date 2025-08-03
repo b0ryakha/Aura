@@ -1,3 +1,5 @@
-global enum Orientation
+local enum Orientation
     "Horizontal" "Vertical"
 end
+
+return Orientation

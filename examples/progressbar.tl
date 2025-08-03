@@ -1,17 +1,17 @@
 package.path = package.path .. ";./build/?.lua"
-require("aura")
+local aura = require("aura")
 
-local app = Application:new("ProgressBar")
+local app = aura.Application:new("ProgressBar")
 local layout = app:layout()
 layout:setLayoutType("HBox")
 
-local left = Layout:new("VBox", nil, layout)
-local right = Layout:new("HBox", nil, layout)
+local left = aura.Layout:new("VBox", nil, layout)
+local right = aura.Layout:new("HBox", nil, layout)
 
-local bar1 = ProgressBar:new(Vector2:new(500, 50), left)
-local bar2 = ProgressBar:new(Vector2:new(500, 50), left)
-local bar3 = ProgressBar:new(Vector2:new(50, 300), right)
-local bar4 = ProgressBar:new(Vector2:new(50, 300), right)
+local bar1 = aura.ProgressBar:new(Vector2:new(500, 50), left)
+local bar2 = aura.ProgressBar:new(Vector2:new(500, 50), left)
+local bar3 = aura.ProgressBar:new(Vector2:new(50, 300), right)
+local bar4 = aura.ProgressBar:new(Vector2:new(50, 300), right)
 --TODO: fix an unnecessary increase in the window size, the total size in Layout may not be calculated correctly.
 --local bar5 = ProgressBar:new(Vector2:new(50, 300), right)
 

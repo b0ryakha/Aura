@@ -1,11 +1,17 @@
-require("label")
-require("image")
---TODO: check by SPACE key or add bind system for widgets
-global enum CheckBoxState
-    "Normal" "Pressed"
-end
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local Align = require("Align")
+local Signal = require("Signal")
+local Label = require("Label")
+local Image = require("Image")
+local theme = require("theme")
 
-global record CheckBox is IWidget
+--TODO: check by SPACE key or add bind system for widgets
+local record CheckBox is IWidget
+    enum State
+        "Normal" "Pressed"
+    end
+
     label: Label
     mark: Image
 
@@ -13,7 +19,7 @@ global record CheckBox is IWidget
     offset: number
     mutable_offset: number
 
-    state: CheckBoxState
+    state: State
     is_checked: boolean
     lock_press: boolean
 
@@ -131,3 +137,5 @@ function CheckBox:setText(title: string)
     self.label:setText(title)
     self.mutable_offset = title == "" and 0 or self.offset
 end
+
+return CheckBox

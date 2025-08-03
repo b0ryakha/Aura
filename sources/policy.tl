@@ -1,16 +1,16 @@
+local fmt = require("fmt")
 require("oop")
-require("format")
 
-global enum PolicyType
-    "Fixed" "Minimum" "Maximum"
+local record Policy
+    enum Type
+        "Fixed" "Minimum" "Maximum"
+    end
+
+    h: Type
+    v: Type
 end
 
-global record Policy
-    h: PolicyType
-    v: PolicyType
-end
-
-function Policy:new(h: PolicyType, v?: PolicyType): Policy
+function Policy:new(h: Policy.Type, v?: Policy.Type): Policy
     local self = create(Policy, "Policy")
 
     self.h = h
@@ -20,5 +20,7 @@ function Policy:new(h: PolicyType, v?: PolicyType): Policy
 end
 
 function Policy:__tostring(): string
-    return format("%(h: %, v: %)", type(self), self.h, self.v)
+    return fmt("%(h: %, v: %)", type(self), self.h, self.v)
 end
+
+return Policy

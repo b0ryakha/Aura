@@ -1,77 +1,13 @@
+local type IWidget = require("IWidget")
+local Signal = require("Signal")
+local Policy = require("Policy")
+local Geometry = require("Geometry")
+local fmt = require("fmt")
+local cursors = require("cursors")
+local theme = require("theme")
 require("oop")
-require("policy")
-require("signal")
-require("format")
-require("layouttype")
-require("theme")
-require("cursorsystem")
-require("geometry")
 
-global interface IWidget
-    m_parent: IWidget
-    childs: { IWidget }
-    m_layout: IWidget
-
-    m_pos: Vector2
-    is_visible: boolean
-    is_active: boolean
-
-    m_size: Vector2
-    min_size: Vector2
-    size_policy: Policy
-    cursor_type: integer
-
-    tooltip: string
-    tooltip_duration: number
-    is_tooltip_visible: boolean
-
--- public:
-    parentWidget: function<Self>(Self): IWidget
-    childAt: function<Self>(Self, integer): IWidget
-    pos: function<Self>(Self): Vector2
-    isVisible: function<Self>(Self): boolean
-    isActive: function<Self>(Self): boolean
-    size: function<Self>(Self): Vector2
-    minSize: function<Self>(Self): Vector2 -- virtual
-    geometry: function<Self>(Self): Geometry
-    sizePolicy: function<Self>(Self): Policy
-    cursor: function<Self>(Self): integer
-    toolTip: function<Self>(Self): string
-
-    setParent: function<Self>(Self, IWidget)
-    addChild: function<Self>(Self, IWidget)
-    setLayout: function<Self>(Self, IWidget) -- virtual
-    setPos: function<Self>(Self, Vector2)
-    bindPos: function<Self>(Self, Vector2) -- virtual
-    setVisible: function<Self>(Self, boolean) -- virtual
-    hide: function<Self>(Self)
-    show: function<Self>(Self)
-    setActive: function<Self>(Self, boolean) -- virtual
-    disable: function<Self>(Self)
-    enable: function<Self>(Self)
-    minimize: function<Self>(Self)
-    resize: function<Self>(Self, Vector2)
-    bindSize: function<Self>(Self, Vector2) -- virtual
-    setGeometry: function<Self>(Self, Geometry)
-    setSizePolicy: function<Self>(Self, Policy)
-    setCursor: function<Self>(Self, integer)
-    resetCursor: function<Self>(Self)
-    setToolTip: function<Self>(Self, string)
-
-    isHover: function<Self>(Self): boolean
-    peekFocus: function<Self>(Self)
-    hasFocus: function<Self>(Self): boolean
-    render: function<Self>(Self) -- virtual
-    update: function<Self>(Self) -- virtual
-    renderToolTip: function<Self>(Self) -- virtual
-    childsRender: function<Self>(Self)
-    childsUpdate: function<Self>(Self)
-
-    sizeChanged: Signal
-    posChanged: Signal
-end
-
-global record Widget is IWidget end
+local record Widget is IWidget end
 
 local focused: IWidget = nil
 
@@ -102,7 +38,7 @@ function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Wid
 
     connect(window_resized, function() self:update() end)
     connect(window_started, function() self:update() end)
-    connect(cursor_stopped, function(data: Data)
+    connect(cursor_stopped, function(data: SignalData)
         self.tooltip_duration = data.duration as number
     end)
     connect(window_updated, function()
@@ -114,7 +50,7 @@ function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Wid
         end
     end)
 
-    cursor_system.add_element(self)
+    cursors.add_element(self)
 
     return self
 end
@@ -186,7 +122,7 @@ end
 -- virtual:
 function Widget:bindSize(size: Vector2)
     if not size then
-        error(format("%: Cannot bind a nil size", type(self)))
+        error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
     self.m_size = size
@@ -202,7 +138,7 @@ end
 -- virtual:
 function Widget:bindPos(pos: Vector2)
     if not pos then
-        error(format("%: Cannot bind a nil pos", type(self)))
+        error(fmt("%: Cannot bind a nil pos", type(self)))
     end
 
     self.m_pos = pos
@@ -224,7 +160,7 @@ function Widget:setActive(state: boolean)
 end
 
 function Widget:__tostring(): string
-    return format("%(pos: %, size: %, policy: %)", type(self), self.m_pos, self.m_size, self.size_policy)
+    return fmt("%(pos: %, size: %, policy: %)", type(self), self.m_pos, self.m_size, self.size_policy)
 end
 
 function Widget:childsRender()
@@ -285,7 +221,7 @@ end
 
 function Widget:resize(size: Vector2)
     if not size then
-        error(format("%: Cannot set a nil size", type(self)))
+        error(fmt("%: Cannot set a nil size", type(self)))
     end
 
     self:bindSize(size:copy())
@@ -301,7 +237,7 @@ end
 
 function Widget:setPos(pos: Vector2)
     if not pos then
-        error(format("%: Cannot set a nil pos", type(self)))
+        error(fmt("%: Cannot set a nil pos", type(self)))
     end
 
     self:bindPos(pos:copy())
@@ -315,7 +251,7 @@ end
 function Widget:childAt(index: integer): IWidget
     local widget = self.childs[index]
     if not widget then
-        error(format("%: Out of bounds (len: %, i: %)", type(self), #self.childs, index))
+        error(fmt("%: Out of bounds (len: %, i: %)", type(self), #self.childs, index))
     end
 
     return widget
@@ -374,3 +310,5 @@ end
 function Widget:enable()
     self:setActive(true)
 end
+
+return Widget

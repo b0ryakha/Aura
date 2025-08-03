@@ -1,11 +1,18 @@
-require("widget")
-require("margins")
-require("layouttype")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local CachedColor = require("CachedColor")
+local Policy = require("Policy")
+local Margins = require("Margins")
+local fmt = require("fmt")
 
 --global dbg = require("externals/debugger/debugger") as Debugger
 
-global record Layout is IWidget
-    type: LayoutType
+local record Layout is IWidget
+    enum Type
+        "HBox" "VBox" "Grid"
+    end
+
+    type: Type
     m_margins: Margins
     m_spacing: number
 
@@ -13,7 +20,7 @@ global record Layout is IWidget
     debug_color: Color
 end
 
-function Layout:new(align_type?: LayoutType, size?: Vector2, parent?: IWidget): Layout
+function Layout:new(align_type?: Layout.Type, size?: Vector2, parent?: IWidget): Layout
     local self = extends(Layout, "Layout", Widget, parent, Policy:new("Maximum"), size)
 
     if self.m_parent and type(self.m_parent) ~= "Layout" then
@@ -224,7 +231,7 @@ end
 
 function Layout:addItem(item: IWidget)
     if not item then
-        error(format("%: Cannot add a nil item", type(self)))
+        error(fmt("%: Cannot add a nil item", type(self)))
     end
 
     self:addChild(item)
@@ -268,11 +275,11 @@ function Layout:setMargins(margins: Margins)
     self.m_margins = margins:copy()
 end
 
-function Layout:layoutType(): LayoutType
+function Layout:layoutType(): Layout.Type
     return self.type
 end
 
-function Layout:setLayoutType(new_type: LayoutType)
+function Layout:setLayoutType(new_type: Layout.Type)
     self.type = new_type
 end
 
@@ -324,3 +331,5 @@ function Layout:minSize(): Vector2
 
     return result
 end
+
+return Layout

@@ -1,7 +1,7 @@
+local fmt = require("fmt")
 require("oop")
-require("format")
 
-global record Margins
+local record Margins
     left: number
     right: number
     top: number
@@ -24,5 +24,7 @@ function Margins:copy(): Margins
 end
 
 function Margins:__tostring(): string
-    return format("%(l: %, r: %, t: %, b: %)", type(self), self.left, self.right, self.top, self.bottom)
+    return fmt("%(l: %, r: %, t: %, b: %)", type(self), self.left, self.right, self.top, self.bottom)
 end
+
+return Margins

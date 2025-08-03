@@ -1,6 +1,8 @@
-require("widget")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local theme = require("theme")
 
-global record Image is IWidget
+local record Image is IWidget
     m_color: Color
     sprite: Sprite
     is_h_mirror: boolean
@@ -82,3 +84,5 @@ function Image:mirror(horizontal?: boolean, vertical?: boolean)
     self.is_h_mirror = (horizontal ~= nil) and horizontal or true
     self.is_v_mirror = (vertical ~= nil) and horizontal or false
 end
+
+return Image

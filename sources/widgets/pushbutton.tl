@@ -1,14 +1,20 @@
-require("label")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local Align = require("Align")
+local Signal = require("Signal")
+local Label = require("Label")
+local fmt = require("fmt")
+local theme = require("theme")
 
-global enum ButtonState
-    "Normal" "Hovered" "Pressed"
-end
+local record PushButton is IWidget
+    enum State
+        "Normal" "Hovered" "Pressed"
+    end
 
-global record PushButton is IWidget
     label: Label
 
     is_flat: boolean
-    state: ButtonState
+    state: State
     is_pressed: boolean
 
     clicked: Signal
@@ -90,7 +96,7 @@ end
 -- override:
 function PushButton:bindPos(pos: Vector2)
     if not pos then
-        error(format("%: Cannot bind a nil pos", type(self)))
+        error(fmt("%: Cannot bind a nil pos", type(self)))
     end
 
     self.m_pos = pos
@@ -105,7 +111,7 @@ end
 -- override:
 function PushButton:bindSize(size: Vector2)
     if not size then
-        error(format("%: Cannot bind a nil size", type(self)))
+        error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
     self.m_size = size
@@ -141,3 +147,5 @@ end
 function PushButton:setFlat(state: boolean)
     self.is_flat = state
 end
+
+return PushButton

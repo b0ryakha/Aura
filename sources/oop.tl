@@ -8,14 +8,14 @@ local interface IClass
 end
 
 -- hook:
-global original_type = _G.type
+local original = _G.type
 _G.type = function(object: any): string
     if object == nil then return "nil" end
 
     local mt = getmetatable(object) as IClass
     if mt and mt.__type then return mt.__type end
 
-    return original_type(object)
+    return original(object)
 end
 
 global function instanceof<T, U>(self: T, object: U): boolean

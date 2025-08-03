@@ -1,13 +1,14 @@
+local dt = require("externals/deltatime/deltatime")
 require("oop")
 
-global type Data = { string : any }
-global type Slot = function(Data)
-global type Trigger = function(Data): boolean
+global type SignalData = { string : any }
+local type Slot = function(SignalData)
+local type Trigger = function(SignalData): boolean
 
-global record Signal
+local record Signal
     trigger: Trigger
     slots: { Slot }
-    data: Data
+    data: SignalData
 end
 
 local signals: { Signal } = {};
@@ -44,10 +45,14 @@ function Signal:updateData(k: string, value: any)
     self.data[k] = value
 end
 
-global function process_signals()
+-- hook:
+local original = window.display
+_G["window"].display = function()
     for _, signal in ipairs(signals) do
         signal:process()
     end
+
+    original()
 end
 
 global function connect(signal: Signal, slot: Slot)
@@ -71,9 +76,8 @@ global function emit(signal: Signal)
 end
 
 -- default signals:
-global dt: number = 0
-
-global window_resized = Signal:new(function(data: Data): boolean
+-- provides: new_size
+global window_resized = Signal:new(function(data: SignalData): boolean
     if not data.new_size then data.new_size = window.get_size() end
 
     if data.new_size ~= window.get_size() then
@@ -84,7 +88,8 @@ global window_resized = Signal:new(function(data: Data): boolean
     return false
 end)
 
-global window_started = Signal:new(function(data: Data): boolean
+-- provides: started
+global window_started = Signal:new(function(data: SignalData): boolean
     if not data.started then
         data.started = true
         return true
@@ -93,12 +98,13 @@ global window_started = Signal:new(function(data: Data): boolean
     return false
 end)
 
-global cursor_stopped = Signal:new(function(data: Data): boolean
+-- provides: duration
+global cursor_stopped = Signal:new(function(data: SignalData): boolean
     if not data.old_cursor_pos then data.old_cursor_pos = cursor.get_pos() end
     if not data.duration then data.duration = 0 end
 
     if data.old_cursor_pos == cursor.get_pos() then
-        data.duration = data.duration as number + dt
+        data.duration = data.duration as number + dt.getTime()
         return true
     else
         data.duration = 0
@@ -108,6 +114,9 @@ global cursor_stopped = Signal:new(function(data: Data): boolean
     return false
 end)
 
-global window_updated = Signal:new(function(_: Data): boolean
+-- provides: nil
+global window_updated = Signal:new(function(_: SignalData): boolean
     return true
 end)
+
+return Signal

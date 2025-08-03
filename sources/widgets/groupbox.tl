@@ -1,8 +1,13 @@
-require("label")
-require("layout")
-require("checkbox")
+local type IWidget = require("IWidget")
+local Widget = require("Widget")
+local Signal = require("Signal")
+local Label = require("Label")
+local Layout = require("Layout")
+local CheckBox = require("CheckBox")
+local fmt = require("fmt")
+local theme = require("theme")
 
-global record GroupBox is IWidget
+local record GroupBox is IWidget
     label: Label
     checkbox: CheckBox
 
@@ -22,7 +27,7 @@ function GroupBox:new(title?: string, size?: Vector2, parent?: IWidget): GroupBo
     self.checkbox = CheckBox:new(title, nil)
     self.checkbox:bindPos(self.m_pos)
     self.checkbox:setCheckState(true)
-    connect(self.checkbox.checkStateChanged, function(data: Data)
+    connect(self.checkbox.checkStateChanged, function(data: SignalData)
         if not self.m_layout then return end
         for _, child in ipairs(self.m_layout.childs) do
             child:setActive(data.state as boolean)
@@ -87,7 +92,7 @@ end
 
 function GroupBox:addItem(item: IWidget)
     if not item then
-        error(format("%: Cannot add a nil item", type(self)))
+        error(fmt("%: Cannot add a nil item", type(self)))
     end
 
     if self.m_layout then
@@ -121,3 +126,5 @@ end
 function GroupBox:setCheckable(state: boolean)
     self.is_checkable = state
 end
+
+return GroupBox
