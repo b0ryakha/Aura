@@ -24,7 +24,6 @@ end
 
 global function create<T>(class: T, name: string): T
     local mt = {
-        __call = (class as IClass).new,
         __index = class,
         __type = name,
         __tostring = (class as IClass).__tostring,
@@ -40,7 +39,11 @@ global function extends<Child>(child: Child, name: string, base: any, ...: any):
     for k, v in pairs(base as table) do index[k] = v end
     for k, v in pairs(child as table) do index[k] = v end
 
-    local mt = { __index = index, __type = name, __base_type = type(base) }
+    local mt = {
+        __index = index,
+        __type = name,
+        __base_type = type(base)
+    }
 
     return setmetatable((base as IClass):new(...), mt)
 end

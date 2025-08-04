@@ -22,6 +22,8 @@ function Margins:new(left: number, right: number, top: number, bottom: number): 
     return self
 end
 
+setmetatable(Margins, { __call = Margins.new })
+
 function Margins:copy(): Margins
     return Margins(self.left, self.right, self.top, self.bottom)
 end

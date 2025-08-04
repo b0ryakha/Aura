@@ -22,6 +22,8 @@ function ModelIndex:new(row?: integer, column?: integer): ModelIndex
     return self
 end
 
+setmetatable(ModelIndex, { __call = ModelIndex.new })
+
 function ModelIndex:isValid(): boolean
     return self.m_row ~= nil and self.m_column ~= nil
 end

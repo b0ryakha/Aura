@@ -58,6 +58,8 @@ function Widget:new(parent?: IWidget, size_policy?: Policy, size?: Vector2): Wid
     return self
 end
 
+setmetatable(Widget, { __call = Widget.new })
+
 -- virtual:
 function Widget:render() self:childsRender() end
 

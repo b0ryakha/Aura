@@ -22,6 +22,8 @@ function Policy:new(h: Policy.Type, v?: Policy.Type): Policy
     return self
 end
 
+setmetatable(Policy, { __call = Policy.new })
+
 function Policy:__tostring(): string
     return fmt("%(h: %, v: %)", type(self), self.h, self.v)
 end

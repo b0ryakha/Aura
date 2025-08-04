@@ -21,6 +21,8 @@ function Align:new(h: Align.Horizontal, v?: Align.Vertical): Align
     return self
 end
 
+setmetatable(Align, { __call = Align.new })
+
 function Align:__tostring(): string
     return fmt("%(h: %, v: %)", type(self), self.h, self.v)
 end

@@ -71,6 +71,8 @@ function ListView:new(size?: Vector2, flow?: ListView.Flow, parent?: IWidget): L
     return self
 end
 
+setmetatable(ListView, { __call = ListView.new })
+
 -- private:
 function ListView:findGeometryFor(index: ModelIndex): Geometry
     if index:row() == 1 then

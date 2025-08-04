@@ -18,6 +18,8 @@ function Window:new(size_policy?: Policy, size?: Vector2, parent?: IWidget): Win
     return self
 end
 
+setmetatable(Window, { __call = Window.new })
+
 -- override
 --[[
 Renders the window.

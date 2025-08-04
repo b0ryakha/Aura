@@ -22,6 +22,8 @@ function Geometry:new(x: number, y: number, width: number, height: number): Geom
     return self
 end
 
+setmetatable(Geometry, { __call = Geometry.new })
+
 function Geometry:__tostring(): string
     return fmt("%(x: %, y: %, w: %, h: %)", type(self), self.x, self.y, self.width, self.height)
 end

@@ -40,6 +40,8 @@ function Layout:new(align_type?: Layout.Type, size?: Vector2, parent?: IWidget):
     return self
 end
 
+setmetatable(Layout, { __call = Layout.new })
+
 -- private:
 function Layout:warp(child: IWidget)
     if child.size_policy.h ~= "Fixed" then

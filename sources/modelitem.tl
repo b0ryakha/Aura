@@ -25,6 +25,8 @@ function ModelItem:new(display: string, decoration?: string, tooltip?: string): 
     return self
 end
 
+setmetatable(ModelItem, { __call = ModelItem.new })
+
 function ModelItem:set(role: ModelItem.Role, value: ModelItem.Value)
     self.data[role] = value
 end

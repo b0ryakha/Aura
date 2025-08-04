@@ -21,6 +21,8 @@ function Delegate:new(): Delegate
     return self
 end
 
+setmetatable(Delegate, { __call = Delegate.new })
+
 function Delegate:clear_cache()
     self.cached_labels = {}
 end

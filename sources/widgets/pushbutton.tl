@@ -44,6 +44,8 @@ function PushButton:new(text?: string, size?: Vector2, parent?: IWidget): PushBu
     return self
 end
 
+setmetatable(PushButton, { __call = PushButton.new })
+
 -- override:
 function PushButton:update()
     if not self.is_active then return end

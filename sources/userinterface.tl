@@ -3,8 +3,14 @@ local Widget = require("Widget")
 local Geometry = require("Geometry")
 local Application = require("Application")
 local Label = require("Label")
-require("Layout")
 local fmt = require("fmt")
+
+local AVAILABLES: { string : any } = {
+    Layout = require("Layout"),
+    Application = require("Application"),
+    Label = require("Label"),
+    PushButton = require("PushButton"),
+}
 
 local type UIData = { string : IWidget }
 local type Attributes = { string : any }
@@ -52,6 +58,8 @@ function UserInterface:new(path: string): UIData
     return self.data
 end
 
+setmetatable(UserInterface, { __call = UserInterface.new })
+
 -- private:
 function UserInterface:readFile(path: string): string
     local xml = io.open(path, "r")
@@ -69,7 +77,7 @@ end
 function UserInterface:pushWidget(node: UINode): any
     if node.tag ~= "widget" then return end
 
-    local T = (_G as table)[node.attributes.class] as Widget
+    local T = AVAILABLES[node.attributes.class as string] as Widget
     if T == nil or T.new == nil then
         error(fmt("%: Unknown class \"%\"", type(self), node.attributes.class))
     end

@@ -1,4 +1,3 @@
-package.path = package.path .. ";./build/?.lua"
 local aura = require("aura")
 
 local app = aura.Application("CheckBox")

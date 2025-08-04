@@ -30,6 +30,8 @@ function Spacer:new(align_type?: Orientation, parent?: IWidget): Spacer
     return self
 end
 
+setmetatable(Spacer, { __call = Spacer.new })
+
 -- override:
 function Spacer:bindSize(size: Vector2)
     if not size then

@@ -20,4 +20,6 @@ function ListModel:new(values?: { ModelItem.Value }): ListModel
     return self
 end
 
+setmetatable(ListModel, { __call = ListModel.new })
+
 return ListModel

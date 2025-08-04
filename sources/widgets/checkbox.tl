@@ -56,6 +56,8 @@ function CheckBox:new(text?: string, size?: Vector2, parent?: IWidget): CheckBox
     return self
 end
 
+setmetatable(CheckBox, { __call = CheckBox.new })
+
 -- private:
 function CheckBox:updateElements()
     self.label:bindPos(Vector2:new(self.m_pos.x + self.box_size.x + self.mutable_offset, self.m_pos.y))

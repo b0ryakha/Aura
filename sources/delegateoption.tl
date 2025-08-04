@@ -29,4 +29,6 @@ function DelegateOption:new(is_selected: boolean, is_hovered: boolean, text: str
     return self
 end
 
+setmetatable(DelegateOption, { __call = DelegateOption.new })
+
 return DelegateOption

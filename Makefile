@@ -4,10 +4,13 @@ BUILD_DIR = "./build"
 .ONESHELL:
 
 gen_doc:
-	./teal-doc-gen.exe ./sources/widgets ./Documentation.md
+	./externals/teal-doc-gen/teal-doc-gen.exe ./sources/widgets ./Documentation.md
+
+# F*ck Teal bug: "cannot redeclare global with a different type..."
+BLACKLISTED = signal.tl
 
 build: gen_doc
-	tl check ${SRC_DIR}/*.tl &&
+	tl check ${SRC_DIR}/*.tl; find ${SRC_DIR} -name '*.tl' ! -name $(BLACKLISTED) -exec tl check {} + &&
 	tl gen ${SRC_DIR}/*.tl &&
 	tl check ${SRC_DIR}/widgets/*.tl &&
 	tl gen ${SRC_DIR}/widgets/*.tl &&

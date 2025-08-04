@@ -27,6 +27,8 @@ function Signal:new(trigger?: Trigger): Signal
     return signals[#signals]
 end
 
+setmetatable(Signal, { __call = Signal.new })
+
 -- private:
 function Signal:runSlots()
     for _, slot in ipairs(self.slots) do

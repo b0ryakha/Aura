@@ -46,6 +46,8 @@ function ProgressBar:new(size?: Vector2, parent?: IWidget): ProgressBar
     return self
 end
 
+setmetatable(ProgressBar, { __call = ProgressBar.new })
+
 -- private:
 function ProgressBar:processFormat(fmt: string): string
     local values = {

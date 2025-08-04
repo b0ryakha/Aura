@@ -43,6 +43,8 @@ function Application:new(title?: string, size?: Vector2): Application
     return self
 end
 
+setmetatable(Application, { __call = Application.new })
+
 -- override:
 function Application:bindSize(size: Vector2)
     if not size then

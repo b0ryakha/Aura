@@ -45,6 +45,8 @@ function GroupBox:new(title?: string, size?: Vector2, parent?: IWidget): GroupBo
     return self
 end
 
+setmetatable(GroupBox, { __call = GroupBox.new })
+
 -- override:
 function GroupBox:update()
     if not self.is_active then return end

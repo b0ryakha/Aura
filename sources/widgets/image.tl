@@ -24,6 +24,8 @@ function Image:new(path?: string, size?: Vector2, parent?: IWidget): Image
     return self
 end
 
+setmetatable(Image, { __call = Image.new })
+
 -- override:
 function Image:update()
     if not self.sprite then return end

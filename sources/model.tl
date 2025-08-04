@@ -21,6 +21,8 @@ function Model:new(): Model
     return self
 end
 
+setmetatable(Model, { __call = Model.new })
+
 -- private:
 function Model:resolveIndex(index: ModelIndex): ModelIndex
     for resolved, _ in pairs(self.items) do

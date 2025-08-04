@@ -68,6 +68,8 @@ function Slider:new(size?: Vector2, parent?: IWidget): Slider
     return self
 end
 
+setmetatable(Slider, { __call = Slider.new })
+
 function Slider:update()
     if not self.is_active then return end
 

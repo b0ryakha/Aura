@@ -43,6 +43,8 @@ function Label:new(text?: string, parent?: IWidget): Label
     return self
 end
 
+setmetatable(Label, { __call = Label.new })
+
 -- override:
 function Label:update()
     if self.is_link then
