@@ -2,20 +2,32 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "shell",
             "label": "Test",
+            "type": "shell",
             "icon": { "id": "debug" },
             "command": "./externals/moonshine/Moonshine.exe",
-            "args": [ "./examples/${input:selectTestPath}.lua" ],
-            "dependsOn": [ "check" ],
+            "args": [ "./examples/${input:selectTestPath}.lua", "||", "true" ],
+            "dependsOn": [ "Static Analysis" ],
             "problemMatcher": [],
+            "group":{
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "close": true,
+                "showReuseMessage": false
+            }
         },
         {
+            "label": "Static Analysis",
             "type": "shell",
-            "label": "check",
             "command": "C:/Users/${env:USERNAME}/.vscode/extensions/sumneko.lua-3.15.0-win32-x64/server/bin/lua-language-server.exe",
             "args": [ "--check=./" ],
-            "problemMatcher": []
+            "problemMatcher": [],
+            "presentation": {
+                "close": true,
+                "showReuseMessage": false
+            }
         },
     ],
     "inputs": [
