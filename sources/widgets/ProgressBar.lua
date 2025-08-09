@@ -31,6 +31,7 @@ function ProgressBar:new(size, parent)
     self.label:bindPos(self.m_pos)
     self.label:bindSize(self.m_size)
     self:resetFormat()
+    self:preventFocus()
 
     self.min = 0
     self.max = 100

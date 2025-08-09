@@ -6,7 +6,6 @@ local cursor_system = require("cursor_system")
 local theme = require("theme")
 require("oop")
 ---@TODO: add bind system
----@TODO: improve focus state for all widgets
 
 ---@class (exact) Widget: CursosElement
 ---@operator call: Widget
@@ -76,13 +75,12 @@ function Widget:new(parent, size_policy, size)
         self:renderToolTip()
 
         if self:isHover() then
-            if (
-                mouse.is_pressed(buttons.Left) or
+            if (mouse.is_pressed(buttons.Left) or
                 mouse.is_pressed(buttons.Right) or
                 mouse.is_pressed(buttons.Middle) or
                 mouse.is_pressed(buttons.XButton1) or
-                mouse.is_pressed(buttons.XButton2)
-            ) then
+                mouse.is_pressed(buttons.XButton2))
+            then
                 self:peekFocus()
             end
         end
@@ -265,10 +263,14 @@ end
 
 function Widget:peekFocus()
     if self.redirected_widget then
-        focused = self.redirected_widget
+        if focused ~= self.redirected_widget then
+            focused = self.redirected_widget
+        end
     else
         if not self.is_prevent_focus then
-            focused = self
+            if focused ~= self then
+                focused = self
+            end
         end
     end
 end

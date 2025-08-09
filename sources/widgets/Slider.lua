@@ -5,7 +5,6 @@ local theme = require("theme")
 
 ---@TODO: fix handle going beyond the slider
 ---@TODO: fix fact that you can drag slider by touching near area (not slider itself)
----@TODO: bring out part of the functionality in ISlider
 
 ---@alias Slider.TickPosition
 ---| "None"
@@ -209,13 +208,10 @@ function Slider:render()
 
     render.outline_rectangle(bg_x, bg_y, bg_w, bg_h, 1, theme.outline2)
 
-    local color = theme.default
-    if cursor.is_bound(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y) or cursor.is_bound(handle_pos.x, handle_pos.y, handle_size, handle_size) then
-        color = theme.hovered
-    end
+    local is_hightlight = self:isActive() and (self:hasFocus() or cursor.is_bound(handle_pos.x, handle_pos.y, handle_size, handle_size))
 
-    render.rectangle(handle_pos.x, handle_pos.y, handle_size, handle_size, color, 25)
-    render.outline_rectangle(handle_pos.x, handle_pos.y, handle_size, handle_size, 1, theme.outline2, 25)
+    render.rectangle(handle_pos.x, handle_pos.y, handle_size, handle_size, is_hightlight and theme.hovered or theme.default, 25)
+    render.outline_rectangle(handle_pos.x, handle_pos.y, handle_size, handle_size, 1, is_hightlight and theme.accent or theme.outline2, 25)
 
     self:renderTicks()
 end

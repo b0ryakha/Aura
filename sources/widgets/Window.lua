@@ -14,6 +14,7 @@ function Window:new(size_policy, size, parent)
     local self = extends(Window, "Window", Widget, parent, size_policy, size)
 
     self.rounding = 0
+    self:preventFocus()
 
     return self
 end

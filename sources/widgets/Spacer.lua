@@ -24,6 +24,7 @@ function Spacer:new(align_type, parent)
         self.m_size.x = self.thickness
     end
 
+    self:preventFocus()
     self:hide()
 
     return self

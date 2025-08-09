@@ -41,7 +41,6 @@ function CheckBox:new(text, size, parent)
 
     self.mark = Image("assets/checkmark.png", Vector2:new(64, 64))
     self.mark:setColor(theme.foreground)
-    self.mark:preventFocus()
 
     self.state = "Normal"
     self.lock_press = false
@@ -100,15 +99,27 @@ function CheckBox:render()
     if not self:isVisible() then return end
 
     local color = theme.default
+    local outline_color = theme.outline
 
     if not self:isActive() then
         color = theme.background2
-    elseif self.state == "Pressed" then
-        color = theme.pressed
+    else
+        if self:isHover() or self:hasFocus() then
+            outline_color = theme.accent
+        end
+
+        if self:hasFocus() then
+            local pos = self.label:pos()
+            render.line(pos.x, self.m_pos.y + self.box_size.y + 2, pos.x + self.label:measure().x, self.m_pos.y + self.box_size.y + 2, 2, theme.accent)
+        end
+
+        if self.state == "Pressed" then
+            color = theme.pressed
+        end
     end
 
     render.rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, color, 5)
-    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, 1, theme.outline, 5)
+    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, 1, outline_color, 5)
 
     if self.is_checked then
         self.mark:render()

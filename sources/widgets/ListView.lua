@@ -146,7 +146,12 @@ end
 ---@param index ModelIndex
 function ListView:updateFor(geometry, index)
     if cursor.is_bound(geometry:unpack()) then
-        if mouse.is_pressed(buttons.Left) then
+        if (mouse.is_pressed(buttons.Left) or
+            mouse.is_pressed(buttons.Right) or
+            mouse.is_pressed(buttons.Middle) or
+            mouse.is_pressed(buttons.XButton1) or
+            mouse.is_pressed(buttons.XButton2))
+        then
             self.itemPressed:updateData("index", index)
             emit(self.itemPressed)
 

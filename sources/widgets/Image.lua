@@ -18,6 +18,8 @@ function Image:new(path, size, parent)
 
     self.is_h_mirror = false
     self.is_v_mirror = false
+    
+    self:preventFocus()
 
     if path and path ~= "" then
         self:loadFromFile(path, self:size())

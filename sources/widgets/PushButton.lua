@@ -49,11 +49,15 @@ setmetatable(PushButton, { __call = PushButton.new })
 function PushButton:update()
     if not self:isActive() then return end
 
-    if self:isHover() then
-        self:setCursor(cursors.Hand)
-        self.state = "Hovered"
+    if self:isHover() or self:hasFocus() then
+        if self:isHover() then
+            self:setCursor(cursors.Hand)
+            self.state = "Hovered"
+        else
+            self.state = "Normal"
+        end
 
-        if mouse.is_pressed(buttons.Left) then
+        if (self:isHover() and mouse.is_pressed(buttons.Left)) or keyboard.is_pressed(keys.Space) then
             self.state = "Pressed"
             emit(self.pressed)
 
@@ -75,23 +79,30 @@ function PushButton:render()
     if not self:isVisible() then return end
 
     local color = theme.default
+    local outline_color = theme.outline
     
     if not self:isActive() then
         color = theme.background2
     else
         if self.state == "Hovered" then
             color = theme.hovered
+            outline_color = theme.accent
         end
     
         if self.state == "Pressed" then
             color = theme.pressed
+            outline_color = theme.accent
+        end
+
+        if self:hasFocus() then
+            outline_color = theme.accent
         end
     end
 
     render.gradient(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, color, color, theme.pressed, theme.pressed)
 
     if not self.is_flat then
-        render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, theme.outline)
+        render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, outline_color)
     end
 
     self.label:render()

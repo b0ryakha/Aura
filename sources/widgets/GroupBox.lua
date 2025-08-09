@@ -39,6 +39,8 @@ function GroupBox:new(title, size, parent)
         end
     end)
 
+    self:preventFocus()
+
     self.checkStateChanged = self.checkbox.checkStateChanged -- by ref
     self.offset = cmath.round(self.m_pos.y + self.label:measure().y * 1.5)
     self.is_flat = false

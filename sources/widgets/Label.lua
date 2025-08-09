@@ -34,6 +34,7 @@ function Label:new(text, parent)
     self.is_debug = false
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 50)
 
+    self:preventFocus()
     self:setFont(theme.regular_font)
     self:tryWrap()
     
