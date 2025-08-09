@@ -4,7 +4,6 @@ local Signal = require("Signal")
 local Label = require("Label")
 local Image = require("Image")
 local theme = require("theme")
----@TODO: check by SPACE key or add bind system for widgets
 
 ---@alias CheckBox.State "Normal" | "Pressed"
 
@@ -38,9 +37,11 @@ function CheckBox:new(text, size, parent)
     self.label = Label(text)
     self.label:setAlignment(Align("Center"))
     self.label.m_size.y = self.box_size.y
+    self.label:redirectFocus(self)
 
     self.mark = Image("assets/checkmark.png", Vector2:new(64, 64))
     self.mark:setColor(theme.foreground)
+    self.mark:preventFocus()
 
     self.state = "Normal"
     self.lock_press = false
@@ -68,10 +69,12 @@ end
 function CheckBox:update()
     if not self:isActive() then return end
 
-    if self:isHover() then
-        self:setCursor(cursors.Hand)
+    if self:isHover() or self:hasFocus() then
+        if self:isHover() then
+            self:setCursor(cursors.Hand)
+        end
 
-        if mouse.is_pressed(buttons.Left) then
+        if (self:isHover() and mouse.is_pressed(buttons.Left)) or keyboard.is_pressed(keys.Space) then
             self.state = "Pressed"
 
             if not self.lock_press then

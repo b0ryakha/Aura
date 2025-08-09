@@ -27,6 +27,8 @@ function Layout:new(align_type, size, parent)
         self.m_parent:setLayout(self)
     end
 
+    self:preventFocus()
+
     self.type = align_type or "HBox"
     self.m_margins = Margins(9, 9, 9, 9)
     self.m_spacing = 6

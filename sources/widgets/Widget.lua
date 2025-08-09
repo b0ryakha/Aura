@@ -5,6 +5,8 @@ local fmt = require("fmt")
 local cursor_system = require("cursor_system")
 local theme = require("theme")
 require("oop")
+---@TODO: add bind system
+---@TODO: improve focus state for all widgets
 
 ---@class (exact) Widget: CursosElement
 ---@operator call: Widget
@@ -26,6 +28,8 @@ require("oop")
 ---@field private tooltip string
 ---@field private tooltip_duration number
 ---@field private is_tooltip_visible boolean
+---@field private is_prevent_focus boolean
+---@field private redirected_widget Widget | nil
 local Widget = {}
 
 ---@type Widget | nil
@@ -50,6 +54,7 @@ function Widget:new(parent, size_policy, size)
     self.tooltip = ""
     self.tooltip_duration = 0
     self.is_tooltip_visible = false
+    self.is_prevent_focus = false
 
     self.childs = {}
 
@@ -70,8 +75,16 @@ function Widget:new(parent, size_policy, size)
         if not self:isActive() then return end
         self:renderToolTip()
 
-        if self:isHover() and mouse.is_pressed(buttons.Left) then
-            self:peekFocus()
+        if self:isHover() then
+            if (
+                mouse.is_pressed(buttons.Left) or
+                mouse.is_pressed(buttons.Right) or
+                mouse.is_pressed(buttons.Middle) or
+                mouse.is_pressed(buttons.XButton1) or
+                mouse.is_pressed(buttons.XButton2)
+            ) then
+                self:peekFocus()
+            end
         end
     end)
 
@@ -236,8 +249,28 @@ function Widget:isHover()
     return cursor.is_bound(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
 end
 
+---@param is_prevent? boolean
+function Widget:preventFocus(is_prevent)
+    self.is_prevent_focus = is_prevent or true
+end
+
+---@param widget Widget | nil ref
+function Widget:redirectFocus(widget)
+    if widget == self then
+        self.redirected_widget = nil
+    end
+
+    self.redirected_widget = widget
+end
+
 function Widget:peekFocus()
-    focused = self
+    if self.redirected_widget then
+        focused = self.redirected_widget
+    else
+        if not self.is_prevent_focus then
+            focused = self
+        end
+    end
 end
 
 ---@return boolean

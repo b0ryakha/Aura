@@ -28,6 +28,7 @@ function Application:new(title, size)
         self:setTitle(title)
     end
 
+    self:preventFocus()
     self:setLayout(Layout("VBox"))
     self.args = globalvars.get_args()
 
