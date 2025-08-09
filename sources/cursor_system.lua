@@ -1,4 +1,4 @@
---TODO: go to widget signal
+---@TODO: go to widget signal
 local cursor_system = {}
 
 local elements = {}

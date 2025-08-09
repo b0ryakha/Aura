@@ -331,13 +331,13 @@ function Layout:minSize()
 
         if self.type == "HBox" then
             result.x = result.x + min.x
-            result.y = math.max(result.y, result.y + min.y)
+            result.y = math.max(result.y, min.y)
         elseif self.type == "VBox" then
-            result.x = math.max(result.x, result.x + min.x)
+            result.x = math.max(result.x, min.x)
             result.y = result.y + min.y
         else -- Grid:
-            result.x = math.max(result.x, result.x + min.x)
-            result.y = math.max(result.y, result.y + min.y)
+            result.x = result.x + min.x
+            result.y = result.y + min.y
         end
     end
 

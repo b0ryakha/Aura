@@ -1,4 +1,5 @@
---TODO: write docs
+---@TODO: write docs
+---@TODO: auto generate tasks.json:inputs.options from ./examples dir
 package.path = package.path .. ";./sources/widgets/?.lua"
 
 local aura = {

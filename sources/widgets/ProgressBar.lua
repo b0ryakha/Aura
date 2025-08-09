@@ -174,7 +174,7 @@ function ProgressBar:fmt()
     return self.m_format
 end
 
----@param fmt string
+---@param fmt string can contains: 'p' - percent, 'v' - value, 'm' - max
 function ProgressBar:setFormat(fmt)
     self.m_format = fmt
 end

@@ -20,8 +20,8 @@ local fmt = require("fmt")
 ---@field private is_pressed boolean
 ---@field private m_flow ListView.Flow
 ---@field private m_align Align
----TODO: @field private is_wrap boolean
----TODO: @field private scroll_bar ScrollBar
+---@TODO: @field private is_wrap boolean
+---@TODO: @field private scroll_bar ScrollBar
 ---
 ---@field private font Font
 ---@field private prev_size Vector2

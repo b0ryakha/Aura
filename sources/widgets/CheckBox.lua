@@ -4,7 +4,7 @@ local Signal = require("Signal")
 local Label = require("Label")
 local Image = require("Image")
 local theme = require("theme")
---TODO: check by SPACE key or add bind system for widgets
+---@TODO: check by SPACE key or add bind system for widgets
 
 ---@alias CheckBox.State "Normal" | "Pressed"
 

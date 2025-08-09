@@ -3,9 +3,9 @@ local CachedColor = require("CachedColor")
 local Signal = require("Signal")
 local theme = require("theme")
 
---TODO: fix handle going beyond the slider
---TODO: fix fact that you can drag slider by touching near area (not slider itself)
---TODO: bring out part of the functionality in ISlider
+---@TODO: fix handle going beyond the slider
+---@TODO: fix fact that you can drag slider by touching near area (not slider itself)
+---@TODO: bring out part of the functionality in ISlider
 
 ---@alias Slider.TickPosition
 ---| "None"
