@@ -6,8 +6,8 @@
             "type": "shell",
             "icon": { "id": "debug" },
             "command": "./externals/moonshine/Moonshine.exe",
-            "args": [ "./examples/${input:selectTestPath}.lua", "||", "true" ],
-            "dependsOn": [ "Static Analysis" ],
+            "args": [ "./examples/${input:selectTestPath}", "||", "true" ],
+            "dependsOn": [ "Static Analysis", "Fill inputs.options" ],
             "problemMatcher": [],
             "group":{
                 "kind": "build",
@@ -29,25 +29,24 @@
                 "showReuseMessage": false
             }
         },
+        {
+            "label": "Fill inputs.options",
+            "type": "shell",
+            "command": "./externals/moonshine/Moonshine.exe",
+            "args": [ "./externals/input-options-filler/input-options-filler.lua", "./examples", "||", "true" ],
+            "problemMatcher": [],
+            "presentation": {
+                "close": true,
+                "showReuseMessage": false
+            }
+        }
     ],
     "inputs": [
         {
             "id": "selectTestPath",
             "type": "pickString",
             "description": "Select test script",
-            "options": [
-                "checkbox",
-                "explorer",
-                "groupbox",
-                "label",
-                "layout",
-                "listview",
-                "progressbar",
-                "pushbutton",
-                "slider",
-                "tooltip",
-                "userinterface",
-            ]
+            "options": [ "checkbox.lua", "explorer.lua", "groupbox.lua", "label.lua", "layout.lua", "listview.lua", "progressbar.lua", "pushbutton.lua", "slider.lua", "tooltip.lua", "userinterface.lua" ],
         }
     ]
 }
