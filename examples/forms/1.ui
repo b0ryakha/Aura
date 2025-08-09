@@ -1,7 +1,7 @@
 <ui>
     <widget class="Application" name="app">
         <property name="title">
-            <string>Press me</string>
+            <string>UserInterface</string>
         </property>
         <property name="layout">
             <var>main_layout</var>

@@ -1,0 +1,369 @@
+local Geometry = require("Geometry")
+local Policy = require("Policy")
+local Signal = require("Signal")
+local fmt = require("fmt")
+local cursor_system = require("cursor_system")
+local theme = require("theme")
+require("oop")
+
+---@class (exact) Widget: CursosElement
+---@operator call: Widget
+---@field sizeChanged Signal
+---@field posChanged Signal
+---@field protected m_parent Widget
+---@field protected childs table<integer, Widget>
+---@field protected m_layout Layout
+---
+---@field protected m_pos Vector2
+---@field private is_visible boolean
+---@field private is_active boolean
+---
+---@field protected m_size Vector2
+---@field protected min_size Vector2
+---@field protected size_policy Policy
+---@field private cursor_type cursors
+---
+---@field private tooltip string
+---@field private tooltip_duration number
+---@field private is_tooltip_visible boolean
+local Widget = {}
+
+---@type Widget | nil
+local focused = nil
+
+---@param parent? Widget
+---@param size_policy? Policy
+---@param size? Vector2
+---@return Widget
+function Widget:new(parent, size_policy, size)
+    local self = create(Widget, "Widget")
+
+    self.m_pos = Vector2:new(0, 0)
+    self.is_visible = true
+    self.is_active = true
+
+    self.m_size = size and size:copy() or Vector2:new(100, 100)
+    self.min_size = self.m_size:copy()
+    self.size_policy = size_policy or Policy("Minimum")
+    self:resetCursor()
+
+    self.tooltip = ""
+    self.tooltip_duration = 0
+    self.is_tooltip_visible = false
+
+    self.childs = {}
+
+    if parent then
+        self:setParent(parent)
+    end
+
+    self.sizeChanged = Signal()
+    self.posChanged = Signal()
+
+    connect(window_resized, function() self:update() end)
+    connect(window_started, function() self:update() end)
+    connect(cursor_stopped, function(data)
+        ---@diagnostic disable-next-line: invisible
+        self.tooltip_duration = data.duration
+    end)
+    connect(window_updated, function()
+        if not self:isActive() then return end
+        self:renderToolTip()
+
+        if self:isHover() and mouse.is_pressed(buttons.Left) then
+            self:peekFocus()
+        end
+    end)
+
+    cursor_system.add_element(self)
+
+    return self
+end
+
+setmetatable(Widget, { __call = Widget.new })
+
+---@virtual
+function Widget:render() self:childsRender() end
+
+---@virtual
+function Widget:update() self:childsUpdate() end
+
+---@virtual
+---@param layout Layout ref
+function Widget:setLayout(layout)
+    if not layout then return end
+
+    self.m_layout = layout
+    self.m_layout:setParent(self)
+    self.m_layout:bindPos(self.m_pos)
+    self.m_layout:bindSize(self.m_size)
+end
+
+---@virtual
+function Widget:renderToolTip()
+    if self.tooltip == "" then return end
+
+    local is_bound = self:isHover()
+
+    if not self.is_tooltip_visible then
+        if self.tooltip_duration > 0.5 and is_bound then
+            self.is_tooltip_visible = true
+        else
+            return
+        end
+    elseif not is_bound then
+        self.is_tooltip_visible = false
+    end
+
+    local font = theme.small_font
+    local measure = render.measure_text(font, self.tooltip)
+    local m_pos = cursor.get_pos()
+    local cursor_size = 16
+    local offset = 4
+
+    render.rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, theme.background4, 1)
+    render.outline_rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, 1, theme.outline2, 1)
+    render.text(m_pos.x + cursor_size + offset, m_pos.y + cursor_size + offset, font, self.tooltip, theme.foreground4)
+end
+
+---@virtual
+---@return Vector2
+function Widget:minSize()
+    if self.m_layout then
+        return self.m_layout:minSize()
+    end
+
+    if #self.childs > 0 then
+        local max = Vector2:new(0, 0)
+
+        for _, child in ipairs(self.childs) do
+            local min = child:minSize()
+            max.x = math.max(max.x, min.x)
+            max.y = math.max(max.y, min.y)
+        end
+
+        return max
+    end
+
+    return self.min_size:copy()
+end
+
+---@virtual
+---@param size Vector2 ref
+function Widget:bindSize(size)
+    if not size then
+        error(fmt("%: Cannot bind a nil size", type(self)))
+    end
+
+    self.m_size = size
+    self.min_size = size
+    if self.m_layout then self.m_layout:bindSize(size) end
+    self:update()
+
+    if self.m_size ~= size then
+        emit(self.sizeChanged)
+    end
+end
+
+---@virtual
+---@param pos Vector2 ref
+function Widget:bindPos(pos)
+    if not pos then
+        error(fmt("%: Cannot bind a nil pos", type(self)))
+    end
+
+    self.m_pos = pos
+    self:update()
+
+    if self.m_pos ~= pos then
+        emit(self.posChanged)
+    end
+end
+
+---@virtual
+---@param visible boolean
+function Widget:setVisible(visible)
+    self.is_visible = visible
+end
+
+---@virtual
+---@param state boolean
+function Widget:setActive(state)
+    self.is_active = state
+end
+
+---@return string
+function Widget:__tostring()
+    return fmt("%(pos: %, size: %, policy: %)", type(self), self.m_pos, self.m_size, self.size_policy)
+end
+
+function Widget:childsRender()
+    if not self:isVisible() then return end
+
+    for _, child in ipairs(self.childs) do
+        child:render()
+    end
+
+    if self.m_layout then
+        self.m_layout:render()
+    end
+end
+
+function Widget:childsUpdate()
+    if not self:isActive() then return end
+
+    for _, child in ipairs(self.childs) do
+        child:update()
+    end
+end
+
+---@param child Widget
+function Widget:addChild(child)
+    if not child then return end
+
+    child.m_parent = self
+    table.insert(self.childs, child)
+end
+
+---@param parent Widget
+function Widget:setParent(parent)
+    if not parent then return end
+    parent:addChild(self)
+end
+
+---@return boolean
+function Widget:isHover()
+    return cursor.is_bound(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
+end
+
+function Widget:peekFocus()
+    focused = self
+end
+
+---@return boolean
+function Widget:hasFocus()
+    return self == focused
+end
+
+---@param tooltip string
+function Widget:setToolTip(tooltip)
+    self.tooltip = tooltip
+end
+
+---@return Vector2
+function Widget:size()
+    return self.m_size:copy()
+end
+
+function Widget:minimize()
+    self:bindSize(self:minSize())
+end
+
+---@param size Vector2
+function Widget:resize(size)
+    if not size then
+        error(fmt("%: Cannot set a nil size", type(self)))
+    end
+
+    self:bindSize(size:copy())
+end
+
+---@return Geometry
+function Widget:geometry()
+    return Geometry(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
+end
+
+---@return Vector2
+function Widget:pos()
+    return self.m_pos:copy()
+end
+
+---@param pos Vector2
+function Widget:setPos(pos)
+    if not pos then
+        error(fmt("%: Cannot set a nil pos", type(self)))
+    end
+
+    self:bindPos(pos:copy())
+end
+
+---@param geometry Geometry
+function Widget:setGeometry(geometry)
+    self:bindPos(Vector2:new(geometry.x, geometry.y))
+    self:bindSize(Vector2:new(geometry.width, geometry.height))
+end
+
+---@param index integer
+---@return Widget
+function Widget:childAt(index)
+    local widget = self.childs[index]
+    if not widget then
+        error(fmt("%: Out of bounds (len: %, i: %)", type(self), #self.childs, index))
+    end
+
+    return widget
+end
+
+---@return cursors
+function Widget:cursor()
+    return self.cursor_type
+end
+
+---@param new_type cursors
+function Widget:setCursor(new_type)
+    self.cursor_type = new_type
+end
+
+function Widget:resetCursor()
+    self:setCursor(cursors.Arrow)
+end
+
+---@param size_policy Policy
+function Widget:setSizePolicy(size_policy)
+    if not size_policy then return end
+    self.size_policy = size_policy
+    self:update()
+end
+
+---@return Policy
+function Widget:sizePolicy()
+    return self.size_policy
+end
+
+---@return string
+function Widget:toolTip()
+    return self.tooltip
+end
+
+---@return Widget
+function Widget:parent()
+    return self.m_parent
+end
+
+---@return boolean
+function Widget:isVisible()
+    return self.is_visible
+end
+
+function Widget:hide()
+    self.is_visible = false
+end
+
+function Widget:show()
+    self.is_visible = true
+end
+
+---@return boolean
+function Widget:isActive()
+    return self.is_active
+end
+
+function Widget:disable()
+    self:setActive(false)
+end
+
+function Widget:enable()
+    self:setActive(true)
+end
+
+return Widget

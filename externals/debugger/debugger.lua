@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-global
+---@diagnostic disable: deprecated
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2024 Scott Lembcke and Howling Moon Software
 

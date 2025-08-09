@@ -1,0 +1,1 @@
+---@alias Orientation "Horizontal" | "Vertical"

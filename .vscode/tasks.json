@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Test",
+            "icon": { "id": "debug" },
+            "command": "./externals/moonshine/Moonshine.exe",
+            "args": [ "./examples/${input:selectTestPath}.lua" ],
+            "dependsOn": [ "check" ],
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "check",
+            "command": "C:/Users/${env:USERNAME}/.vscode/extensions/sumneko.lua-3.15.0-win32-x64/server/bin/lua-language-server.exe",
+            "args": [ "--check=./" ],
+            "problemMatcher": []
+        },
+    ],
+    "inputs": [
+        {
+            "id": "selectTestPath",
+            "type": "pickString",
+            "description": "Select test script",
+            "options": [
+                "checkbox",
+                "explorer",
+                "groupbox",
+                "label",
+                "layout",
+                "listview",
+                "progressbar",
+                "pushbutton",
+                "slider",
+                "tooltip",
+                "userinterface",
+            ]
+        }
+    ]
+}
