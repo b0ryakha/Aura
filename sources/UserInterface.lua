@@ -83,6 +83,11 @@ function UserInterface:get(class, name)
 end
 
 ---@private
+---@generic T
+---@param element T
+---@param class string
+---@param field string
+---@param value any
 function UserInterface:setterForField(element, class, field, value)
     local capitalized = string.upper(string.sub(field, 1, 1)) .. string.sub(field, 2)
     local method_name = "set" .. capitalized
@@ -140,7 +145,6 @@ function UserInterface:pushWidget(node)
                     end
                 })
             else
-                --TODO: fix multi call setTitle
                 self:setterForField(element, node.attributes.class, prop_field, prop_val)
             end
         else

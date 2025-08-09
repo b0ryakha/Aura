@@ -24,7 +24,10 @@ function Application:new(title, size)
         self:resize(window.get_size())
     end
 
-    self:setTitle(title or "")
+    if title then
+        self:setTitle(title)
+    end
+
     self:setLayout(Layout("VBox"))
     self.args = globalvars.get_args()
 

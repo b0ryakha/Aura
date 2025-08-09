@@ -1,3 +1,5 @@
+--DBG = require("externals/debugger/debugger")
+
 -- hook:
 local original = _G.type
 _G.type = function(object)

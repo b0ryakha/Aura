@@ -1,5 +1,4 @@
 --TODO: write docs
---global dbg = require("externals/debugger/debugger") as Debugger
 package.path = package.path .. ";./sources/widgets/?.lua"
 
 local aura = {
