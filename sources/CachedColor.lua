@@ -37,4 +37,17 @@ function CachedColor:new(r_or_hex, g, b, a)
     return cache[cache_key]
 end
 
+---@param background Color
+---@param foreground Color
+---@param alpha integer [0.0 - 1.1]
+---@return Color
+function CachedColor:mixed(background, foreground, alpha)
+    return CachedColor:new(
+        cmath.clamp((foreground.r * alpha) + (background.r * (1 - alpha)), 0, 255),
+        cmath.clamp((foreground.g * alpha) + (background.g * (1 - alpha)), 0, 255),
+        cmath.clamp((foreground.b * alpha) + (background.b * (1 - alpha)), 0, 255),
+        cmath.clamp((foreground.a * alpha) + (background.a * (1 - alpha)), 0, 255)
+    )
+end
+
 return CachedColor

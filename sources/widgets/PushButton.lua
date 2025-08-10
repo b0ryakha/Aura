@@ -25,11 +25,13 @@ local PushButton = {}
 ---@param parent? Widget
 ---@return PushButton
 function PushButton:new(text, size, parent)
-    local self = extends(PushButton, "PushButton", Widget, parent, nil, size)
+    local self = extends(PushButton, "PushButton", Widget, parent)
 
     self.label = Label(text)
     self.label:setAlignment(Align("Center"))
     self.label:bindPos(self.m_pos) -- fake ref
+
+    self:bindSize(self.label:measure() + 20) -- fake ref
     self.label:bindSize(self.m_size) -- fake ref
 
     self.is_flat = false
@@ -47,7 +49,7 @@ setmetatable(PushButton, { __call = PushButton.new })
 
 ---@override
 function PushButton:update()
-    if not self:isActive() then return end
+    if not self:isEnabled() then return end
 
     if self:isHover() or self:hasFocus() then
         if self:isHover() then
@@ -78,36 +80,32 @@ end
 function PushButton:render()
     if not self:isVisible() then return end
 
-    local color = theme.default
-    local outline_color = theme.outline
+    local bg_color = theme.accent
+    local outline_color = theme.outline3
     
-    if not self:isActive() then
-        color = theme.background2
+    if not self:isEnabled() then
+        outline_color = theme.outline1
     else
         if self.state == "Hovered" then
-            color = theme.hovered
-            outline_color = theme.accent
-        end
-    
-        if self.state == "Pressed" then
-            color = theme.pressed
-            outline_color = theme.accent
-        end
-
-        if self:hasFocus() then
-            outline_color = theme.accent
+            outline_color = theme.accent3
+        elseif self.state == "Pressed" then
+            bg_color = theme.accent2
+            outline_color = theme.accent3
         end
     end
 
-    render.gradient(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, color, color, theme.pressed, theme.pressed)
+    if not self.is_flat or (self.is_flat and self.state == "Pressed") then
+        render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, bg_color, 15)
+    end
 
-    if not self.is_flat then
-        render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, outline_color)
+    if not self.is_flat or (self.state and self.state ~= "Normal") then
+        render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, outline_color, 15)
     end
 
     self.label:render()
 end
 
+---@TODO: override to 'connect'
 ---@override
 ---@param pos Vector2 ref
 function PushButton:bindPos(pos)
@@ -124,6 +122,7 @@ function PushButton:bindPos(pos)
     end
 end
 
+---@TODO: override to 'connect'
 ---@override
 ---@param size Vector2 ref
 function PushButton:bindSize(size)
@@ -155,10 +154,10 @@ end
 
 ---@override
 ---@param state boolean
-function PushButton:setActive(state)
+function PushButton:setEnabled(state)
     ---@diagnostic disable-next-line: invisible
-    self.is_active = state
-    self.label:setActive(state)
+    self.is_enabled = state
+    self.label:setEnabled(state)
 end
 
 ---@return boolean

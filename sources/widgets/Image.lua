@@ -23,6 +23,7 @@ function Image:new(path, size, parent)
 
     if path and path ~= "" then
         self:loadFromFile(path, self:size())
+        self:setColor(theme.accent5)
     end
 
     return self
@@ -55,16 +56,16 @@ end
 
 ---@override
 ---@param state boolean
-function Image:setActive(state)
+function Image:setEnabled(state)
     ---@diagnostic disable-next-line: invisible
-    self.is_active = state
-    self.sprite:set_color(state and theme.foreground or theme.foreground3)
+    self.is_enabled = state
+    self.sprite:set_color(state and theme.accent5 or theme.foreground1)
 end
 
----@return Color
+---@return Color | nil
 function Image:color()
     if not self.m_color then
-        return (self:isActive() and theme.foreground or theme.foreground3):copy()
+        return nil
     end
 
     return self.m_color:copy()

@@ -1,54 +1,64 @@
 local CachedFont = require("CachedFont")
 local CachedColor = require("CachedColor")
+---@TODO: remove superfluous
 
 ---@class (exact) Theme
----@field background Color
----@field background2 Color
----@field background3 Color
----@field background4 Color
----@field background5 Color
 ---@field foreground Color
----@field foreground2 Color
----@field foreground3 Color
----@field foreground4 Color
----@field default Color
----@field hovered Color
----@field pressed Color
----@field outline Color
----@field outline2 Color
----@field accent Color
----@field light_accent Color
----@field dark_accent Color
+---@field foreground1 Color disabled
+---@field foreground2 Color default
 ---
----@field regular_font Font
----@field small_font Font
+---@field background Color
+---@field background1 Color pressed
+---@field background2 Color default
+---@field background3 Color
+---@field background4 Color tooltip
+---@field background5 Color
+---
+---@field accent Color PushButton bg
+---@field accent1 Color
+---@field accent2 Color darked default
+---@field accent3 Color default
+---@field accent4 Color
+---@field accent5 Color
+---
+---@field outline Color
+---@field outline1 Color disabled
+---@field outline2 Color
+---@field outline3 Color default
+---@field outline4 Color
+---
+---@field font Font
+---@field font1 Font
 local Theme = {}
 
 local themes = {}
-themes.light = {
-    background = CachedColor:new(245, 245, 245),
-    background2 = CachedColor:new(240, 240, 240),
-    background3 = CachedColor:new(35, 35, 35),
-    background4 = CachedColor:new(255, 255, 255),
-    background5 = CachedColor:new(80, 80, 80),
-
+themes.dark = {
     foreground = CachedColor:new(0, 0, 0),
-    foreground2 = CachedColor:new(20, 20, 20),
-    foreground3 = CachedColor:new(215, 215, 215),
-    foreground4 = CachedColor:new(60, 60, 60),
+    foreground1 = CachedColor:new(145, 145, 145),
+    foreground2 = CachedColor:new(240, 240, 240),
 
-    default = CachedColor:new(240, 240, 240),
-    hovered = CachedColor:new(254, 254, 254),
-    pressed = CachedColor:new(235, 235, 235),
-    outline = CachedColor:new(215, 215, 215),
-    outline2 = CachedColor:new(150, 150, 150),
-    accent = CachedColor:new(180, 220, 255),
-    dark_accent = CachedColor:new(140, 180, 215),
-    light_accent = CachedColor:new(220, 250, 255),
+    background = CachedColor:new(30, 30, 30),
+    background1 = CachedColor:new(35, 35, 35),
+    background2 = CachedColor:new(40, 40, 40),
+    background3 = CachedColor:new(50, 50, 50),
+    background4 = CachedColor:new(50, 55, 60),
+    background5 = CachedColor:new(60, 60, 60),
 
-    regular_font = CachedFont:new("SansSerif.ttf", 14),
-    small_font = CachedFont:new("SansSerif.ttf", 12)
+    accent = CachedColor:new(40, 45, 55),
+    accent1 = CachedColor:new(35, 100, 135),
+    accent2 = CachedColor:new(45, 110, 145),
+    accent3 = CachedColor:new(50, 180, 250),
+    accent4 = CachedColor:new(0, 0, 255),
+    accent5 = CachedColor:new(255, 255, 255),
+
+    outline = CachedColor:new(60, 60, 60),
+    outline1 = CachedColor:new(70, 70, 70),
+    outline2 = CachedColor:new(90, 90, 90),
+    outline3 = CachedColor:new(105, 105, 105),
+    outline4 = CachedColor:new(120, 120, 120),
+
+    font = CachedFont:new("Verdana.ttf", 12)
 }
 
-local current = themes.light
+local current = themes.dark
 return current

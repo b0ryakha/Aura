@@ -16,7 +16,7 @@ function Spacer:new(align_type, parent)
     local self = extends(Spacer, "Spacer", Widget, parent, Policy("Maximum"))
 
     self.align_type = align_type or "Horizontal"
-    self.thickness = 10
+    self.thickness = 8
 
     if self.align_type == "Horizontal" then
         self.m_size.y = self.thickness
@@ -33,6 +33,7 @@ end
 setmetatable(Spacer, { __call = Spacer.new })
 
 ---@override
+---@TODO: override to 'connect'
 ---@param size Vector2 ref
 function Spacer:bindSize(size)
     if not size then
@@ -53,21 +54,37 @@ function Spacer:render()
     if not self:isVisible() then return end
 
     if self.align_type == "Horizontal" then
+        local x1 = self.m_pos.x
+        local y1 = self.m_size.y / 2 + self.m_pos.y
+        local x2 = x1 + self.thickness
+        local y2 = self.m_size.y / 2 + self.m_pos.y + self.thickness
+
+        render.rectangle(x1, y1 - self.thickness, 1, self.thickness * 3, theme.accent5)
+
         for x = self.m_pos.x, self.m_pos.x + self.m_size.x - self.thickness / 2, self.thickness do
-            local x1 = x
-            local y1 = (self.m_size.y / 2 + self.m_pos.y)
-            local x2 = (x + self.thickness)
-            local y2 = (self.m_size.y / 2 + self.m_pos.y + self.thickness)
-            render.line(x1, y1, x2, y2, 5, theme.foreground2)
+            x1 = x
+            x2 = x1 + self.thickness
+            render.line(x1, y1, x2, y2, 1, theme.accent4)
+            render.rectangle(x1, y1, 1, self.thickness, theme.accent5)
         end
+
+        render.rectangle(x1 + self.thickness, y1 - self.thickness, 1, self.thickness * 3, theme.accent5)
     else -- Vertical:
+        local x1 = self.m_size.x / 2 + self.m_pos.x
+        local y1 = self.m_pos.y
+        local x2 = self.m_size.x / 2 + self.m_pos.x + self.thickness
+        local y2 = y1 + self.thickness
+    
+        render.rectangle(x1 - self.thickness, y1, self.thickness * 3, 1, theme.accent5)
+
         for y = self.m_pos.y, self.m_pos.y + self.m_size.y - self.thickness / 2, self.thickness do
-            local x1 = (self.m_size.x / 2 + self.m_pos.x)
-            local y1 = y
-            local x2 = (self.m_size.x / 2 + self.m_pos.x + self.thickness)
-            local y2 = (y + self.thickness)
-            render.line(x1, y1, x2, y2, 5, theme.foreground2)
+            y1 = y
+            y2 = y1 + self.thickness
+            render.line(x1, y1, x2, y2, 1, theme.accent4)
+            render.rectangle(x1, y1, self.thickness, 1, theme.accent5)
         end
+
+        render.rectangle(x1 - self.thickness, y1 + self.thickness, self.thickness * 3, 1, theme.accent5)
     end
 end
 

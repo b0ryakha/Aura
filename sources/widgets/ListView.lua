@@ -53,8 +53,8 @@ function ListView:new(size, flow, parent)
     self.m_flow = flow or "TopToBottom"
     self.m_align = Align("Left", "Center")
 
-    self.font = theme.regular_font
-    self.m_spacing = math.floor(self.font:get_glyph('@').x * 0.3)
+    self.font = theme.font
+    self.m_spacing = math.floor(self.font:get_bounds('@').x * 0.3)
 
     self.last_click_time = 0
     self.double_click_threshold = 0.25
@@ -137,8 +137,7 @@ function ListView:selectIndex(index)
     self.selected = index
     self.hovered = ModelIndex()
 
-    self.itemSelected:updateData("index", self.selected)
-    emit(self.itemSelected)
+    emit(self.itemSelected, { ["index"] = self.selected })
 end
 
 ---@private
@@ -152,8 +151,7 @@ function ListView:updateFor(geometry, index)
             mouse.is_pressed(buttons.XButton1) or
             mouse.is_pressed(buttons.XButton2))
         then
-            self.itemPressed:updateData("index", index)
-            emit(self.itemPressed)
+            emit(self.itemPressed, { ["index"] = index })
 
             local current_time = os.clock()
 
@@ -161,13 +159,10 @@ function ListView:updateFor(geometry, index)
                 self.is_pressed = true
 
                 if (current_time - self.last_click_time) <= self.double_click_threshold then
-                    self.itemDoubleClicked:updateData("index", index)
-                    emit(self.itemDoubleClicked)
+                    emit(self.itemDoubleClicked, { ["index"] = index })
                 else
                     self:selectIndex(index)
-
-                    self.itemClicked:updateData("index", index)
-                    emit(self.itemClicked)
+                    emit(self.itemClicked, { ["index"] = index })
                 end
 
                 self.last_click_time = current_time
@@ -188,8 +183,8 @@ end
 function ListView:render()
     if not self:isVisible() then return end
 
-    render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, theme.default)
-    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, theme.outline)
+    render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, theme.background2, 1)
+    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, theme.outline3, 1)
 
     if self.m_model ~= nil then
         for i = 1, self.m_model:rowCount() do
@@ -225,10 +220,6 @@ function ListView:setModel(model)
     end
 
     self.m_model = model
-
-    connect(self.m_model.dataChanged, function()
-        self.delegate:clearCache()
-    end)
 end
 
 ---@param delegate Delegate ref

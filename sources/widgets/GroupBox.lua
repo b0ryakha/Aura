@@ -1,9 +1,9 @@
 local Widget = require("Widget")
-local Signal = require("Signal")
 local Label = require("Label")
 local CheckBox = require("CheckBox")
 local fmt = require("fmt")
 local theme = require("theme")
+---@TODO: fix a breakage when the size is strongly compressed
 
 ---@class (exact) GroupBox: Widget
 ---@operator call: GroupBox
@@ -28,23 +28,29 @@ function GroupBox:new(title, size, parent)
     self.label:bindPos(self.m_pos)
 
     self.checkbox = CheckBox(title, nil)
-    self.checkbox:bindPos(self.m_pos)
     self.checkbox:setCheckState(true)
-    connect(self.checkbox.checkStateChanged, function(data)
+    
+    self:preventFocus()
+
+    connect(self.posChanged, function(data)
+        local new_pos = data.new_pos--[[@as Vector2]]
+        ---@diagnostic disable-next-line: invisible
+        self.checkbox:setPos(new_pos)
+    end)
+
+    self.checkStateChanged = self.checkbox.checkStateChanged -- by ref
+    connect(self.checkStateChanged, function(data)
         ---@diagnostic disable-next-line: invisible
         if not self.m_layout then return end
         ---@diagnostic disable-next-line: invisible
         for _, child in ipairs(self.m_layout.childs) do
-            child:setActive(data.state)
+            child:setEnabled(data.state)
         end
     end)
 
-    self:preventFocus()
-
-    self.checkStateChanged = self.checkbox.checkStateChanged -- by ref
-    self.offset = cmath.round(self.m_pos.y + self.label:measure().y * 1.5)
     self.is_flat = false
     self.is_checkable = false
+    self:updateOffset()
 
     return self
 end
@@ -53,7 +59,7 @@ setmetatable(GroupBox, { __call = GroupBox.new })
 
 ---@override
 function GroupBox:update()
-    if not self:isActive() then return end
+    if not self:isEnabled() then return end
 
     if self.is_checkable then
         self.checkbox:update()
@@ -84,9 +90,11 @@ end
 function GroupBox:render()
     if not self:isVisible() then return end
 
+    render.rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, theme.background2, 1)
+
     if not self.is_flat then
-        render.rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, theme.background2, 1)
-        render.outline_rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, 1, theme.outline, 1)
+        local outline_color = self:isEnabled() and theme.outline3 or theme.outline1
+        render.outline_rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, 1, outline_color, 1)
     end
 
     if self.is_checkable then
@@ -144,6 +152,12 @@ end
 ---@param state boolean
 function GroupBox:setCheckable(state)
     self.is_checkable = state
+    self:updateOffset()
+end
+
+---@private
+function GroupBox:updateOffset()
+    self.offset = cmath.round(self.m_pos.y + (self.is_checkable and self.checkbox:size() or self.label:measure()).y * 1.5)
 end
 
 return GroupBox

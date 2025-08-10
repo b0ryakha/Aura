@@ -9,6 +9,7 @@ require("oop")
 ---@operator call: Signal
 ---@field private trigger Trigger
 ---@field private slots table<integer, Slot>
+---
 ---@field private data SignalData
 local Signal = {}
 
@@ -48,12 +49,6 @@ function Signal:addSlot(slot)
     table.insert(self.slots, slot)
 end
 
----@param key string
----@param value any
-function Signal:updateData(key, value)
-    self.data[key] = value
-end
-
 -- hook:
 local original = window.display
 ---@diagnostic disable-next-line: duplicate-set-field
@@ -81,10 +76,18 @@ function connect(signal, slot)
 end
 
 ---@param signal Signal
+---@param updated_data? table<string, any>
 ---@diagnostic disable-next-line: lowercase-global
-function emit(signal)
+function emit(signal, updated_data)
     if not signal then
         error("Signal: Cannot emit a nil signal!")
+    end
+
+    if updated_data then
+        for k, v in pairs(updated_data) do
+            ---@diagnostic disable-next-line: invisible
+            signal.data[k] = v
+        end
     end
 
 ---@diagnostic disable-next-line: invisible

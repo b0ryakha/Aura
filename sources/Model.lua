@@ -7,6 +7,7 @@ require("oop")
 ---@operator call: Model
 ---@field private items table<ModelIndex, ModelItem>
 ---@field private count Vector2
+---
 ---@field dataChanged Signal
 local Model = {}
 

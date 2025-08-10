@@ -9,15 +9,13 @@ require("oop")
 
 ---@class (exact) Widget: CursosElement
 ---@operator call: Widget
----@field sizeChanged Signal
----@field posChanged Signal
 ---@field protected m_parent Widget
 ---@field protected childs table<integer, Widget>
 ---@field protected m_layout Layout
 ---
 ---@field protected m_pos Vector2
 ---@field private is_visible boolean
----@field private is_active boolean
+---@field private is_enabled boolean
 ---
 ---@field protected m_size Vector2
 ---@field protected min_size Vector2
@@ -29,6 +27,9 @@ require("oop")
 ---@field private is_tooltip_visible boolean
 ---@field private is_prevent_focus boolean
 ---@field private redirected_widget Widget | nil
+---
+---@field sizeChanged Signal provides: new_size: Vector2
+---@field posChanged Signal provides: new_pos: Vector2
 local Widget = {}
 
 ---@type Widget | nil
@@ -43,7 +44,7 @@ function Widget:new(parent, size_policy, size)
 
     self.m_pos = Vector2:new(0, 0)
     self.is_visible = true
-    self.is_active = true
+    self.is_enabled = true
 
     self.m_size = size and size:copy() or Vector2:new(100, 100)
     self.min_size = self.m_size:copy()
@@ -68,10 +69,10 @@ function Widget:new(parent, size_policy, size)
     connect(window_started, function() self:update() end)
     connect(cursor_stopped, function(data)
         ---@diagnostic disable-next-line: invisible
-        self.tooltip_duration = data.duration
+        self.tooltip_duration = data.duration--[[@as number]]
     end)
     connect(window_updated, function()
-        if not self:isActive() then return end
+        if not self:isEnabled() then return end
         self:renderToolTip()
 
         if self:isHover() then
@@ -111,6 +112,10 @@ function Widget:setLayout(layout)
 end
 
 ---@virtual
+---@TODO: move it to a separate class
+---@TODO: make hidding after 10 seconds
+---@TODO: make not follow the cursor
+---@TODO: add shadow
 function Widget:renderToolTip()
     if self.tooltip == "" then return end
 
@@ -126,15 +131,15 @@ function Widget:renderToolTip()
         self.is_tooltip_visible = false
     end
 
-    local font = theme.small_font
+    local font = theme.font
     local measure = render.measure_text(font, self.tooltip)
     local m_pos = cursor.get_pos()
     local cursor_size = 16
     local offset = 4
 
     render.rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, theme.background4, 1)
-    render.outline_rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, 1, theme.outline2, 1)
-    render.text(m_pos.x + cursor_size + offset, m_pos.y + cursor_size + offset, font, self.tooltip, theme.foreground4)
+    render.outline_rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, 1, theme.outline3, 1)
+    render.text(m_pos.x + cursor_size + offset, m_pos.y + cursor_size + offset, font, self.tooltip, theme.foreground2)
 end
 
 ---@virtual
@@ -159,35 +164,37 @@ function Widget:minSize()
     return self.min_size:copy()
 end
 
----@virtual
 ---@param size Vector2 ref
 function Widget:bindSize(size)
     if not size then
         error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
+    local is_changed = self.m_size ~= size
+
     self.m_size = size
     self.min_size = size
     if self.m_layout then self.m_layout:bindSize(size) end
     self:update()
 
-    if self.m_size ~= size then
-        emit(self.sizeChanged)
+    if is_changed then
+        emit(self.sizeChanged, { ["new_size"] = size })
     end
 end
 
----@virtual
 ---@param pos Vector2 ref
 function Widget:bindPos(pos)
     if not pos then
         error(fmt("%: Cannot bind a nil pos", type(self)))
     end
 
+    local is_changed = self.m_pos ~= pos
+
     self.m_pos = pos
     self:update()
 
-    if self.m_pos ~= pos then
-        emit(self.posChanged)
+    if is_changed then
+        emit(self.posChanged, { ["new_pos"] = pos })
     end
 end
 
@@ -199,8 +206,8 @@ end
 
 ---@virtual
 ---@param state boolean
-function Widget:setActive(state)
-    self.is_active = state
+function Widget:setEnabled(state)
+    self.is_enabled = state
 end
 
 ---@return string
@@ -221,7 +228,7 @@ function Widget:childsRender()
 end
 
 function Widget:childsUpdate()
-    if not self:isActive() then return end
+    if not self:isEnabled() then return end
 
     for _, child in ipairs(self.childs) do
         child:update()
@@ -389,16 +396,16 @@ function Widget:show()
 end
 
 ---@return boolean
-function Widget:isActive()
-    return self.is_active
+function Widget:isEnabled()
+    return self.is_enabled
 end
 
 function Widget:disable()
-    self:setActive(false)
+    self:setEnabled(false)
 end
 
 function Widget:enable()
-    self:setActive(true)
+    self:setEnabled(true)
 end
 
 return Widget

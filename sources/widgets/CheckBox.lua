@@ -19,6 +19,7 @@ local theme = require("theme")
 ---@field private state CheckBox.State
 ---@field private is_checked boolean
 ---@field private lock_press boolean
+---@field private bindPos fun() blocked
 ---
 ---@field checkStateChanged Signal
 local CheckBox = {}
@@ -40,7 +41,6 @@ function CheckBox:new(text, size, parent)
     self.label:redirectFocus(self)
 
     self.mark = Image("assets/checkmark.png", Vector2:new(64, 64))
-    self.mark:setColor(theme.foreground)
 
     self.state = "Normal"
     self.lock_press = false
@@ -48,25 +48,28 @@ function CheckBox:new(text, size, parent)
 
     self.checkStateChanged = Signal()
 
+    connect(self.sizeChanged, function() 
+        ---@diagnostic disable-next-line: invisible
+        self.mark:resize(self.box_size)
+    end)
+
+    connect(self.posChanged, function() 
+        ---@diagnostic disable-next-line: invisible
+        self.label:bindPos(Vector2:new(self.m_pos.x + self.box_size.x + self.mutable_offset, self.m_pos.y))
+        ---@diagnostic disable-next-line: invisible
+        self.mark:setPos(self.m_pos)
+    end)
+
     self:bindSize(Vector2:new(self.box_size.x + self.label.m_size.x + self.mutable_offset, self.box_size.y))
-    self:updateElements()
 
     return self
 end
 
 setmetatable(CheckBox, { __call = CheckBox.new })
 
----@private
-function CheckBox:updateElements()
-    self.label:bindPos(Vector2:new(self.m_pos.x + self.box_size.x + self.mutable_offset, self.m_pos.y))
-
-    self.mark:setPos(self.m_pos)
-    self.mark:resize(self.box_size)
-end
-
 ---@override
 function CheckBox:update()
-    if not self:isActive() then return end
+    if not self:isEnabled() then return end
 
     if self:isHover() or self:hasFocus() then
         if self:isHover() then
@@ -78,48 +81,50 @@ function CheckBox:update()
 
             if not self.lock_press then
                 self.lock_press = true
-                self.is_checked = not self.is_checked
-
-                self.checkStateChanged:updateData("state", self.is_checked)
-                emit(self.checkStateChanged)
             end
         elseif self.lock_press then
             self.lock_press = false
             self.state = "Normal"
+
+            self.is_checked = not self.is_checked
+
+            emit(self.checkStateChanged, { ["state"] = self.is_checked })
         end
     else
         self.state = "Normal"
     end
-
-    self:updateElements()
 end
 
 ---@override
 function CheckBox:render()
     if not self:isVisible() then return end
 
-    local color = theme.default
-    local outline_color = theme.outline
+    local bg_color = theme.background2
+    local outline_color = theme.outline3
 
-    if not self:isActive() then
-        color = theme.background2
+    if not self:isEnabled() then
+        bg_color = theme.background1
+        outline_color = theme.outline1
     else
-        if self:isHover() or self:hasFocus() then
-            outline_color = theme.accent
+        if self:isHover() or self.is_checked then
+            outline_color = theme.accent3
         end
 
         if self:hasFocus() then
-            local pos = self.label:pos()
-            render.line(pos.x, self.m_pos.y + self.box_size.y + 2, pos.x + self.label:measure().x, self.m_pos.y + self.box_size.y + 2, 2, theme.accent)
+            local x = self.label:pos().x
+            local y = self.m_pos.y + self.box_size.y + 2
+            render.rectangle(x, y, self.label:measure().x, 1, theme.accent3)
         end
 
         if self.state == "Pressed" then
-            color = theme.pressed
+            bg_color = self.is_checked and theme.accent1 or theme.background1
+        elseif self.is_checked then
+            bg_color = theme.accent2
         end
     end
 
-    render.rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, color, 5)
-    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, 1, outline_color, 5)
+    render.rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, bg_color, 25)
+    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, 1, outline_color, 25)
 
     if self.is_checked then
         self.mark:render()
@@ -130,11 +135,11 @@ end
 
 ---@override
 ---@param state boolean
-function CheckBox:setActive(state)
+function CheckBox:setEnabled(state)
     ---@diagnostic disable-next-line: invisible
-    self.is_active = state
-    self.label:setActive(state)
-    self.mark:setActive(state)
+    self.is_enabled = state
+    self.label:setEnabled(state)
+    self.mark:setEnabled(state)
 end
 
 ---@return boolean

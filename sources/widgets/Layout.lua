@@ -203,7 +203,7 @@ end
 
 ---@override
 function Layout:update()
-    if not self:isActive() then return end
+    if not self:isEnabled() then return end
 
     local old_pos = {}
     local old_size = {}
@@ -218,14 +218,20 @@ function Layout:update()
 
     for i, child in ipairs(self.childs) do
         child:update()
-        if old_pos[i] ~= child:pos() then emit(child.posChanged) end
-        if old_size[i] ~= child:size() then emit(child.sizeChanged) end
+        
+        if old_pos[i] ~= child:pos() then
+            emit(child.posChanged, { ["new_pos"] = child:pos() })
+        end
+
+        if old_size[i] ~= child:size() then
+            emit(child.sizeChanged, { ["new_size"] = child:size() })
+        end
     end
 end
 
 ---@override
 function Layout:render()
-    if not self:isActive() then return end
+    if not self:isEnabled() then return end
 
     if self.is_debug then
         render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, self.debug_color)

@@ -1,4 +1,6 @@
 ---@TODO: write docs
+---@TODO: add color animation
+---@TODO: all bind methods to 'connect'
 package.path = package.path .. ";./sources/widgets/?.lua"
 
 local aura = {

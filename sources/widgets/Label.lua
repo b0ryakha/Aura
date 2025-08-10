@@ -14,6 +14,7 @@ local theme = require("theme")
 ---
 ---@field private font Font
 ---@field private m_measure Vector2
+---@field private m_color Color
 ---
 ---@field private is_debug boolean
 ---@field private debug_color Color
@@ -30,12 +31,13 @@ function Label:new(text, parent)
     self.m_align = Align("Left", "Top")
     self.is_link = false
     self.word_wrap = false
+    self.m_color = theme.foreground2
 
     self.is_debug = false
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 50)
 
     self:preventFocus()
-    self:setFont(theme.regular_font)
+    self:setFont(theme.font)
     self:tryWrap()
     
     return self
@@ -65,21 +67,21 @@ function Label:update()
 end
 
 ---@private
-function Label:expand()
+function Label:removeNewLines()
     self.m_text = self.m_text:gsub('\n', '')
 end
 
 ---@private
 function Label:tryWrap()
     if not self.word_wrap then return end
-    self:expand()
+    self:removeNewLines()
 
     local wrapped = ""
     local line_width = 0
 
     for i = 1, #self.m_text do
         local char = self.m_text:sub(i, i)
-        local char_width = self.font:get_glyph(char).x + 0.5
+        local char_width = self.font:get_bounds(char).x
 
         if (line_width + char_width) >= self.m_size.x then
             wrapped = wrapped .. '\n'
@@ -118,7 +120,9 @@ function Label:render()
         y = self.m_pos.y + self.m_size.y / 2 - self.m_measure.y / 2
     end
 
-    render.text(x, y, self.font, self.m_text, self:isActive() and theme.foreground or theme.foreground3)
+    local disabled = CachedColor:mixed(theme.background2, self.m_color, 0.5)
+
+    render.text(x, y, self.font, self.m_text, self:isEnabled() and self.m_color or disabled)
 end
 
 ---@param font Font
@@ -184,6 +188,16 @@ function Label:setStyle(style)
     self:tryWrap()
 end
 
+---@param color Color
+function Label:setColor(color)
+    self.m_color = color
+end
+
+---@return Color
+function Label:color()
+    return self.m_color
+end
+
 function Label:makeClickable()
     self.is_link = true
     self:setStyle(self:style() .. "l")
@@ -201,7 +215,7 @@ function Label:setWordWrap(state)
     if self.word_wrap then
         self:tryWrap()
     else
-        self:expand()
+        self:removeNewLines()
     end
 end
 

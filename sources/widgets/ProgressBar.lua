@@ -30,8 +30,6 @@ function ProgressBar:new(size, parent)
     self.label:setAlignment(Align("Center"))
     self.label:bindPos(self.m_pos)
     self.label:bindSize(self.m_size)
-    self:resetFormat()
-    self:preventFocus()
 
     self.min = 0
     self.max = 100
@@ -39,6 +37,9 @@ function ProgressBar:new(size, parent)
     self.m_percent = 0
     self.m_orientation = "Horizontal"
     self.is_inverted = false
+
+    self:preventFocus()
+    self:resetFormat()
 
     self.valueChanged = Signal()
     
@@ -64,10 +65,8 @@ function ProgressBar:formattedText(fmt)
     end))
 end
 
----@override
-function ProgressBar:update()
-    if not self:isActive() then return end
-
+---@private
+function ProgressBar:updateValue()
     self.m_percent = math.floor(((self.val - self.min) / (self.max - self.min)) * 100)
     self.label:setText(self:formattedText(self.m_format))
 end
@@ -76,8 +75,6 @@ end
 function ProgressBar:render()
     if not self:isVisible() then return end
 
-    render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, theme.default)
-    
     local x = self.m_pos.x
     local y = self.m_pos.y
     local w = (self.m_percent / 100) * self.m_size.x
@@ -99,8 +96,18 @@ function ProgressBar:render()
         end
     end
 
-    render.gradient(x, y, w, h, theme.accent, theme.accent, theme.dark_accent, theme.dark_accent)
-    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, theme.outline)
+    local bg_color = self:isEnabled() and theme.background3 or theme.background2
+    render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, bg_color)
+
+    local outline_color = self:isEnabled() and theme.outline3 or theme.outline1
+    render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, outline_color)
+
+    local value_color = self:isEnabled() and theme.accent2 or theme.background1
+    render.rectangle(x, y, w, h, value_color)
+
+    if self:isEnabled() then
+        render.outline_rectangle(x, y, w, h, 1, theme.accent3)
+    end
 
     self.label:render()
 end
@@ -131,6 +138,7 @@ function ProgressBar:setValue(value)
     self.val = cmath.clamp(value, self.min, self.max)
 
     if old ~= self.val then
+        self:updateValue()
         emit(self.valueChanged)
     end
 end
@@ -146,8 +154,7 @@ function ProgressBar:percent()
 end
 
 function ProgressBar:reset()
-    self.val = 0
-    self.m_percent = 0
+    self:setValue(0)
 end
 
 ---@param min integer
@@ -178,6 +185,7 @@ end
 ---@param fmt string can contains: 'p' - percent, 'v' - value, 'm' - max
 function ProgressBar:setFormat(fmt)
     self.m_format = fmt
+    self:updateValue()
 end
 
 function ProgressBar:resetFormat()

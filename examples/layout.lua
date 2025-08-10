@@ -7,6 +7,11 @@ local layout = app:layout()
 layout:turnDebug()
 
 layout:addItem(aura.Window(aura.Policy("Fixed"), Vector2:new(100, 100)))
+
+local hspacer = aura.Spacer("Horizontal")
+hspacer:show()
+
+layout:addItem(hspacer)
 layout:addItem(aura.Window(aura.Policy("Minimum"), Vector2:new(250, 250)))
 
 local vlayout = aura.Layout("VBox", nil, layout)
@@ -14,10 +19,10 @@ vlayout:turnDebug()
 
 vlayout:addItem(aura.Window(aura.Policy("Maximum")))
 
-local spacer = aura.Spacer("Vertical")
-spacer:show()
+local vspacer = aura.Spacer("Vertical")
+vspacer:show()
 
-vlayout:addItem(spacer)
+vlayout:addItem(vspacer)
 vlayout:addItem(aura.Window(aura.Policy("Minimum"), Vector2:new(100, 100)))
 
 while window.is_open() do

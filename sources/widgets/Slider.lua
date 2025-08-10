@@ -5,6 +5,7 @@ local theme = require("theme")
 
 ---@TODO: fix handle going beyond the slider
 ---@TODO: fix fact that you can drag slider by touching near area (not slider itself)
+---@TODO: color the ticks to theme.accent3 if they are at the 'value' level
 
 ---@alias Slider.TickPosition
 ---| "None"
@@ -64,8 +65,14 @@ end
 
 setmetatable(Slider, { __call = Slider.new })
 
+---@private
+function Slider:updateValue()
+    self.m_percent = ((self.val - self.min) / (self.max - self.min)) * 100
+end
+
+---@override
 function Slider:update()
-    if not self:isActive() then return end
+    if not self:isEnabled() then return end
 
     local is_bounding = cursor.is_bound(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
 
@@ -121,10 +128,9 @@ function Slider:update()
             self:setValue(cmath.clamp(self.val + step, self.min, self.max))
         end
     end
-
-    self.m_percent = ((self.val - self.min) / (self.max - self.min)) * 100
 end
 
+---@override
 function Slider:render()
     if not self:isVisible() then return end
 
@@ -198,22 +204,27 @@ function Slider:render()
         render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, self.debug_color)
     end
 
-    render.rectangle(bg_x, bg_y, bg_w, bg_h, theme.outline)
+    render.rectangle(bg_x, bg_y, bg_w, bg_h, self:isEnabled() and theme.background5 or theme.background3)
+    render.outline_rectangle(bg_x, bg_y, bg_w, bg_h, 1, self:isEnabled() and theme.outline2 or theme.outline)
 
-    if self.m_orientation == "Horizontal" then
-        render.gradient(x, y, w, h, theme.accent, theme.accent, theme.dark_accent, theme.dark_accent)
-    else -- Vertical:
-        render.gradient(x, y, w, h, theme.accent, theme.dark_accent, theme.accent, theme.dark_accent)
+    if self:isEnabled() then
+        render.rectangle(x, y, w, h, theme.accent2)
+        render.outline_rectangle(x, y, w, h, 1, theme.accent3)
     end
 
-    render.outline_rectangle(bg_x, bg_y, bg_w, bg_h, 1, theme.outline2)
-
-    local is_hightlight = self:isActive() and (self:hasFocus() or cursor.is_bound(handle_pos.x, handle_pos.y, handle_size, handle_size))
-
-    render.rectangle(handle_pos.x, handle_pos.y, handle_size, handle_size, is_hightlight and theme.hovered or theme.default, 25)
-    render.outline_rectangle(handle_pos.x, handle_pos.y, handle_size, handle_size, 1, is_hightlight and theme.accent or theme.outline2, 25)
-
     self:renderTicks()
+
+    local outline_color = theme.outline4
+
+    if self:isEnabled() then
+        if self:hasFocus() or cursor.is_bound(handle_pos.x, handle_pos.y, handle_size, handle_size) then
+            outline_color =  theme.accent3
+        end
+    else
+        outline_color = theme.outline2
+    end
+
+    render.circle(handle_pos.x + handle_size / 2, handle_pos.y + handle_size / 2, handle_size, theme.accent, 1, outline_color)
 end
 
 ---@private
@@ -229,7 +240,7 @@ function Slider:renderTicks()
     local len = 8
     local thick = 2
     local pad = math.min(self.m_size.x, self.m_size.y) / 2
-    local color = theme.outline2
+    local color = theme.outline
     local tick_type = self:resolvedTickPosition()
 
     for i = 0, tick_count do
@@ -287,6 +298,7 @@ function Slider:setValue(value)
     self.val = cmath.clamp(value, self.min, self.max)
 
     if old ~= self.val then
+        self:updateValue()
         emit(self.valueChanged)
     end
 end
@@ -322,8 +334,7 @@ function Slider:setOrientation(orientation)
 end
 
 function Slider:reset()
-    self.val = 0
-    self.m_percent = 0
+    self:setValue(0)
 end
 
 ---@param min integer

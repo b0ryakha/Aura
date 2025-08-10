@@ -15,9 +15,13 @@ connect(btn2.released, function() print("Released button #2") end)
 local btn3 = aura.PushButton("on pressed", Vector2:new(250, 50))
 connect(btn3.pressed, function() print("Pressed button #3") end)
 
+local btn4 = aura.PushButton("disabled", Vector2:new(250, 50))
+btn4:setEnabled(false)
+
 layout:addItem(btn1)
 layout:addItem(btn2)
 layout:addItem(btn3)
+layout:addItem(btn4)
 
 while window.is_open() do
     app:update()

@@ -5,14 +5,21 @@ local layout = app:layout()
 layout:setLayoutType("HBox")
 
 local left = aura.Layout("VBox", nil, layout)
+left:setSpacing(50)
+
 local right = aura.Layout("HBox", nil, layout)
+right:setSpacing(50)
 
-local bar1 = aura.ProgressBar(Vector2:new(500, 50), left)
-local bar2 = aura.ProgressBar(Vector2:new(500, 50), left)
-local bar3 = aura.ProgressBar(Vector2:new(50, 300), right)
-local bar4 = aura.ProgressBar(Vector2:new(50, 300), right)
+local bar1 = aura.ProgressBar(Vector2:new(500, 30), left)
+local bar2 = aura.ProgressBar(Vector2:new(500, 30), left)
+local disabled_bar = aura.ProgressBar(Vector2:new(500, 30), left)
 
-local bar5 = aura.ProgressBar(Vector2:new(50, 300), right)
+local bar3 = aura.ProgressBar(Vector2:new(30, 300), right)
+local bar4 = aura.ProgressBar(Vector2:new(30, 300), right)
+local bar5 = aura.ProgressBar(Vector2:new(30, 300), right)
+
+disabled_bar:setEnabled(false)
+disabled_bar:setValue(50)
 
 bar1:setFormat("p: %p, v: %v, m: %m")
 bar2:setInvertedAppearance(true)

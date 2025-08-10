@@ -70,7 +70,7 @@ function Font:get_style() end
 
 ---@param symbol string -> symbol
 ---@return Vector2
-function Font:get_glyph(symbol) end
+function Font:get_bounds(symbol) end
 
 
 ---@class (exact) Sprite
@@ -301,7 +301,7 @@ function render.measure_text(font, text) end
 ---@param width number
 ---@param height number
 ---@param color Color
----@param rounding? number [0 - 100], default = nil
+---@param rounding? number [0 - 100], default = 0
 function render.rectangle(x, y, width, height, color, rounding) end
 
 ---@param x number
@@ -310,7 +310,7 @@ function render.rectangle(x, y, width, height, color, rounding) end
 ---@param height number
 ---@param thickness number
 ---@param color Color
----@param rounding? number [0 - 100], default = nil
+---@param rounding? number [0 - 100], default = 0
 function render.outline_rectangle(x, y, width, height, thickness, color, rounding) end
 
 ---@param x number
