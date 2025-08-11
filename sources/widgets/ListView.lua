@@ -41,9 +41,7 @@ local ListView = {}
 ---@param parent? Widget
 ---@return ListView
 function ListView:new(size, flow, parent)
-    local self = extends(ListView, "ListView", Widget, parent, nil, nil)
-
-    self:bindSize(size or Vector2:new(250, 200))
+    local self = extends(ListView, "ListView", Widget, parent, nil, size or Vector2:new(250, 200))
 
     self.delegate = Delegate()
 
@@ -206,6 +204,8 @@ function ListView:render()
             ), index)
         end
     end
+
+    self:widgetRender()
 end
 
 ---@return ListModel

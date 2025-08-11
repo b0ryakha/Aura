@@ -5,6 +5,8 @@ local Label = require("Label")
 local fmt = require("fmt")
 local theme = require("theme")
 
+---@TODO: fix vertical reduction
+
 ---@alias PushButton.State "Normal" | "Hovered" | "Pressed"
 
 ---@class (exact) PushButton: Widget
@@ -25,14 +27,13 @@ local PushButton = {}
 ---@param parent? Widget
 ---@return PushButton
 function PushButton:new(text, size, parent)
-    local self = extends(PushButton, "PushButton", Widget, parent)
-
     self.label = Label(text)
+
+    local self = extends(PushButton, "PushButton", Widget, parent, nil, size or (self.label:measure() + 20))
+
     self.label:setAlignment(Align("Center"))
     self.label:bindPos(self.m_pos) -- fake ref
-
-    self:bindSize(self.label:measure() + 20) -- fake ref
-    self.label:bindSize(self.m_size) -- fake ref
+    self.label:bindSize(self.m_size)
 
     self.is_flat = false
     self.state = "Normal"
@@ -49,7 +50,7 @@ setmetatable(PushButton, { __call = PushButton.new })
 
 ---@override
 function PushButton:update()
-    if not self:isEnabled() then return end
+    if not self:isEnabled() or not self:isVisible() then return end
 
     if self:isHover() or self:hasFocus() then
         if self:isHover() then
@@ -74,6 +75,8 @@ function PushButton:update()
     else
         self.state = "Normal"
     end
+
+    self:widgetUpdate()
 end
 
 ---@override
@@ -103,6 +106,7 @@ function PushButton:render()
     end
 
     self.label:render()
+    self:widgetRender()
 end
 
 ---@TODO: override to 'connect'
@@ -130,6 +134,8 @@ function PushButton:bindSize(size)
         error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
+    local is_changed = self.m_size ~= size
+
     self.m_size = size
     self.min_size = size
     if self.m_layout then self.m_layout:bindSize(size) end
@@ -137,7 +143,7 @@ function PushButton:bindSize(size)
 
     self:update()
 
-    if self.m_size ~= size then
+    if is_changed then
         emit(self.sizeChanged)
     end
 end

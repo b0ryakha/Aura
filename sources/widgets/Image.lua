@@ -21,6 +21,16 @@ function Image:new(path, size, parent)
     
     self:preventFocus()
 
+    connect(self.sizeChanged, function()
+        ---@diagnostic disable-next-line: invisible
+        self:updateGeometry()
+    end)
+
+    connect(self.posChanged, function()
+        ---@diagnostic disable-next-line: invisible
+        self:updateGeometry()
+    end)
+
     if path and path ~= "" then
         self:loadFromFile(path, self:size())
         self:setColor(theme.accent5)
@@ -31,8 +41,8 @@ end
 
 setmetatable(Image, { __call = Image.new })
 
----@override
-function Image:update()
+---@private
+function Image:updateGeometry()
     if not self.sprite then return end
 
     self.sprite:set_pos(
@@ -52,6 +62,7 @@ function Image:render()
     if not self:isVisible() then return end
 
     render.sprite(self.sprite)
+    self:widgetRender()
 end
 
 ---@override
@@ -93,6 +104,7 @@ function Image:loadFromFile(path, size)
 
     self:bindSize(size or Vector2:new(64, 64))
     self.sprite = Sprite:new(path, self.m_size.x, self.m_size.y)
+    self:updateGeometry()
 end
 
 ---@param horizontal? boolean

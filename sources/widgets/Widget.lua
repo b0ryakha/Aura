@@ -3,11 +3,10 @@ local Policy = require("Policy")
 local Signal = require("Signal")
 local fmt = require("fmt")
 local cursor_system = require("cursor_system")
-local theme = require("theme")
 require("oop")
 ---@TODO: add bind system
 
----@class (exact) Widget: CursosElement
+---@class (exact) Widget
 ---@operator call: Widget
 ---@field protected m_parent Widget
 ---@field protected childs table<integer, Widget>
@@ -22,9 +21,7 @@ require("oop")
 ---@field protected size_policy Policy
 ---@field private cursor_type cursors
 ---
----@field private tooltip string
----@field private tooltip_duration number
----@field private is_tooltip_visible boolean
+---@field private tooltip ToolTip | nil
 ---@field private is_prevent_focus boolean
 ---@field private redirected_widget Widget | nil
 ---
@@ -51,11 +48,7 @@ function Widget:new(parent, size_policy, size)
     self.size_policy = size_policy or Policy("Minimum")
     self:resetCursor()
 
-    self.tooltip = ""
-    self.tooltip_duration = 0
-    self.is_tooltip_visible = false
     self.is_prevent_focus = false
-
     self.childs = {}
 
     if parent then
@@ -67,13 +60,11 @@ function Widget:new(parent, size_policy, size)
 
     connect(window_resized, function() self:update() end)
     connect(window_started, function() self:update() end)
-    connect(cursor_stopped, function(data)
-        ---@diagnostic disable-next-line: invisible
-        self.tooltip_duration = data.duration--[[@as number]]
-    end)
     connect(window_updated, function()
-        if not self:isEnabled() then return end
-        self:renderToolTip()
+        if not self:isEnabled() or not self:isVisible() then return end
+
+        ---@diagnostic disable-next-line: invisible
+        if self.tooltip then self.tooltip:update(self:isHover()) end
 
         if self:isHover() then
             if (mouse.is_pressed(buttons.Left) or
@@ -87,7 +78,7 @@ function Widget:new(parent, size_policy, size)
         end
     end)
 
-    cursor_system.add_element(self)
+    cursor_system.add(self)
 
     return self
 end
@@ -95,10 +86,10 @@ end
 setmetatable(Widget, { __call = Widget.new })
 
 ---@virtual
-function Widget:render() self:childsRender() end
+function Widget:render() self:widgetRender() end
 
 ---@virtual
-function Widget:update() self:childsUpdate() end
+function Widget:update() self:widgetUpdate() end
 
 ---@virtual
 ---@param layout Layout ref
@@ -109,37 +100,6 @@ function Widget:setLayout(layout)
     self.m_layout:setParent(self)
     self.m_layout:bindPos(self.m_pos)
     self.m_layout:bindSize(self.m_size)
-end
-
----@virtual
----@TODO: move it to a separate class
----@TODO: make hidding after 10 seconds
----@TODO: make not follow the cursor
----@TODO: add shadow
-function Widget:renderToolTip()
-    if self.tooltip == "" then return end
-
-    local is_bound = self:isHover()
-
-    if not self.is_tooltip_visible then
-        if self.tooltip_duration > 0.5 and is_bound then
-            self.is_tooltip_visible = true
-        else
-            return
-        end
-    elseif not is_bound then
-        self.is_tooltip_visible = false
-    end
-
-    local font = theme.font
-    local measure = render.measure_text(font, self.tooltip)
-    local m_pos = cursor.get_pos()
-    local cursor_size = 16
-    local offset = 4
-
-    render.rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, theme.background4, 1)
-    render.outline_rectangle(m_pos.x + cursor_size, m_pos.y + cursor_size, measure.x + offset * 2, measure.y + offset * 2, 1, theme.outline3, 1)
-    render.text(m_pos.x + cursor_size + offset, m_pos.y + cursor_size + offset, font, self.tooltip, theme.foreground2)
 end
 
 ---@virtual
@@ -215,7 +175,7 @@ function Widget:__tostring()
     return fmt("%(pos: %, size: %, policy: %)", type(self), self.m_pos, self.m_size, self.size_policy)
 end
 
-function Widget:childsRender()
+function Widget:widgetRender()
     if not self:isVisible() then return end
 
     for _, child in ipairs(self.childs) do
@@ -225,10 +185,18 @@ function Widget:childsRender()
     if self.m_layout then
         self.m_layout:render()
     end
+
+    if self.tooltip then
+        self.tooltip:render()
+    end
 end
 
-function Widget:childsUpdate()
-    if not self:isEnabled() then return end
+function Widget:widgetUpdate()
+    if not self:isEnabled() or not self:isVisible() then return end
+
+    if self.m_layout then
+        self.m_layout:update()
+    end
 
     for _, child in ipairs(self.childs) do
         child:update()
@@ -289,7 +257,11 @@ end
 
 ---@param tooltip string
 function Widget:setToolTip(tooltip)
-    self.tooltip = tooltip
+    if not tooltip or tooltip == "" then
+        self.tooltip = nil
+    end
+
+    self.tooltip = require("ToolTip"):new(tooltip)
 end
 
 ---@return Vector2
@@ -374,7 +346,7 @@ end
 
 ---@return string
 function Widget:toolTip()
-    return self.tooltip
+    return self.tooltip and self.tooltip:text() or ""
 end
 
 ---@return Widget

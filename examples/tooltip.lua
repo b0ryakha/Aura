@@ -6,7 +6,7 @@ app:setLayoutType("HBox")
 local layout = app:layout()
 layout:setSpacing(100)
 
-local label = aura.Label("Point it at me ->")
+local label = aura.Label("Point at me ->")
 label:setToolTip("Not on the text...")
 
 local win = aura.Window(aura.Policy("Minimum"), Vector2:new(250, 250))

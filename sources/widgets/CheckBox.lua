@@ -35,16 +35,17 @@ function CheckBox:new(text, size, parent)
     self.offset = 5
     self.mutable_offset = self.offset
 
-    self.label = Label(text)
+    self.label = Label(text, self)
     self.label:setAlignment(Align("Center"))
     self.label.m_size.y = self.box_size.y
     self.label:redirectFocus(self)
 
-    self.mark = Image("assets/checkmark.png", Vector2:new(64, 64))
-
     self.state = "Normal"
     self.lock_press = false
     self.is_checked = false
+
+    self.mark = Image("assets/checkmark.png", Vector2:new(64, 64), self)
+    self.mark:setVisible(self.is_checked)
 
     self.checkStateChanged = Signal()
 
@@ -69,7 +70,7 @@ setmetatable(CheckBox, { __call = CheckBox.new })
 
 ---@override
 function CheckBox:update()
-    if not self:isEnabled() then return end
+    if not self:isEnabled() or not self:isVisible() then return end
 
     if self:isHover() or self:hasFocus() then
         if self:isHover() then
@@ -87,12 +88,15 @@ function CheckBox:update()
             self.state = "Normal"
 
             self.is_checked = not self.is_checked
+            self.mark:setVisible(self.is_checked)
 
             emit(self.checkStateChanged, { ["state"] = self.is_checked })
         end
     else
         self.state = "Normal"
     end
+
+    self:widgetUpdate()
 end
 
 ---@override
@@ -126,11 +130,7 @@ function CheckBox:render()
     render.rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, bg_color, 25)
     render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, 1, outline_color, 25)
 
-    if self.is_checked then
-        self.mark:render()
-    end
-
-    self.label:render()
+    self:widgetRender()
 end
 
 ---@override
@@ -150,6 +150,7 @@ end
 ---@param state boolean
 function CheckBox:setCheckState(state)
     self.is_checked = state
+    self.mark:setVisible(state)
 end
 
 ---@return string

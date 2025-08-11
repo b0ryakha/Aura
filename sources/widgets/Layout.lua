@@ -203,7 +203,7 @@ end
 
 ---@override
 function Layout:update()
-    if not self:isEnabled() then return end
+    if not self:isEnabled() or not self:isVisible() then return end
 
     local old_pos = {}
     local old_size = {}
@@ -237,7 +237,7 @@ function Layout:render()
         render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, self.debug_color)
     end
 
-    self:childsRender()
+    self:widgetRender()
 end
 
 ---@param item Widget

@@ -31,7 +31,7 @@ function Window:render()
     render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, bg_color)
     render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, outline_color)
 
-    self:childsRender()
+    self:widgetRender()
 end
 
 return Window

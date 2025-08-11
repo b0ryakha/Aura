@@ -47,6 +47,8 @@ setmetatable(Label, { __call = Label.new })
 
 ---@override
 function Label:update()
+    if not self:isEnabled() or not self:isVisible() then return end
+
     if self.is_link then
         if self:isHover() then
             self:setCursor(cursors.Hand)
@@ -64,6 +66,8 @@ function Label:update()
             end
         end
     end
+
+    self:widgetUpdate()
 end
 
 ---@private
@@ -123,6 +127,8 @@ function Label:render()
     local disabled = CachedColor:mixed(theme.background2, self.m_color, 0.5)
 
     render.text(x, y, self.font, self.m_text, self:isEnabled() and self.m_color or disabled)
+
+    self:widgetRender()
 end
 
 ---@param font Font

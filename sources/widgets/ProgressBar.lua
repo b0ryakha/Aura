@@ -26,7 +26,7 @@ local ProgressBar = {}
 function ProgressBar:new(size, parent)
     local self = extends(ProgressBar, "ProgressBar", Widget, parent, nil, size)
 
-    self.label = Label()
+    self.label = Label("")
     self.label:setAlignment(Align("Center"))
     self.label:bindPos(self.m_pos)
     self.label:bindSize(self.m_size)
@@ -110,6 +110,7 @@ function ProgressBar:render()
     end
 
     self.label:render()
+    self:widgetRender()
 end
 
 ---@return boolean

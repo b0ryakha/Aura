@@ -3,7 +3,7 @@ local Label = require("Label")
 local CheckBox = require("CheckBox")
 local fmt = require("fmt")
 local theme = require("theme")
----@TODO: fix a breakage when the size is strongly compressed
+---@TODO: fix the damage when narrowing horizontally
 
 ---@class (exact) GroupBox: Widget
 ---@operator call: GroupBox
@@ -12,7 +12,6 @@ local theme = require("theme")
 ---
 ---@field private offset integer
 ---@field private is_flat boolean
----@field private is_checkable boolean
 ---
 ---@field checkStateChanged Signal
 local GroupBox = {}
@@ -24,11 +23,12 @@ local GroupBox = {}
 function GroupBox:new(title, size, parent)
     local self = extends(GroupBox, "GroupBox", Widget, parent, nil, size)
 
-    self.label = Label(title)
+    self.label = Label(title, self)
     self.label:bindPos(self.m_pos)
 
-    self.checkbox = CheckBox(title, nil)
+    self.checkbox = CheckBox(title, nil, self)
     self.checkbox:setCheckState(true)
+    self.checkbox:setVisible(false)
     
     self:preventFocus()
 
@@ -49,25 +49,12 @@ function GroupBox:new(title, size, parent)
     end)
 
     self.is_flat = false
-    self.is_checkable = false
     self:updateOffset()
 
     return self
 end
 
 setmetatable(GroupBox, { __call = GroupBox.new })
-
----@override
-function GroupBox:update()
-    if not self:isEnabled() then return end
-
-    if self.is_checkable then
-        self.checkbox:update()
-    end
-
-    self.label:update()
-    self.m_layout:update()
-end
 
 ---@override
 ---@param layout Layout ref
@@ -77,7 +64,6 @@ function GroupBox:setLayout(layout)
     self.m_layout = layout
     self.m_layout:bindPos(self.m_pos)
     self.m_layout:bindSize(self.m_size)
-    self.m_layout.childs = self.childs
 
     local margins = self.m_layout:margins()
     margins.top = margins.top + self.offset
@@ -97,17 +83,7 @@ function GroupBox:render()
         render.outline_rectangle(self.m_pos.x, self.m_pos.y + self.offset, self.m_size.x, self.m_size.y, 1, outline_color, 1)
     end
 
-    if self.is_checkable then
-        self.checkbox:render()
-    else
-        self.label:render()
-    end
-
-    if self.m_layout then
-        self.m_layout:render()
-    else
-        self:childsRender()
-    end
+    self:widgetRender()
 end
 
 ---@param item Widget
@@ -146,18 +122,19 @@ end
 
 ---@return boolean
 function GroupBox:isCheckable()
-    return self.is_checkable
+    return self.checkbox:isEnabled()
 end
 
 ---@param state boolean
 function GroupBox:setCheckable(state)
-    self.is_checkable = state
+    self.checkbox:setVisible(state)
+    self.label:setVisible(not state)
     self:updateOffset()
 end
 
 ---@private
 function GroupBox:updateOffset()
-    self.offset = cmath.round(self.m_pos.y + (self.is_checkable and self.checkbox:size() or self.label:measure()).y * 1.5)
+    self.offset = cmath.round(self.m_pos.y + (self:isCheckable() and self.checkbox:size() or self.label:measure()).y * 1.5)
 end
 
 return GroupBox

@@ -39,7 +39,7 @@ local Slider = {}
 ---@param parent? Widget
 ---@return Slider
 function Slider:new(size, parent)
-    local self = extends(Slider, "Slider", Widget, parent, nil, size)
+    local self = extends(Slider, "Slider", Widget, parent, nil, size or Vector2:new(300, 20))
 
     self.min = 0
     self.max = 100
@@ -57,8 +57,6 @@ function Slider:new(size, parent)
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 50)
 
     self.valueChanged = Signal()
-
-    self:bindSize(size or Vector2:new(300, 20))
     
     return self
 end
@@ -72,7 +70,7 @@ end
 
 ---@override
 function Slider:update()
-    if not self:isEnabled() then return end
+    if not self:isEnabled() or not self:isVisible() then return end
 
     local is_bounding = cursor.is_bound(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)
 
@@ -128,6 +126,8 @@ function Slider:update()
             self:setValue(cmath.clamp(self.val + step, self.min, self.max))
         end
     end
+
+    self:widgetUpdate()
 end
 
 ---@override
@@ -225,6 +225,7 @@ function Slider:render()
     end
 
     render.circle(handle_pos.x + handle_size / 2, handle_pos.y + handle_size / 2, handle_size, theme.accent, 1, outline_color)
+    self:widgetRender()
 end
 
 ---@private

@@ -32,11 +32,6 @@ function Application:new(title, size)
     self:setLayout(Layout("VBox"))
     self.args = globalvars.get_args()
 
-    connect(self.sizeChanged, function(data)
-        local new_size = data.new_size--[[@as Vector2]]
-        window.set_size(new_size.x, new_size.y)
-    end)
-
     connect(window_resized, function()
         local win = window.get_size()
         local min = self:minSize()
@@ -53,9 +48,31 @@ end
 setmetatable(Application, { __call = Application.new })
 
 ---@override
+---@TODO: override to 'connect'
+---@param size Vector2 ref
+function Application:bindSize(size)
+    if not size then
+        error(fmt("%: Cannot bind a nil size", type(self)))
+    end
+
+    local is_changed = self.m_size ~= size
+
+    self.m_size = size
+    self.min_size = size
+    if self.m_layout then self.m_layout:bindSize(size) end
+    window.set_size(size.x, size.y)
+
+    self:update()
+
+    if is_changed then
+        emit(self.sizeChanged)
+    end
+end
+
+---@override
 function Application:render()
     render.rectangle(0, 0, self.m_size.x, self.m_size.y, theme.background2)
-    self:childsRender()
+    self:widgetRender()
 end
 
 ---@return Layout
