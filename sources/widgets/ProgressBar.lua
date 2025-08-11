@@ -3,6 +3,7 @@ local Align = require("Align")
 local Signal = require("Signal")
 local Label = require("Label")
 local theme = require("theme")
+local fmt = require("fmt")
 
 ---@class (exact) ProgressBar: Widget
 ---@operator call: ProgressBar
@@ -26,7 +27,7 @@ local ProgressBar = {}
 function ProgressBar:new(size, parent)
     local self = extends(ProgressBar, "ProgressBar", Widget, parent, nil, size)
 
-    self.label = Label()
+    self.label = Label("")
     self.label:setAlignment(Align("Center"))
     self.label:bindPos(self.m_pos)
     self.label:bindSize(self.m_size)
@@ -47,6 +48,11 @@ function ProgressBar:new(size, parent)
 end
 
 setmetatable(ProgressBar, { __call = ProgressBar.new })
+
+---@return string
+function ProgressBar:__tostring()
+    return fmt("%(v: %, min: %, max: %, o: %)", type(self), self.val, self.min, self.max, self.m_orientation)
+end
 
 ---@private
 ---@param fmt string can contains: 'p' - percent, 'v' - value, 'm' - max
@@ -110,6 +116,7 @@ function ProgressBar:render()
     end
 
     self.label:render()
+    self:parentRender()
 end
 
 ---@return boolean
@@ -178,7 +185,7 @@ function ProgressBar:setRange(min, max)
 end
 
 ---@return string
-function ProgressBar:fmt()
+function ProgressBar:format()
     return self.m_format
 end
 

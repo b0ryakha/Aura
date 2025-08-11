@@ -14,7 +14,9 @@ local theme = require("theme")
 ---
 ---@field private font Font
 ---@field private m_measure Vector2
----@field private m_color Color
+---@field private current_color Color
+---@field private default_color Color
+---@field private disabled_color Color
 ---
 ---@field private is_debug boolean
 ---@field private debug_color Color
@@ -31,7 +33,8 @@ function Label:new(text, parent)
     self.m_align = Align("Left", "Top")
     self.is_link = false
     self.word_wrap = false
-    self.m_color = theme.foreground2
+
+    self:setColor(theme.foreground2)
 
     self.is_debug = false
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 50)
@@ -39,14 +42,31 @@ function Label:new(text, parent)
     self:preventFocus()
     self:setFont(theme.font)
     self:tryWrap()
+
+    connect(self.enabled, function()
+        ---@diagnostic disable-next-line: invisible
+        self.current_color = self.default_color:copy()
+    end)
+
+    connect(self.disabled, function()
+        ---@diagnostic disable-next-line: invisible
+        self.current_color = self.disabled_color:copy()
+    end)
     
     return self
 end
 
 setmetatable(Label, { __call = Label.new })
 
+---@return string
+function Label:__tostring()
+    return fmt("%(t: %, a: %, c: %)", type(self), self.m_text, self.m_align, self.current_color)
+end
+
 ---@override
 function Label:update()
+    if not self:isEnabled() or not self:isVisible() then return end
+
     if self.is_link then
         if self:isHover() then
             self:setCursor(cursors.Hand)
@@ -64,6 +84,8 @@ function Label:update()
             end
         end
     end
+
+    self:parentUpdate()
 end
 
 ---@private
@@ -120,9 +142,9 @@ function Label:render()
         y = self.m_pos.y + self.m_size.y / 2 - self.m_measure.y / 2
     end
 
-    local disabled = CachedColor:mixed(theme.background2, self.m_color, 0.5)
+    render.text(x, y, self.font, self.m_text, self.current_color)
 
-    render.text(x, y, self.font, self.m_text, self:isEnabled() and self.m_color or disabled)
+    self:parentRender()
 end
 
 ---@param font Font
@@ -190,12 +212,14 @@ end
 
 ---@param color Color
 function Label:setColor(color)
-    self.m_color = color
+    self.default_color = color
+    self.disabled_color = CachedColor:mixed(theme.background2, self.default_color, 0.5)
+    self.current_color = self.default_color:copy()
 end
 
 ---@return Color
 function Label:color()
-    return self.m_color
+    return self.current_color
 end
 
 function Label:makeClickable()

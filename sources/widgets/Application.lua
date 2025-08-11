@@ -32,19 +32,22 @@ function Application:new(title, size)
     self:setLayout(Layout("VBox"))
     self.args = globalvars.get_args()
 
-    connect(self.sizeChanged, function(data)
-        local new_size = data.new_size--[[@as Vector2]]
-        window.set_size(new_size.x, new_size.y)
-    end)
-
     connect(window_resized, function()
-        local win = window.get_size()
+        ---@diagnostic disable-next-line: invisible
+        self.m_size = window.get_size()
         local min = self:minSize()
 
         self:resize(Vector2:new(
-            math.max(win.x, min.x),
-            math.max(win.y, min.y)
+            ---@diagnostic disable-next-line: invisible
+            math.max(self.m_size.x, min.x),
+            ---@diagnostic disable-next-line: invisible
+            math.max(self.m_size.y, min.y)
         ))
+    end)
+
+    connect(self.sizeChanged, function()
+        ---@diagnostic disable-next-line: invisible
+        window.set_size(self.m_size.x, self.m_size.y)
     end)
 
     return self
@@ -52,10 +55,15 @@ end
 
 setmetatable(Application, { __call = Application.new })
 
+---@return string
+function Application:__tostring()
+    return fmt("%(t: %)", type(self), self.m_title)
+end
+
 ---@override
 function Application:render()
     render.rectangle(0, 0, self.m_size.x, self.m_size.y, theme.background2)
-    self:childsRender()
+    self:parentRender()
 end
 
 ---@return Layout

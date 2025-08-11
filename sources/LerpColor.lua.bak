@@ -1,0 +1,49 @@
+local CachedColor = require("CachedColor")
+local dt = require("externals/deltatime/deltatime")
+
+---@class (exact) LerpColor
+---@field private current Color
+---@field private target Color
+---@field private speed number
+local LerpColor = {}
+
+---@param color Color
+---@return LerpColor
+function LerpColor:new(color)
+    self.current = color:copy()
+    self.target = self.current
+    self.speed = 20
+
+    connect(window_updated, function()
+        if self.current == self.target then return end
+        local delay = dt.getTime() * self.speed
+
+        self.current = CachedColor:new(
+            cmath.lerp(self.current.r, self.target.r, delay),
+            cmath.lerp(self.current.g, self.target.g, delay),
+            cmath.lerp(self.current.b, self.target.b, delay),
+            cmath.lerp(self.current.a, self.target.a, delay)
+        )
+    end)
+
+    return self
+end
+
+---@param target Color
+---@param speed? number default = 20
+function LerpColor:set(target, speed)
+    self.target = target
+    self.speed = speed or 20
+end
+
+---@return Color
+function LerpColor:getTarget()
+    return self.target and self.target:copy() or nil
+end
+
+---@return Color
+function LerpColor:get()
+    return self.current
+end
+
+return LerpColor

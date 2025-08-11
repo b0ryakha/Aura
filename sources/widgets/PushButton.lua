@@ -5,6 +5,8 @@ local Label = require("Label")
 local fmt = require("fmt")
 local theme = require("theme")
 
+---@TODO: fix vertical reduction
+
 ---@alias PushButton.State "Normal" | "Hovered" | "Pressed"
 
 ---@class (exact) PushButton: Widget
@@ -25,14 +27,13 @@ local PushButton = {}
 ---@param parent? Widget
 ---@return PushButton
 function PushButton:new(text, size, parent)
-    local self = extends(PushButton, "PushButton", Widget, parent)
-
     self.label = Label(text)
+
+    local self = extends(PushButton, "PushButton", Widget, parent, nil, size or (self.label:measure() + 20))
+
     self.label:setAlignment(Align("Center"))
     self.label:bindPos(self.m_pos) -- fake ref
-
-    self:bindSize(self.label:measure() + 20) -- fake ref
-    self.label:bindSize(self.m_size) -- fake ref
+    self.label:bindSize(self.m_size)
 
     self.is_flat = false
     self.state = "Normal"
@@ -41,15 +42,30 @@ function PushButton:new(text, size, parent)
     self.clicked = Signal()
     self.pressed = Signal()
     self.released = Signal()
+
+    connect(self.sizeChanged, function()
+        ---@diagnostic disable-next-line: invisible
+        self.label:bindSize(self.m_size)
+    end)
+
+    connect(self.posChanged, function()
+        ---@diagnostic disable-next-line: invisible
+        self.label:bindPos(self.m_pos)
+    end)
     
     return self
 end
 
 setmetatable(PushButton, { __call = PushButton.new })
 
+---@return string
+function PushButton:__tostring()
+    return fmt("%(t: %, s: %)", type(self), self.label:text(), self.m_size)
+end
+
 ---@override
 function PushButton:update()
-    if not self:isEnabled() then return end
+    if not self:isEnabled() or not self:isVisible() then return end
 
     if self:isHover() or self:hasFocus() then
         if self:isHover() then
@@ -74,6 +90,8 @@ function PushButton:update()
     else
         self.state = "Normal"
     end
+
+    self:parentUpdate()
 end
 
 ---@override
@@ -103,43 +121,7 @@ function PushButton:render()
     end
 
     self.label:render()
-end
-
----@TODO: override to 'connect'
----@override
----@param pos Vector2 ref
-function PushButton:bindPos(pos)
-    if not pos then
-        error(fmt("%: Cannot bind a nil pos", type(self)))
-    end
-
-    self.m_pos = pos
-    self.label:bindPos(pos)
-    self:update()
-
-    if self.m_pos ~= pos then
-        emit(self.posChanged)
-    end
-end
-
----@TODO: override to 'connect'
----@override
----@param size Vector2 ref
-function PushButton:bindSize(size)
-    if not size then
-        error(fmt("%: Cannot bind a nil size", type(self)))
-    end
-
-    self.m_size = size
-    self.min_size = size
-    if self.m_layout then self.m_layout:bindSize(size) end
-    self.label:bindSize(size)
-
-    self:update()
-
-    if self.m_size ~= size then
-        emit(self.sizeChanged)
-    end
+    self:parentRender()
 end
 
 ---@return string
@@ -156,8 +138,14 @@ end
 ---@param state boolean
 function PushButton:setEnabled(state)
     ---@diagnostic disable-next-line: invisible
+    if self.is_enabled == state then return end
+
+    ---@diagnostic disable-next-line: invisible
     self.is_enabled = state
     self.label:setEnabled(state)
+
+    if state then emit(self.enabled)
+    else emit(self.disabled) end
 end
 
 ---@return boolean

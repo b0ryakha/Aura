@@ -18,19 +18,22 @@ setmetatable(Delegate, { __call = Delegate.new })
 ---@param option DelegateOption
 ---@param index ModelIndex
 function Delegate:paint(option, index)
-    local label = Label(option.text)
-    label:setFont(option.font)
-    label:bindPos(option.rect:pos() + option.spacing)
-    label:bindSize(option.rect:size() - option.spacing)
-    label:setAlignment(option.align)
+    local pos = option:pos()
+    local size = option:size()
 
-    if option.is_hovered then
-        render.rectangle(option.rect.x, option.rect.y, option.rect.width, option.rect.height, theme.accent2)
-    elseif option.is_selected then
+    local label = Label(option:text())
+    label:setFont(option:font())
+    label:bindPos(pos + option:spacing()) -- fake ref
+    label:bindSize(option:size() - option:spacing()) -- fake ref
+    label:setAlignment(option:align())
+
+    if option:isHovered() then
+        render.rectangle(pos.x, pos.y, size.x, size.y, theme.accent2)
+    elseif option:isSelected() then
         label:setColor(theme.foreground)
-        render.rectangle(option.rect.x, option.rect.y, option.rect.width, option.rect.height, theme.accent3)
+        render.rectangle(pos.x, pos.y, size.x, size.y, theme.accent3)
     elseif index:row() % 2 == 0 then
-        render.rectangle(option.rect.x, option.rect.y, option.rect.width, option.rect.height, theme.background5)
+        render.rectangle(pos.x, pos.y, size.x, size.y, theme.background5)
     end
 
     label:render()

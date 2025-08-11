@@ -13,16 +13,10 @@ local Spacer = {}
 ---@param parent? Widget
 ---@return Spacer
 function Spacer:new(align_type, parent)
-    local self = extends(Spacer, "Spacer", Widget, parent, Policy("Maximum"))
+    local self = extends(Spacer, "Spacer", Widget, parent, Policy("Maximum"), Vector2:new(0, 0))
 
     self.align_type = align_type or "Horizontal"
     self.thickness = 8
-
-    if self.align_type == "Horizontal" then
-        self.m_size.y = self.thickness
-    else -- Vertical:
-        self.m_size.x = self.thickness
-    end
 
     self:preventFocus()
     self:hide()
@@ -32,21 +26,9 @@ end
 
 setmetatable(Spacer, { __call = Spacer.new })
 
----@override
----@TODO: override to 'connect'
----@param size Vector2 ref
-function Spacer:bindSize(size)
-    if not size then
-        error(fmt("%: Cannot bind a nil size", type(self)))
-    end
-
-    self.size_policy = Policy("Fixed")
-    self.m_size = size
-    self:update()
-
-    if self.m_size ~= size then
-        emit(self.sizeChanged)
-    end
+---@return string
+function Spacer:__tostring()
+    return fmt("%(a: %)", type(self), self.align_type)
 end
 
 ---@override

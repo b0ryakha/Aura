@@ -53,6 +53,8 @@ end
 local original = window.display
 ---@diagnostic disable-next-line: duplicate-set-field
 _G.window.display = function()
+    emit(window_updated)
+
     for _, signal in ipairs(signals) do
         signal:process()
     end
@@ -96,7 +98,7 @@ end
 
 -- default signals:
 
----provides: new_size: Vector2
+---provides: data.new_size: Vector2
 ---@diagnostic disable-next-line: lowercase-global
 window_resized = Signal(function(data)
     if not data.new_size then data.new_size = window.get_size() end
@@ -109,7 +111,7 @@ window_resized = Signal(function(data)
     return false
 end)
 
----provides: started: boolean
+---provides: data.started: boolean
 ---@diagnostic disable-next-line: lowercase-global
 window_started = Signal(function(data)
     if not data.started then
@@ -120,7 +122,7 @@ window_started = Signal(function(data)
     return false
 end)
 
----provides: duration: number
+---provides: data.duration: number
 ---@diagnostic disable-next-line: lowercase-global
 cursor_stopped = Signal(function(data)
     if not data.old_cursor_pos then data.old_cursor_pos = cursor.get_pos() end
@@ -138,8 +140,6 @@ cursor_stopped = Signal(function(data)
 end)
 
 ---@diagnostic disable-next-line: lowercase-global
-window_updated = Signal(function()
-    return true
-end)
+window_updated = Signal()
 
 return Signal

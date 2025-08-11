@@ -1,5 +1,6 @@
 local Widget = require("Widget")
 local theme = require("theme")
+local fmt = require("fmt")
 
 ---@class (exact) Window: Widget
 ---@operator call: Window
@@ -21,6 +22,11 @@ end
 
 setmetatable(Window, { __call = Window.new })
 
+---@return string
+function Window:__tostring()
+    return fmt("%(pos: %, size: %, policy: %)", type(self), self.m_pos, self.m_size, self.size_policy)
+end
+
 ---@override
 function Window:render()
     if not self:isVisible() then return end
@@ -31,7 +37,7 @@ function Window:render()
     render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, bg_color)
     render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, 1, outline_color)
 
-    self:childsRender()
+    self:parentRender()
 end
 
 return Window

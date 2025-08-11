@@ -41,6 +41,11 @@ end
 
 setmetatable(Layout, { __call = Layout.new })
 
+---@return string
+function Layout:__tostring()
+    return fmt("%(t: %, s: %, m: %)", type(self), self.type, self.m_spacing, self.m_margins)
+end
+
 ---@private
 ---@param child Widget
 function Layout:warp(child)
@@ -203,7 +208,7 @@ end
 
 ---@override
 function Layout:update()
-    if not self:isEnabled() then return end
+    if not self:isEnabled() or not self:isVisible() then return end
 
     local old_pos = {}
     local old_size = {}
@@ -220,11 +225,11 @@ function Layout:update()
         child:update()
         
         if old_pos[i] ~= child:pos() then
-            emit(child.posChanged, { ["new_pos"] = child:pos() })
+            emit(child.posChanged)
         end
 
         if old_size[i] ~= child:size() then
-            emit(child.sizeChanged, { ["new_size"] = child:size() })
+            emit(child.sizeChanged)
         end
     end
 end
@@ -237,7 +242,7 @@ function Layout:render()
         render.rectangle(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y, self.debug_color)
     end
 
-    self:childsRender()
+    self:parentRender()
 end
 
 ---@param item Widget
@@ -253,6 +258,11 @@ end
 ---@return Widget
 function Layout:itemAt(index)
     return self:childAt(index)
+end
+
+---@return table<integer, Widget>
+function Layout:items()
+    return self.childs
 end
 
 ---@param item Widget
@@ -334,7 +344,7 @@ function Layout:minSize()
     local result = Vector2:new(self.m_margins.left + self.m_margins.right, self.m_margins.top + self.m_margins.bottom)
     if #self.childs == 0 then return result end
 
-    for _, child in ipairs(self.childs) do
+    self:iterateChilds(function(child)
         local min = child:minSize()
 
         if self.type == "HBox" then
@@ -347,7 +357,7 @@ function Layout:minSize()
             result.x = result.x + min.x
             result.y = result.y + min.y
         end
-    end
+    end)
 
     if self.type == "HBox" or self.type == "Grid" then
         result.x = result.x + self.m_spacing * (#self.childs - 1)

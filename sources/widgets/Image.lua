@@ -1,9 +1,11 @@
 local Widget = require("Widget")
 local theme = require("theme")
+local fmt = require("fmt")
 
 ---@class (exact) Image: Widget
 ---@operator call: Image
 ---@field private m_color Color
+---@field private m_path string
 ---@field private sprite Sprite
 ---@field private is_h_mirror boolean
 ---@field private is_v_mirror boolean
@@ -21,18 +23,31 @@ function Image:new(path, size, parent)
     
     self:preventFocus()
 
-    if path and path ~= "" then
-        self:loadFromFile(path, self:size())
-        self:setColor(theme.accent5)
-    end
+    connect(self.sizeChanged, function()
+        ---@diagnostic disable-next-line: invisible
+        self:updateGeometry()
+    end)
+
+    connect(self.posChanged, function()
+        ---@diagnostic disable-next-line: invisible
+        self:updateGeometry()
+    end)
+
+    self:loadFromFile(path or "", self:size())
+    self:setColor(theme.accent5)
 
     return self
 end
 
 setmetatable(Image, { __call = Image.new })
 
----@override
-function Image:update()
+---@return string
+function Image:__tostring()
+    return fmt("%(p: %, c: %)", type(self), self.path, self.m_color)
+end
+
+---@private
+function Image:updateGeometry()
     if not self.sprite then return end
 
     self.sprite:set_pos(
@@ -52,14 +67,21 @@ function Image:render()
     if not self:isVisible() then return end
 
     render.sprite(self.sprite)
+    self:parentRender()
 end
 
 ---@override
 ---@param state boolean
 function Image:setEnabled(state)
     ---@diagnostic disable-next-line: invisible
+    if self.is_enabled == state then return end
+
+    ---@diagnostic disable-next-line: invisible
     self.is_enabled = state
     self.sprite:set_color(state and theme.accent5 or theme.foreground1)
+
+    if state then emit(self.enabled)
+    else emit(self.disabled) end
 end
 
 ---@return Color | nil
@@ -69,6 +91,11 @@ function Image:color()
     end
 
     return self.m_color:copy()
+end
+
+---@return string
+function Image:path()
+    return self.m_path
 end
 
 ---@param color Color
@@ -90,9 +117,15 @@ end
 ---@param size Vector2
 function Image:loadFromFile(path, size)
     if not path then return end
+    self.m_path = path
 
-    self:bindSize(size or Vector2:new(64, 64))
-    self.sprite = Sprite:new(path, self.m_size.x, self.m_size.y)
+    if path == "" then
+        self.sprite = nil
+    else
+        self:bindSize(size or Vector2:new(64, 64))
+        self.sprite = Sprite:new(path, self.m_size.x, self.m_size.y)
+        self:updateGeometry()
+    end
 end
 
 ---@param horizontal? boolean

@@ -4,6 +4,7 @@ local Signal = require("Signal")
 local Label = require("Label")
 local Image = require("Image")
 local theme = require("theme")
+local fmt = require("fmt")
 
 ---@alias CheckBox.State "Normal" | "Pressed"
 
@@ -35,25 +36,26 @@ function CheckBox:new(text, size, parent)
     self.offset = 5
     self.mutable_offset = self.offset
 
-    self.label = Label(text)
+    self.label = Label(text, self)
     self.label:setAlignment(Align("Center"))
     self.label.m_size.y = self.box_size.y
     self.label:redirectFocus(self)
-
-    self.mark = Image("assets/checkmark.png", Vector2:new(64, 64))
 
     self.state = "Normal"
     self.lock_press = false
     self.is_checked = false
 
+    self.mark = Image("assets/checkmark.png", Vector2:new(64, 64), self)
+    self.mark:setVisible(self.is_checked)
+
     self.checkStateChanged = Signal()
 
-    connect(self.sizeChanged, function() 
+    connect(self.sizeChanged, function()
         ---@diagnostic disable-next-line: invisible
         self.mark:resize(self.box_size)
     end)
 
-    connect(self.posChanged, function() 
+    connect(self.posChanged, function()
         ---@diagnostic disable-next-line: invisible
         self.label:bindPos(Vector2:new(self.m_pos.x + self.box_size.x + self.mutable_offset, self.m_pos.y))
         ---@diagnostic disable-next-line: invisible
@@ -67,9 +69,14 @@ end
 
 setmetatable(CheckBox, { __call = CheckBox.new })
 
+---@return string
+function CheckBox:__tostring()
+    return fmt("%(t: %, s: %)", type(self), self.label:text(), self.state)
+end
+
 ---@override
 function CheckBox:update()
-    if not self:isEnabled() then return end
+    if not self:isEnabled() or not self:isVisible() then return end
 
     if self:isHover() or self:hasFocus() then
         if self:isHover() then
@@ -87,12 +94,15 @@ function CheckBox:update()
             self.state = "Normal"
 
             self.is_checked = not self.is_checked
+            self.mark:setVisible(self.is_checked)
 
             emit(self.checkStateChanged, { ["state"] = self.is_checked })
         end
     else
         self.state = "Normal"
     end
+
+    self:parentUpdate()
 end
 
 ---@override
@@ -111,7 +121,7 @@ function CheckBox:render()
         end
 
         if self:hasFocus() then
-            local x = self.label:pos().x
+            local x = self.m_pos.x + self.box_size.x + self.mutable_offset
             local y = self.m_pos.y + self.box_size.y + 2
             render.rectangle(x, y, self.label:measure().x, 1, theme.accent3)
         end
@@ -126,20 +136,22 @@ function CheckBox:render()
     render.rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, bg_color, 25)
     render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, 1, outline_color, 25)
 
-    if self.is_checked then
-        self.mark:render()
-    end
-
-    self.label:render()
+    self:parentRender()
 end
 
 ---@override
 ---@param state boolean
 function CheckBox:setEnabled(state)
     ---@diagnostic disable-next-line: invisible
+    if self.is_enabled == state then return end
+
+    ---@diagnostic disable-next-line: invisible
     self.is_enabled = state
     self.label:setEnabled(state)
     self.mark:setEnabled(state)
+
+    if state then emit(self.enabled)
+    else emit(self.disabled) end
 end
 
 ---@return boolean
@@ -150,6 +162,7 @@ end
 ---@param state boolean
 function CheckBox:setCheckState(state)
     self.is_checked = state
+    self.mark:setVisible(state)
 end
 
 ---@return string

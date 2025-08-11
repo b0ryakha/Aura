@@ -41,9 +41,7 @@ local ListView = {}
 ---@param parent? Widget
 ---@return ListView
 function ListView:new(size, flow, parent)
-    local self = extends(ListView, "ListView", Widget, parent, nil, nil)
-
-    self:bindSize(size or Vector2:new(250, 200))
+    local self = extends(ListView, "ListView", Widget, parent, nil, size or Vector2:new(250, 200))
 
     self.delegate = Delegate()
 
@@ -68,6 +66,11 @@ function ListView:new(size, flow, parent)
 end
 
 setmetatable(ListView, { __call = ListView.new })
+
+---@return string
+function ListView:__tostring()
+    return fmt("%(f: %)", type(self), self.flow)
+end
 
 ---@private
 ---@param index ModelIndex
@@ -206,6 +209,8 @@ function ListView:render()
             ), index)
         end
     end
+
+    self:parentRender()
 end
 
 ---@return ListModel

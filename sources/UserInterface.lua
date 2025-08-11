@@ -16,7 +16,7 @@ local AVAILABLES = {
 
 ---@class (exact) UINode
 ---@field attributes Attributes
----@field childs table<integer, UINode>
+---@field nodes table<integer, UINode> ordered N‑ary tree
 ---@field content string
 ---@field tag string
 
@@ -40,7 +40,7 @@ function UserInterface:new(path)
     self.text = self:removeComments(self:readFile(path))
     self.cur_ch = 1
 
-    for _, node in ipairs(self:parseXml().childs) do
+    for _, node in ipairs(self:parseXml().nodes) do
         self:pushWidget(node)
     end
 
@@ -117,9 +117,9 @@ function UserInterface:pushWidget(node)
 
     local element = T:new()
 
-    for _, child_node in ipairs(node.childs) do
+    for _, child_node in ipairs(node.nodes) do
         if child_node.tag == "property" then
-            local prop = child_node.childs[1]
+            local prop = child_node.nodes[1]
             local prop_field = child_node.attributes.name--[[@as string]]
             local prop_type = prop.tag
             local prop_val = nil
@@ -132,7 +132,7 @@ function UserInterface:pushWidget(node)
             end
             if prop_type == "rect" then
                 prop_val = {}
-                for _, v in ipairs(prop.childs) do
+                for _, v in ipairs(prop.nodes) do
                     prop_val[v.tag] = tonumber(v.content)
                 end
             end
@@ -274,17 +274,17 @@ function UserInterface:parseXml()
     local attributes = self:parseAttributes()
     local content = self:parseContent()
 
-    local childs = {}
+    local nodes = {}
     local child = self:parseXml()
 
     while child ~= nil do
-        table.insert(childs, child)
+        table.insert(nodes, child)
         child = self:parseXml()
     end
 
     self:closeTag()
 
-    return { tag = tag, attributes = attributes, childs = childs, content = content }
+    return { tag = tag, attributes = attributes, nodes = nodes, content = content }
 end
 
 return UserInterface
