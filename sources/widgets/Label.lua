@@ -31,6 +31,7 @@ function Label:new(text, parent)
     self.m_align = Align("Left", "Top")
     self.is_link = false
     self.word_wrap = false
+
     self.m_color = theme.foreground2
 
     self.is_debug = false
@@ -39,6 +40,16 @@ function Label:new(text, parent)
     self:preventFocus()
     self:setFont(theme.font)
     self:tryWrap()
+
+    connect(self.enabled, function()
+        ---@diagnostic disable-next-line: invisible
+        self.current_color:set(self.default_color)
+    end)
+
+    connect(self.disabled, function()
+        ---@diagnostic disable-next-line: invisible
+        self.current_color:set(self.disabled_color)
+    end)
     
     return self
 end
@@ -125,7 +136,6 @@ function Label:render()
     end
 
     local disabled = CachedColor:mixed(theme.background2, self.m_color, 0.5)
-
     render.text(x, y, self.font, self.m_text, self:isEnabled() and self.m_color or disabled)
 
     self:widgetRender()

@@ -55,7 +55,7 @@ function Application:bindSize(size)
         error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
-    local is_changed = self.m_size ~= size
+    if self.m_size == size then return end
 
     self.m_size = size
     self.min_size = size
@@ -63,10 +63,8 @@ function Application:bindSize(size)
     window.set_size(size.x, size.y)
 
     self:update()
-
-    if is_changed then
-        emit(self.sizeChanged)
-    end
+    
+    emit(self.sizeChanged)
 end
 
 ---@override

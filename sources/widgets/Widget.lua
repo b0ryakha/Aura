@@ -27,6 +27,8 @@ require("oop")
 ---
 ---@field sizeChanged Signal provides: new_size: Vector2
 ---@field posChanged Signal provides: new_pos: Vector2
+---@field enabled Signal
+---@field disabled Signal
 local Widget = {}
 
 ---@type Widget | nil
@@ -57,6 +59,8 @@ function Widget:new(parent, size_policy, size)
 
     self.sizeChanged = Signal()
     self.posChanged = Signal()
+    self.enabled = Signal()
+    self.disabled = Signal()
 
     connect(window_resized, function() self:update() end)
     connect(window_started, function() self:update() end)
@@ -130,16 +134,14 @@ function Widget:bindSize(size)
         error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
-    local is_changed = self.m_size ~= size
+    if self.m_size == size then return end
 
     self.m_size = size
     self.min_size = size
     if self.m_layout then self.m_layout:bindSize(size) end
     self:update()
 
-    if is_changed then
-        emit(self.sizeChanged, { ["new_size"] = size })
-    end
+    emit(self.sizeChanged, { ["new_size"] = size })
 end
 
 ---@param pos Vector2 ref
@@ -148,14 +150,12 @@ function Widget:bindPos(pos)
         error(fmt("%: Cannot bind a nil pos", type(self)))
     end
 
-    local is_changed = self.m_pos ~= pos
+    if self.m_pos == pos then return end
 
     self.m_pos = pos
     self:update()
 
-    if is_changed then
-        emit(self.posChanged, { ["new_pos"] = pos })
-    end
+    emit(self.posChanged, { ["new_pos"] = pos })
 end
 
 ---@virtual
@@ -167,7 +167,12 @@ end
 ---@virtual
 ---@param state boolean
 function Widget:setEnabled(state)
+    if self.is_enabled == state then return end
+
     self.is_enabled = state
+
+    if state then emit(self.enabled)
+    else emit(self.disabled) end
 end
 
 ---@return string

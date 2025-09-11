@@ -117,13 +117,13 @@ function PushButton:bindPos(pos)
         error(fmt("%: Cannot bind a nil pos", type(self)))
     end
 
+    if self.m_pos == pos then return end
+
     self.m_pos = pos
     self.label:bindPos(pos)
     self:update()
 
-    if self.m_pos ~= pos then
-        emit(self.posChanged)
-    end
+    emit(self.posChanged)
 end
 
 ---@TODO: override to 'connect'
@@ -134,7 +134,7 @@ function PushButton:bindSize(size)
         error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
-    local is_changed = self.m_size ~= size
+    if self.m_size == size then return end
 
     self.m_size = size
     self.min_size = size
@@ -143,9 +143,7 @@ function PushButton:bindSize(size)
 
     self:update()
 
-    if is_changed then
-        emit(self.sizeChanged)
-    end
+    emit(self.sizeChanged)
 end
 
 ---@return string
@@ -162,8 +160,14 @@ end
 ---@param state boolean
 function PushButton:setEnabled(state)
     ---@diagnostic disable-next-line: invisible
+    if self.is_enabled == state then return end
+
+    ---@diagnostic disable-next-line: invisible
     self.is_enabled = state
     self.label:setEnabled(state)
+
+    if state then emit(self.enabled)
+    else emit(self.disabled) end
 end
 
 ---@return boolean

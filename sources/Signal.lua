@@ -53,6 +53,8 @@ end
 local original = window.display
 ---@diagnostic disable-next-line: duplicate-set-field
 _G.window.display = function()
+    emit(window_updated)
+
     for _, signal in ipairs(signals) do
         signal:process()
     end
@@ -138,8 +140,6 @@ cursor_stopped = Signal(function(data)
 end)
 
 ---@diagnostic disable-next-line: lowercase-global
-window_updated = Signal(function()
-    return true
-end)
+window_updated = Signal()
 
 return Signal

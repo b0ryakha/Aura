@@ -40,15 +40,13 @@ function Spacer:bindSize(size)
         error(fmt("%: Cannot bind a nil size", type(self)))
     end
 
-    local is_changed = self.m_size ~= size
+    if self.m_size == size then return end
 
     self.size_policy = Policy("Fixed")
     self.m_size = size
     self:update()
 
-    if is_changed then
-        emit(self.sizeChanged)
-    end
+    emit(self.sizeChanged)
 end
 
 ---@override

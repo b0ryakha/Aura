@@ -69,8 +69,14 @@ end
 ---@param state boolean
 function Image:setEnabled(state)
     ---@diagnostic disable-next-line: invisible
+    if self.is_enabled == state then return end
+
+    ---@diagnostic disable-next-line: invisible
     self.is_enabled = state
     self.sprite:set_color(state and theme.accent5 or theme.foreground1)
+
+    if state then emit(self.enabled)
+    else emit(self.disabled) end
 end
 
 ---@return Color | nil

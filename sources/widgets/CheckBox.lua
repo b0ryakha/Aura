@@ -137,9 +137,15 @@ end
 ---@param state boolean
 function CheckBox:setEnabled(state)
     ---@diagnostic disable-next-line: invisible
+    if self.is_enabled == state then return end
+
+    ---@diagnostic disable-next-line: invisible
     self.is_enabled = state
     self.label:setEnabled(state)
     self.mark:setEnabled(state)
+
+    if state then emit(self.enabled)
+    else emit(self.disabled) end
 end
 
 ---@return boolean
