@@ -75,7 +75,7 @@ function Slider:updateValue()
 end
 
 ---@override
-function Slider:update()
+function Slider:update(dt)
     if not self:isEnabled() or not self:isVisible() then return end
 
     local is_bounding = cursor.is_bound(self.m_pos.x, self.m_pos.y, self.m_size.x, self.m_size.y)

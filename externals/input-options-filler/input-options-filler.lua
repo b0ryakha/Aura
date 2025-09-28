@@ -48,4 +48,4 @@ local aligned_heh = indent .. "\"options\": [ \"" .. table.concat(list, "\", \""
 table.insert(tasks, options_start, aligned_heh)
 
 file.write(tasks_path, tasks, true)
-print(program .. ": " .. tasks_path .. "has been successfully updated!")
+print(program .. ": " .. tasks_path .. " has been successfully updated!")

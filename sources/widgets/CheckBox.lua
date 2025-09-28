@@ -89,7 +89,7 @@ function CheckBox:__tostring()
 end
 
 ---@override
-function CheckBox:update()
+function CheckBox:update(dt)
     if not self:isEnabled() or not self:isVisible() then return end
 
     if self:isHover() or self:hasFocus() then

@@ -98,7 +98,7 @@ end
 function Widget:render() self:parentRender() end
 
 ---@virtual
-function Widget:update() self:parentUpdate() end
+function Widget:update(dt) self:parentUpdate(dt) end
 
 ---@virtual
 ---@param layout Layout ref
@@ -186,15 +186,15 @@ function Widget:parentRender()
     end
 end
 
-function Widget:parentUpdate()
+function Widget:parentUpdate(dt)
     if not self:isEnabled() or not self:isVisible() then return end
 
     if self.m_layout then
-        self.m_layout:update()
+        self.m_layout:update(dt)
     end
 
     self:iterateChilds(function(child)
-        child:update()
+        child:update(dt)
     end)
 end
 

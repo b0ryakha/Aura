@@ -74,7 +74,7 @@ function PushButton:__tostring()
 end
 
 ---@override
-function PushButton:update()
+function PushButton:update(dt)
     if not self:isEnabled() or not self:isVisible() then return end
 
     if self:isHover() or self:hasFocus() then

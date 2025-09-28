@@ -7,14 +7,13 @@
             "icon": { "id": "debug" },
             "command": "./externals/moonshine/Moonshine.exe",
             "args": [ "./examples/${input:selectTestPath}", "||", "true" ],
-            "dependsOn": [ "Static Analysis", "Fill inputs.options" ],
+            "dependsOn": [ "Static Analysis" ],
             "problemMatcher": [],
             "group":{
                 "kind": "build",
                 "isDefault": true
             },
             "presentation": {
-                "close": true,
                 "showReuseMessage": false
             }
         },
@@ -36,7 +35,6 @@
             "args": [ "./externals/input-options-filler/input-options-filler.lua", "./examples", "||", "true" ],
             "problemMatcher": [],
             "presentation": {
-                "close": true,
                 "showReuseMessage": false
             }
         }

@@ -3,6 +3,8 @@ local Widget = require("Widget")
 local Layout = require("Layout")
 local fmt = require("fmt")
 local theme = require("theme")
+local deltatime = require("externals/deltatime/deltatime")
+local dt = 0
 
 ---@class (exact) Application: Widget
 ---@operator call: Application
@@ -58,6 +60,17 @@ setmetatable(Application, { __call = Application.new })
 ---@return string
 function Application:__tostring()
     return fmt("%(title: %)", type(self), self.m_title)
+end
+
+---@return number
+function Application:deltaTime()
+    return dt
+end
+
+---@override
+function Application:update()
+    dt = deltatime.getTime()
+    self:parentUpdate(dt)
 end
 
 ---@override

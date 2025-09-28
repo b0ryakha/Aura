@@ -339,9 +339,12 @@ function render.circle(x, y, radius, color, thickness, outlineColor) end
 ---@param color Color
 function render.line(x1, y1, x2, y2, thickness, color) end
 
----@param points table<number, number[]>
----@param color Color
-function render.polygon(points, color) end
+---@class (exact) Point
+---@field pos Vector2
+---@field color Color
+
+---@param points table<integer, Point>
+function render.polygon(points) end
 
 
 globalvars = {}
@@ -612,8 +615,8 @@ keys = {
 ---@return keys | string -> key | symbol
 function keyboard.get_pressed(return_symbol) end
 
----@param key keys
----@return boolean
+---@param key? keys
+---@return boolean | string -> boolean | symbol
 function keyboard.is_pressed(key) end
 
 
@@ -640,3 +643,14 @@ function mouse.is_scrolling_up() end
 
 ---@return boolean
 function mouse.is_scrolling_down() end
+
+
+hotreload = {}
+
+---@return table<string, any>
+function hotreload.get_state() end
+
+---@param state table<string, any>
+function hotreload.set_state(state) end
+
+function hotreload.reload() end

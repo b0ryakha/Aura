@@ -12,7 +12,7 @@ local theme = require("theme")
 ---@field private is_link boolean
 ---@field private word_wrap boolean
 ---
----@field private font Font
+---@field private m_font Font
 ---@field private m_measure Vector2
 ---@field private current_color Color
 ---@field private default_color Color
@@ -64,7 +64,7 @@ function Label:__tostring()
 end
 
 ---@override
-function Label:update()
+function Label:update(dt)
     if not self:isEnabled() or not self:isVisible() then return end
 
     if self.is_link then
@@ -104,7 +104,7 @@ function Label:tryWrap()
 
     for i = 1, #self.m_text do
         local char = self.m_text:sub(i, i)
-        local char_width = self.font:get_bounds(char).x
+        local char_width = self.m_font:get_bounds(char).x
 
         if (line_width + char_width) >= self.m_size.x then
             wrapped = wrapped .. '\n'
@@ -143,22 +143,27 @@ function Label:render()
         y = self.m_pos.y + self.m_size.y / 2 - self.m_measure.y / 2
     end
 
-    render.text(x, y, self.font, self.m_text, self.current_color)
+    render.text(x, y, self.m_font, self.m_text, self.current_color)
 
     self:parentRender()
 end
 
 ---@param font Font
 function Label:setFont(font)
-    self.font = font
-    self.m_measure = render.measure_text(self.font, self.m_text)
+    self.m_font = font
+    self.m_measure = render.measure_text(self.m_font, self.m_text)
     self:resize(self.m_measure)
 
     if self.is_link then
-        self:setStyle("l")
+        self:makeClickable()
     end
 
     self:tryWrap()
+end
+
+---@return Font
+function Label:font()
+    return self.m_font
 end
 
 ---@return Vector2
@@ -174,7 +179,7 @@ end
 ---@param text string
 function Label:setText(text)
     self.m_text = text
-    self.m_measure = render.measure_text(self.font, self.m_text)
+    self.m_measure = render.measure_text(self.m_font, self.m_text)
     self:tryWrap()
 end
 
@@ -202,12 +207,12 @@ end
 
 ---@return string Moonshine Moonshine Font style
 function Label:style()
-    return self.font:get_style()
+    return self.m_font:get_style()
 end
 
----@param style string Moonshine Font style
+---@param style string can store symbols: 'r' - Regular, 'b' - Bold, 'i' - Italic, 's' - StrikeThrough, default = "r"
 function Label:setStyle(style)
-    self.font = CachedFont:new(self.font:get_family(), self.font:get_size(), style)
+    self.m_font = CachedFont:new(self.m_font:get_family(), self.m_font:get_size(), style:gsub("l", ""))
     self:tryWrap()
 end
 
@@ -225,7 +230,8 @@ end
 
 function Label:makeClickable()
     self.is_link = true
-    self:setStyle(self:style() .. "l")
+    self.m_font = CachedFont:new(self.m_font:get_family(), self.m_font:get_size(), self:style())
+    self:tryWrap()
 end
 
 ---@return boolean

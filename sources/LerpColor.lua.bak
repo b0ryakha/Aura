@@ -1,5 +1,4 @@
 local CachedColor = require("CachedColor")
-local dt = require("externals/deltatime/deltatime")
 
 ---@class (exact) LerpColor
 ---@field private current Color

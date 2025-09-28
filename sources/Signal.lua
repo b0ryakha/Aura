@@ -1,4 +1,3 @@
-local dt = require("externals/deltatime/deltatime")
 require("oop")
 
 ---@alias SignalData table<string, any>
@@ -129,7 +128,7 @@ cursor_stopped = Signal(function(data)
     if not data.duration then data.duration = 0 end
 
     if data.old_cursor_pos == cursor.get_pos() then
-        data.duration = data.duration + dt.getTime()
+        data.duration = data.duration + require("Application"):deltaTime()
         return true
     else
         data.duration = 0

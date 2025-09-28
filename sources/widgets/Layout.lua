@@ -207,7 +207,7 @@ function Layout:vAlign()
 end
 
 ---@override
-function Layout:update()
+function Layout:update(dt)
     if not self:isEnabled() or not self:isVisible() then return end
 
     local old_pos = {}
@@ -222,7 +222,7 @@ function Layout:update()
     if self.type == "Grid" then error("Layout: not impl") end
 
     for i, child in ipairs(self.childs) do
-        child:update()
+        child:update(dt)
         
         if old_pos[i] ~= child:pos() then
             emit(child.posChanged)
