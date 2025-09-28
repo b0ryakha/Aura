@@ -13,7 +13,7 @@ local ModelItem = {}
 ---@param tooltip? string
 ---@return ModelItem
 function ModelItem:new(display, decoration, tooltip)
-    local self = create(ModelItem, "ModelItem")
+    local self = create(self, "ModelItem")
 
     self.data = {}
 

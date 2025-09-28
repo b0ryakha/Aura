@@ -19,7 +19,7 @@ local signals = {};
 ---@param trigger? Trigger
 ---@return Signal
 function Signal:new(trigger)
-    local self = create(Signal, "Signal")
+    local self = create(self, "Signal")
     
     self.trigger = trigger or function(data) end
     self.slots = {}

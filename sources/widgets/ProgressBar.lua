@@ -25,7 +25,7 @@ local ProgressBar = {}
 ---@param parent? Widget
 ---@return ProgressBar
 function ProgressBar:new(size, parent)
-    local self = extends(ProgressBar, "ProgressBar", Widget, parent, nil, size)
+    local self = extends(self, "ProgressBar", Widget, parent, nil, size)
 
     self.label = Label("")
     self.label:setAlignment(Align("Center"))
@@ -51,7 +51,7 @@ setmetatable(ProgressBar, { __call = ProgressBar.new })
 
 ---@return string
 function ProgressBar:__tostring()
-    return fmt("%(v: %, min: %, max: %, o: %)", type(self), self.val, self.min, self.max, self.m_orientation)
+    return fmt("%(val: %, min: %, max: %, orientation: %)", type(self), self.val, self.min, self.max, self.m_orientation)
 end
 
 ---@private

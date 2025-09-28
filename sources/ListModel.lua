@@ -9,7 +9,7 @@ local ListModel = {}
 ---@param values? table<integer, ModelItem.Value>
 ---@return ListModel
 function ListModel:new(values)
-    local self = extends(ListModel, "ListModel", Model)
+    local self = extends(self, "ListModel", Model)
 
     if values ~= nil then
         for i, value in ipairs(values) do

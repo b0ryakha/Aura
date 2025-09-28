@@ -17,12 +17,20 @@ end
 ---@return T
 ---@diagnostic disable-next-line: lowercase-global
 function create(class, name)
-    return setmetatable({}, {
-        __index = class,
-        __type = name,
-        __tostring = class--[[@as any]].__tostring,
-        __eq = class--[[@as any]].__eq,
-    })
+    local mt = {
+        __index = {},
+        __type = name
+    }
+
+    for k, v in pairs(class) do
+        if type(v) == "function" and string.sub(k, 1, 2) == "__" then
+            mt[k] = v
+        else
+            mt.__index[k] = v
+        end
+    end
+
+    return setmetatable({}, mt)
 end
 
 ---@generic T, U
@@ -33,14 +41,19 @@ end
 ---@return T
 ---@diagnostic disable-next-line: lowercase-global
 function extends(child, name, base, ...)
-    local index = {}
+    local instance = base--[[@as any]]:new(...)
+    
+    local mt = getmetatable(instance)
+    mt.__type = name
+    mt.__base_type = type(instance)
 
-    for k, v in pairs(base) do index[k] = v end
-    for k, v in pairs(child) do index[k] = v end
+    for k, v in pairs(child) do
+        if type(v) == "function" and string.sub(k, 1, 2) == "__" then
+            mt[k] = v
+        else
+            mt.__index[k] = v
+        end
+    end
 
-    return setmetatable(base--[[@as any]]:new(...), {
-        __index = index,
-        __type = name,
-        __base_type = type(base)
-    })
+    return setmetatable(instance, mt)
 end

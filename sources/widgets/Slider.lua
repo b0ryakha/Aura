@@ -40,7 +40,7 @@ local Slider = {}
 ---@param parent? Widget
 ---@return Slider
 function Slider:new(size, parent)
-    local self = extends(Slider, "Slider", Widget, parent, nil, size or Vector2:new(300, 20))
+    local self = extends(self, "Slider", Widget, parent, nil, size or Vector2:new(300, 20))
 
     self.min = 0
     self.max = 100
@@ -66,7 +66,7 @@ setmetatable(Slider, { __call = Slider.new })
 
 ---@return string
 function Slider:__tostring()
-    return fmt("%(v: %, min: %, max: %, o: %)", type(self), self.val, self.min, self.max, self.m_orientation)
+    return fmt("%(val: %, min: %, max: %, orientation: %)", type(self), self.val, self.min, self.max, self.m_orientation)
 end
 
 ---@private

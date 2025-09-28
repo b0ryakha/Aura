@@ -12,7 +12,7 @@ local Window = {}
 ---@param parent? Widget
 ---@return Window
 function Window:new(size_policy, size, parent)
-    local self = extends(Window, "Window", Widget, parent, size_policy, size)
+    local self = extends(self, "Window", Widget, parent, size_policy, size)
 
     self.rounding = 0
     self:preventFocus()
@@ -21,11 +21,6 @@ function Window:new(size_policy, size, parent)
 end
 
 setmetatable(Window, { __call = Window.new })
-
----@return string
-function Window:__tostring()
-    return fmt("%(pos: %, size: %, policy: %)", type(self), self.m_pos, self.m_size, self.size_policy)
-end
 
 ---@override
 function Window:render()

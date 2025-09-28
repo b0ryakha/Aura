@@ -32,7 +32,7 @@ local UserInterface = {}
 ---@param path string
 ---@return UIData
 function UserInterface:new(path)
-    local self = create(UserInterface, "UserInterface")
+    local self = create(self, "UserInterface")
 
     self.data = {}
     self.vars = {}

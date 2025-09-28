@@ -20,7 +20,7 @@ local DelegateOption = {}
 ---@param align Align
 ---@return DelegateOption
 function DelegateOption:new(is_selected, is_hovered, text, rect, font, spacing, align)
-    local self = create(DelegateOption, "DelegateOption")
+    local self = create(self, "DelegateOption")
 
     self.is_selected = is_selected
     self.is_hovered = is_hovered

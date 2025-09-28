@@ -46,7 +46,7 @@
             "id": "selectTestPath",
             "type": "pickString",
             "description": "Select test script",
-            "options": [ "checkbox.lua", "explorer.lua", "groupbox.lua", "label.lua", "layout.lua", "listview.lua", "progressbar.lua", "pushbutton.lua", "slider.lua", "tooltip.lua", "userinterface.lua" ],
+            "options": [ "checkbox.lua", "explorer.lua", "groupbox.lua", "label.lua", "layout.lua", "listview.lua", "progressbar.lua", "pushbutton.lua", "slider.lua", "textedit.lua", "tooltip.lua", "userinterface.lua" ],
         }
     ]
 }

@@ -8,7 +8,7 @@ local Delegate = {}
 
 ---@return Delegate
 function Delegate:new()
-    local self = create(Delegate, "Delegate")
+    local self = create(self, "Delegate")
     return self
 end
 

@@ -29,7 +29,7 @@ local PushButton = {}
 function PushButton:new(text, size, parent)
     self.label = Label(text)
 
-    local self = extends(PushButton, "PushButton", Widget, parent, nil, size or (self.label:measure() + 20))
+    local self = extends(self, "PushButton", Widget, parent, nil, size or (self.label:measure() + 20))
 
     self.label:setAlignment(Align("Center"))
     self.label:bindPos(self.m_pos) -- fake ref
@@ -42,6 +42,16 @@ function PushButton:new(text, size, parent)
     self.clicked = Signal()
     self.pressed = Signal()
     self.released = Signal()
+
+    connect(self.enabled, function()
+        ---@diagnostic disable-next-line: invisible
+        self.label:setEnabled(self:isEnabled())
+    end)
+
+    connect(self.disabled, function()
+        ---@diagnostic disable-next-line: invisible
+        self.label:setEnabled(self:isEnabled())
+    end)
 
     connect(self.sizeChanged, function()
         ---@diagnostic disable-next-line: invisible
@@ -60,7 +70,7 @@ setmetatable(PushButton, { __call = PushButton.new })
 
 ---@return string
 function PushButton:__tostring()
-    return fmt("%(t: %, s: %)", type(self), self.label:text(), self.m_size)
+    return fmt("%(text: %, size: %)", type(self), self.label:text(), self.m_size)
 end
 
 ---@override
@@ -132,20 +142,6 @@ end
 ---@param text string
 function PushButton:setText(text)
     self.label:setText(text)
-end
-
----@override
----@param state boolean
-function PushButton:setEnabled(state)
-    ---@diagnostic disable-next-line: invisible
-    if self.is_enabled == state then return end
-
-    ---@diagnostic disable-next-line: invisible
-    self.is_enabled = state
-    self.label:setEnabled(state)
-
-    if state then emit(self.enabled)
-    else emit(self.disabled) end
 end
 
 ---@return boolean

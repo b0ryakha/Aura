@@ -11,7 +11,7 @@ local ModelIndex = {}
 ---@param column? integer
 ---@return ModelIndex
 function ModelIndex:new(row, column)
-    local self = create(ModelIndex, "ModelIndex")
+    local self = create(self, "ModelIndex")
 
     self.m_row = row
     self.m_column = column

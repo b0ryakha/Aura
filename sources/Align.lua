@@ -14,7 +14,7 @@ local Align = {}
 ---@param v? Align.Vertical
 ---@return Align
 function Align:new(h, v)
-    local self = create(Align, "Align")
+    local self = create(self, "Align")
 
     self.h = h
     self.v = v or "Center"

@@ -21,7 +21,7 @@ local GroupBox = {}
 ---@param parent Widget
 ---@return GroupBox
 function GroupBox:new(title, size, parent)
-    local self = extends(GroupBox, "GroupBox", Widget, parent, nil, size)
+    local self = extends(self, "GroupBox", Widget, parent, nil, size)
 
     self.label = Label(title, self)
     self.label:bindPos(self.m_pos)
@@ -57,7 +57,7 @@ setmetatable(GroupBox, { __call = GroupBox.new })
 
 ---@return string
 function GroupBox:__tostring()
-    return fmt("%(t: %, flat: %)", type(self), self.label:text(), self.is_flat)
+    return fmt("%(text: %, flat: %)", type(self), self.label:text(), self.is_flat)
 end
 
 ---@override

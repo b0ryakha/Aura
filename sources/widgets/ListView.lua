@@ -41,7 +41,7 @@ local ListView = {}
 ---@param parent? Widget
 ---@return ListView
 function ListView:new(size, flow, parent)
-    local self = extends(ListView, "ListView", Widget, parent, nil, size or Vector2:new(250, 200))
+    local self = extends(self, "ListView", Widget, parent, nil, size or Vector2:new(250, 200))
 
     self.delegate = Delegate()
 
@@ -69,7 +69,7 @@ setmetatable(ListView, { __call = ListView.new })
 
 ---@return string
 function ListView:__tostring()
-    return fmt("%(f: %)", type(self), self.flow)
+    return fmt("%(flow: %, size: %)", type(self), self.m_flow, self.m_size)
 end
 
 ---@private

@@ -13,7 +13,7 @@ local Model = {}
 
 ---@return Model
 function Model:new()
-    local self = create(Model, "Model")
+    local self = create(self, "Model")
 
     self.items = {}
     self.count = Vector2:new(0, 0)

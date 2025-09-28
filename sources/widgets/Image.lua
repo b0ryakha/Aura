@@ -16,12 +16,22 @@ local Image = {}
 ---@param parent? Widget
 ---@return Image
 function Image:new(path, size, parent)
-    local self = extends(Image, "Image", Widget, parent, nil, size)
+    local self = extends(self, "Image", Widget, parent, nil, size)
 
     self.is_h_mirror = false
     self.is_v_mirror = false
     
     self:preventFocus()
+
+    connect(self.enabled, function()
+        ---@diagnostic disable-next-line: invisible
+        self.sprite:set_color(theme.accent5)
+    end)
+
+    connect(self.disabled, function()
+        ---@diagnostic disable-next-line: invisible
+        self.sprite:set_color(theme.foreground1)
+    end)
 
     connect(self.sizeChanged, function()
         ---@diagnostic disable-next-line: invisible
@@ -43,7 +53,7 @@ setmetatable(Image, { __call = Image.new })
 
 ---@return string
 function Image:__tostring()
-    return fmt("%(p: %, c: %)", type(self), self.path, self.m_color)
+    return fmt("%(path: %, color: %)", type(self), self.m_path, self.m_color)
 end
 
 ---@private
@@ -68,20 +78,6 @@ function Image:render()
 
     render.sprite(self.sprite)
     self:parentRender()
-end
-
----@override
----@param state boolean
-function Image:setEnabled(state)
-    ---@diagnostic disable-next-line: invisible
-    if self.is_enabled == state then return end
-
-    ---@diagnostic disable-next-line: invisible
-    self.is_enabled = state
-    self.sprite:set_color(state and theme.accent5 or theme.foreground1)
-
-    if state then emit(self.enabled)
-    else emit(self.disabled) end
 end
 
 ---@return Color | nil

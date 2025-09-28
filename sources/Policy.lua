@@ -13,7 +13,7 @@ local Policy = {}
 ---@param v? Policy.Type
 ---@return Policy
 function Policy:new(h, v)
-    local self = create(Policy, "Policy")
+    local self = create(self, "Policy")
 
     self.h = h
     self.v = v or h

@@ -16,7 +16,7 @@ local Application = {}
 ---@param size? Vector2
 ---@return Application
 function Application:new(title, size)
-    local self = extends(Application, "Application", Widget, nil, Policy("Maximum"), nil)
+    local self = extends(self, "Application", Widget, nil, Policy("Maximum"), nil)
     
     if size then
         self:resize(size)
@@ -57,7 +57,7 @@ setmetatable(Application, { __call = Application.new })
 
 ---@return string
 function Application:__tostring()
-    return fmt("%(t: %)", type(self), self.m_title)
+    return fmt("%(title: %)", type(self), self.m_title)
 end
 
 ---@override

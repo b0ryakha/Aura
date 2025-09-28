@@ -39,7 +39,7 @@ local focused = nil
 ---@param size? Vector2
 ---@return Widget
 function Widget:new(parent, size_policy, size)
-    local self = create(Widget, "Widget")
+    local self = create(self, "Widget")
 
     self.m_pos = Vector2:new(0, 0)
     self.is_visible = true
@@ -155,13 +155,11 @@ function Widget:bindPos(pos)
     end
 end
 
----@virtual
 ---@param visible boolean
 function Widget:setVisible(visible)
     self.is_visible = visible
 end
 
----@virtual
 ---@param state boolean
 function Widget:setEnabled(state)
     if self.is_enabled == state then return end

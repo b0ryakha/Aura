@@ -15,7 +15,7 @@ local Margins = {}
 ---@param bottom number
 ---@return Margins
 function Margins:new(left, right, top, bottom)
-    local self = create(Margins, "Margins")
+    local self = create(self, "Margins")
     
     self.left = left
     self.right = right

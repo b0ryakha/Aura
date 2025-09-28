@@ -16,7 +16,7 @@ local ToolTip = {}
 ---@param text? string
 ---@return ToolTip
 function ToolTip:new(text)
-    local self = create(ToolTip, "ToolTip")
+    local self = create(self, "ToolTip")
 
     self.label = Label(text)
     self.label:setAlignment(Align("Center"))

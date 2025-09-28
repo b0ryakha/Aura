@@ -13,7 +13,7 @@ local Spacer = {}
 ---@param parent? Widget
 ---@return Spacer
 function Spacer:new(align_type, parent)
-    local self = extends(Spacer, "Spacer", Widget, parent, Policy("Maximum"), Vector2:new(0, 0))
+    local self = extends(self, "Spacer", Widget, parent, Policy("Maximum"), Vector2:new(0, 0))
 
     self.align_type = align_type or "Horizontal"
     self.thickness = 8
@@ -28,7 +28,7 @@ setmetatable(Spacer, { __call = Spacer.new })
 
 ---@return string
 function Spacer:__tostring()
-    return fmt("%(a: %)", type(self), self.align_type)
+    return fmt("%(align: %)", type(self), self.align_type)
 end
 
 ---@override

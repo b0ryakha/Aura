@@ -15,7 +15,7 @@ local Geometry = {}
 ---@param height number
 ---@return Geometry
 function Geometry:new(x, y, width, height)
-    local self = create(Geometry, "Geometry")
+    local self = create(self, "Geometry")
     
     self.x = x
     self.y = y

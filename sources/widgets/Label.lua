@@ -27,7 +27,7 @@ local Label = {}
 ---@param parent? Widget
 ---@return Label
 function Label:new(text, parent)
-    local self = extends(Label, "Label", Widget, parent, Policy("Fixed"), nil)
+    local self = extends(self, "Label", Widget, parent, Policy("Fixed"), nil)
 
     self.m_text = text or ""
     self.m_align = Align("Left", "Top")
@@ -60,7 +60,7 @@ setmetatable(Label, { __call = Label.new })
 
 ---@return string
 function Label:__tostring()
-    return fmt("%(t: %, a: %, c: %)", type(self), self.m_text, self.m_align, self.current_color)
+    return fmt("%(text: %, align: %, color: %)", type(self), self.m_text, self.m_align, self.current_color)
 end
 
 ---@override
@@ -93,6 +93,7 @@ function Label:removeNewLines()
     self.m_text = self.m_text:gsub('\n', '')
 end
 
+---@TODO: wrap only word, not symbols
 ---@private
 function Label:tryWrap()
     if not self.word_wrap then return end

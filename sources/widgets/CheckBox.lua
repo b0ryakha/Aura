@@ -30,7 +30,7 @@ local CheckBox = {}
 ---@param parent? Widget
 ---@return CheckBox
 function CheckBox:new(text, size, parent)
-    local self = extends(CheckBox, "CheckBox", Widget, parent, nil, nil)
+    local self = extends(self, "CheckBox", Widget, parent, nil, nil)
 
     self.box_size = size or Vector2:new(14, 14)
     self.offset = 5
@@ -49,6 +49,20 @@ function CheckBox:new(text, size, parent)
     self.mark:setVisible(self.is_checked)
 
     self.checkStateChanged = Signal()
+
+    connect(self.enabled, function()
+        ---@diagnostic disable-next-line: invisible
+        self.label:setEnabled(self:isEnabled())
+        ---@diagnostic disable-next-line: invisible
+        self.mark:setEnabled(self:isEnabled())
+    end)
+
+    connect(self.disabled, function()
+        ---@diagnostic disable-next-line: invisible
+        self.label:setEnabled(self:isEnabled())
+        ---@diagnostic disable-next-line: invisible
+        self.mark:setEnabled(self:isEnabled())
+    end)
 
     connect(self.sizeChanged, function()
         ---@diagnostic disable-next-line: invisible
@@ -71,7 +85,7 @@ setmetatable(CheckBox, { __call = CheckBox.new })
 
 ---@return string
 function CheckBox:__tostring()
-    return fmt("%(t: %, s: %)", type(self), self.label:text(), self.state)
+    return fmt("%(text: %, checked: %)", type(self), self.label:text(), self.is_checked)
 end
 
 ---@override
@@ -137,21 +151,6 @@ function CheckBox:render()
     render.outline_rectangle(self.m_pos.x, self.m_pos.y, self.box_size.x, self.box_size.y, 1, outline_color, 25)
 
     self:parentRender()
-end
-
----@override
----@param state boolean
-function CheckBox:setEnabled(state)
-    ---@diagnostic disable-next-line: invisible
-    if self.is_enabled == state then return end
-
-    ---@diagnostic disable-next-line: invisible
-    self.is_enabled = state
-    self.label:setEnabled(state)
-    self.mark:setEnabled(state)
-
-    if state then emit(self.enabled)
-    else emit(self.disabled) end
 end
 
 ---@return boolean

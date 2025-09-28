@@ -21,7 +21,7 @@ local Layout = {}
 ---@param parent? Widget
 ---@return Layout
 function Layout:new(align_type, size, parent)
-    local self = extends(Layout, "Layout", Widget, parent, Policy("Maximum"), size)
+    local self = extends(self, "Layout", Widget, parent, Policy("Maximum"), size)
 
     if self.m_parent and type(self.m_parent) ~= "Layout" then
         self.m_parent:setLayout(self)
@@ -43,7 +43,7 @@ setmetatable(Layout, { __call = Layout.new })
 
 ---@return string
 function Layout:__tostring()
-    return fmt("%(t: %, s: %, m: %)", type(self), self.type, self.m_spacing, self.m_margins)
+    return fmt("%(type: %, spacing: %, size: %, margins: %)", type(self), self.type, self.m_spacing, self.m_size, self.m_margins)
 end
 
 ---@private

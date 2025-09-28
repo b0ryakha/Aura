@@ -20,6 +20,8 @@ local aura = {
     Spacer = require("Spacer")--[[@as Spacer]],
     Window = require("Window")--[[@as Window]],
     Widget = require("Widget")--[[@as Widget]],
+    TextEdit = require("TextEdit")--[[@as TextEdit]],
+    LineEdit = require("LineEdit")--[[@as LineEdit]],
 
     Signal = require("Signal")--[[@as Signal]],
     Align = require("Align")--[[@as Align]],
